@@ -49,7 +49,7 @@ export async function POST(request: Request) {
   }
 
   const formData = new URLSearchParams();
-  formData.set("user_id", userId);
+  formData.set("identifier", userId);
   formData.set("password", password);
 
   const backendResponse = await fetch(`${getBackendApiUrl()}/auth/login`, {
