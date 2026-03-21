@@ -47,9 +47,11 @@ node_modules/
 .next/
 out/
 coverage/
+.vercel/
 
 # TypeScript
 *.tsbuildinfo
+next-env.d.ts
 
 # Local uploads / generated assets
 uploads/
