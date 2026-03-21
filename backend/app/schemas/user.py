@@ -3,15 +3,6 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field
 
 
-class UserCreate(BaseModel):
-    role: str
-
-
-class UserUpdate(BaseModel):
-    email: str | None = None
-    role: str | None = None
-
-
 class UserRead(BaseModel):
     id: str = Field(validation_alias="public_id")
     email: str | None = None

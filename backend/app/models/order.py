@@ -10,7 +10,7 @@ from app.db.base import Base
 class Order(Base):
     __tablename__ = "orders"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[str] = mapped_column(String(20), primary_key=True)
     event_id: Mapped[int] = mapped_column(ForeignKey("events.id", ondelete="CASCADE"), nullable=False)
     amount: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
     status: Mapped[str] = mapped_column(String(50), nullable=False)
@@ -26,3 +26,7 @@ class Order(Base):
         server_default=func.now(),
         onupdate=func.now(),
     )
+
+
+ORDER_STATUS_UNPAID = "unpaid"
+ORDER_STATUS_PAID = "paid"

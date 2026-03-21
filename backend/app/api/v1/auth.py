@@ -58,11 +58,11 @@ async def login(
     session: AsyncSession = Depends(get_session),
 ) -> LoginResponse:
     repository = UserRepository(session)
-    user = await repository.authenticate(form.user_id, form.password)
+    user = await repository.authenticate(form.identifier, form.password)
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect user ID or password",
+            detail="Incorrect ID, email, or password",
         )
 
     settings = get_settings()

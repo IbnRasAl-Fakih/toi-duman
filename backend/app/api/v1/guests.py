@@ -36,13 +36,12 @@ async def create_guest(
 
 @router.get("", response_model=list[GuestRead])
 async def list_guests(
-    limit: int = Query(default=100, ge=1, le=500),
-    offset: int = Query(default=0, ge=0),
+    event_id: int = Query(..., ge=1),
     _: object = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> list[GuestRead]:
     repository = GuestRepository(session)
-    return list(await repository.get_multi(limit=limit, offset=offset))
+    return await repository.get_by_event_id(event_id)
 
 
 @router.get("/{guest_id}", response_model=GuestRead)
@@ -53,37 +52,6 @@ async def get_guest(
 ) -> GuestRead:
     repository = GuestRepository(session)
     guest = await repository.get_by_id(guest_id)
-    if guest is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Guest not found")
-    return guest
-
-
-@router.patch("/{guest_id}", response_model=GuestRead)
-async def update_guest(
-    guest_id: int,
-    event_id: Annotated[int | None, Form()] = None,
-    name: Annotated[str | None, Form()] = None,
-    status: Annotated[str | None, Form()] = None,
-    count: Annotated[int | None, Form()] = None,
-    comment: Annotated[str | None, Form()] = None,
-    _: object = Depends(get_current_user),
-    session: AsyncSession = Depends(get_session),
-) -> GuestRead:
-    repository = GuestRepository(session)
-    guest = await repository.update(
-        guest_id,
-        {
-            key: value
-            for key, value in {
-                "event_id": event_id,
-                "name": name,
-                "status": status,
-                "count": count,
-                "comment": comment,
-            }.items()
-            if value is not None
-        },
-    )
     if guest is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Guest not found")
     return guest

@@ -5,6 +5,7 @@ from app.api.v1.events import router as events_router
 from app.api.v1.guests import router as guests_router
 from app.api.v1.orders import router as orders_router
 from app.api.v1.reviews import router as reviews_router
+from app.api.v1.uploads import router as uploads_router
 from app.api.v1.users import router as users_router
 
 
@@ -15,3 +16,4 @@ api_router.include_router(events_router)
 api_router.include_router(guests_router)
 api_router.include_router(orders_router)
 api_router.include_router(reviews_router)
+api_router.include_router(uploads_router)

@@ -10,17 +10,6 @@ class ReviewBase(BaseModel):
     is_published: bool = False
 
 
-class ReviewCreate(ReviewBase):
-    pass
-
-
-class ReviewUpdate(BaseModel):
-    event_id: int | None = None
-    user_id: str | None = None
-    text: str | None = None
-    is_published: bool | None = None
-
-
 class ReviewRead(ReviewBase):
     id: int
     created_at: datetime

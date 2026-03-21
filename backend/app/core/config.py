@@ -1,4 +1,5 @@
 from functools import lru_cache
+from decimal import Decimal
 
 from pydantic import computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -18,6 +19,12 @@ class Settings(BaseSettings):
     smtp_password: str | None = None
     smtp_from_email: str = "no-reply@toi-duman.local"
     smtp_use_tls: bool = False
+    r2_account_id: str | None = None
+    r2_access_key_id: str | None = None
+    r2_secret_access_key: str | None = None
+    r2_bucket_name: str = "toi-duman"
+    r2_public_base_url: str | None = None
+    event_order_amount: Decimal = Decimal("15000.00")
 
     postgres_host: str = "localhost"
     postgres_port: int = 5432
@@ -49,6 +56,14 @@ class Settings(BaseSettings):
     @property
     def alembic_database_url(self) -> str:
         return self.resolved_database_url
+
+    @computed_field
+    @property
+    def r2_endpoint_url(self) -> str | None:
+        if not self.r2_account_id:
+            return None
+
+        return f"https://{self.r2_account_id}.r2.cloudflarestorage.com"
 
 
 @lru_cache

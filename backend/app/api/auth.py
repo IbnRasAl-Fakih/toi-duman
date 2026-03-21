@@ -16,10 +16,10 @@ bearer_scheme = HTTPBearer()
 class LoginForm:
     def __init__(
         self,
-        user_id: Annotated[str, Form()],
+        identifier: Annotated[str, Form()],
         password: Annotated[str, Form()],
     ) -> None:
-        self.user_id = user_id
+        self.identifier = identifier
         self.password = password
 
 

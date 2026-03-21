@@ -11,19 +11,8 @@ class OrderBase(BaseModel):
     paid_at: datetime | None = None
 
 
-class OrderCreate(OrderBase):
-    pass
-
-
-class OrderUpdate(BaseModel):
-    event_id: int | None = None
-    amount: Decimal | None = None
-    status: str | None = None
-    paid_at: datetime | None = None
-
-
 class OrderRead(OrderBase):
-    id: int
+    id: str
     created_at: datetime
     updated_at: datetime
 

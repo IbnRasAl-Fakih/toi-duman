@@ -46,7 +46,8 @@ class UserRepository(BaseRepository[User]):
         return result.scalar_one_or_none()
 
     async def authenticate(self, user_id: str, password: str) -> User | None:
-        user = await self.get_by_public_id(user_id)
+        identifier = user_id.strip()
+        user = await self.get_by_email(identifier) if "@" in identifier else await self.get_by_public_id(identifier)
         if user is None:
             return None
 
