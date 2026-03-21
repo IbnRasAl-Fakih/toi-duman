@@ -45,13 +45,13 @@ export default async function LocaleLayout({
   const currentUser = await getCurrentUser();
 
   return (
-    <div className="site-shell">
+    <div className="flex min-h-screen flex-col">
       <Header
         currentUser={currentUser}
         dictionary={dictionary.nav}
         locale={locale}
       />
-      <main className="site-main">{children}</main>
+      <main className="flex-1">{children}</main>
       <Footer dictionary={dictionary.footer} />
     </div>
   );

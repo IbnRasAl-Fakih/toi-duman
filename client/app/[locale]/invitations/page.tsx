@@ -86,47 +86,65 @@ export default async function InvitationsPage({ params }: InvitationsPageProps) 
     }));
 
   return (
-    <section className="orders-page">
-      <div className="container">
-        <Link className="orders-page__back" href={`/${locale}`}>
-          <svg aria-hidden="true" viewBox="0 0 24 24">
+    <section className="px-0 py-10">
+      <div className="mx-auto w-[min(calc(100%-32px),1180px)]">
+        <Link
+          className="inline-flex items-center gap-2 font-sans text-[1.02rem] font-semibold text-[#72675d]"
+          href={`/${locale}`}
+        >
+          <svg
+            aria-hidden="true"
+            className="h-5 w-5 fill-none stroke-current [stroke-linecap:round] [stroke-linejoin:round] [stroke-width:2.2]"
+            viewBox="0 0 24 24"
+          >
             <path d="m15 6-6 6 6 6" />
           </svg>
           {dictionary.back}
         </Link>
 
-        <div className="orders-page__hero">
-          <p className="eyebrow">{dictionary.eyebrow}</p>
-          <h1>{dictionary.title}</h1>
-          <p>{dictionary.text}</p>
-          <p className="orders-page__user">User ID: {currentUser.id}</p>
+        <div className="mt-6 max-w-4xl">
+          <p className="mb-3 text-[0.92rem] uppercase tracking-[0.14em] text-[#9a6f43]">
+            {dictionary.eyebrow}
+          </p>
+          <h1 className="m-0 text-[clamp(2.2rem,4vw,3.6rem)] leading-[1.02]">
+            {dictionary.title}
+          </h1>
+          <p className="mt-4 text-[1.04rem] leading-[1.8] text-[#72675d]">
+            {dictionary.text}
+          </p>
+          <p className="mt-4 font-sans text-[0.95rem] font-semibold text-[#9a6f43]">
+            User ID: {currentUser.id}
+          </p>
         </div>
 
-        <div className="orders-layout">
-          <section className="orders-section">
-            <div className="orders-section__head">
-              <h2>{dictionary.paidSection}</h2>
-              <span className="orders-section__badge orders-section__badge--paid">
+        <div className="mt-8 grid gap-6 lg:grid-cols-2">
+          <section className="rounded-[32px] border border-[rgba(116,93,72,0.08)] bg-white/75 p-7 shadow-[0_18px_40px_rgba(102,81,61,0.08)]">
+            <div className="flex items-center justify-between gap-4">
+              <h2 className="text-[1.15rem]">{dictionary.paidSection}</h2>
+              <span className="rounded-full bg-[rgba(16,185,129,0.12)] px-3 py-1 font-sans text-[0.92rem] font-semibold text-[#0f8d54]">
                 {paidOrders.length}
               </span>
             </div>
 
             {paidOrders.length ? (
-              <div className="orders-list">
+              <div className="mt-5 grid gap-4">
                 {paidOrders.map((order) => (
-                  <article className="order-card order-card--paid" key={order.id}>
-                    <div className="order-card__main">
+                  <article
+                    className="rounded-[28px] border border-[rgba(116,93,72,0.08)] bg-[linear-gradient(180deg,rgba(240,255,247,0.96),rgba(255,255,255,0.9))] p-5"
+                    key={order.id}
+                  >
+                    <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                       <div>
-                        <p className="order-card__title">{order.title}</p>
-                        <p className="order-card__meta">
+                        <p className="text-[1.08rem] font-semibold">{order.title}</p>
+                        <p className="mt-2 text-[0.95rem] text-[#72675d]">
                           {order.eventType} • {order.id}
                         </p>
                       </div>
-                      <span className="order-card__status order-card__status--paid">
+                      <span className="rounded-full bg-[rgba(16,185,129,0.12)] px-3 py-1 font-sans text-[0.82rem] font-bold uppercase text-[#0f8d54]">
                         {dictionary.statusPaid}
                       </span>
                     </div>
-                    <div className="order-card__details">
+                    <div className="mt-4 grid gap-2 text-[0.92rem] text-[#72675d]">
                       <span>{order.amount}</span>
                       <span>
                         {dictionary.paidAt}: {formatDate(order.paidAt!, locale)}
@@ -136,47 +154,54 @@ export default async function InvitationsPage({ params }: InvitationsPageProps) 
                 ))}
               </div>
             ) : (
-              <p className="orders-empty">{dictionary.emptyPaid}</p>
+              <p className="mt-5 text-[1rem] leading-[1.7] text-[#72675d]">
+                {dictionary.emptyPaid}
+              </p>
             )}
           </section>
 
-          <section className="orders-section">
-            <div className="orders-section__head">
-              <h2>{dictionary.unpaidSection}</h2>
-              <span className="orders-section__badge orders-section__badge--unpaid">
+          <section className="rounded-[32px] border border-[rgba(116,93,72,0.08)] bg-white/75 p-7 shadow-[0_18px_40px_rgba(102,81,61,0.08)]">
+            <div className="flex items-center justify-between gap-4">
+              <h2 className="text-[1.15rem]">{dictionary.unpaidSection}</h2>
+              <span className="rounded-full bg-[rgba(245,158,11,0.14)] px-3 py-1 font-sans text-[0.92rem] font-semibold text-[#b45309]">
                 {unpaidOrders.length}
               </span>
             </div>
 
             {unpaidOrders.length ? (
-              <div className="orders-list">
+              <div className="mt-5 grid gap-4">
                 {unpaidOrders.map((order) => (
-                  <article className="order-card order-card--unpaid" key={order.id}>
-                    <div className="order-card__main">
+                  <article
+                    className="rounded-[28px] border border-[rgba(116,93,72,0.08)] bg-[linear-gradient(180deg,rgba(255,249,238,0.96),rgba(255,255,255,0.9))] p-5"
+                    key={order.id}
+                  >
+                    <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                       <div>
-                        <p className="order-card__title">{order.title}</p>
-                        <p className="order-card__meta">
+                        <p className="text-[1.08rem] font-semibold">{order.title}</p>
+                        <p className="mt-2 text-[0.95rem] text-[#72675d]">
                           {order.eventType} • {order.id}
                         </p>
                       </div>
-                      <span className="order-card__status order-card__status--unpaid">
+                      <span className="rounded-full bg-[rgba(245,158,11,0.14)] px-3 py-1 font-sans text-[0.82rem] font-bold uppercase text-[#b45309]">
                         {dictionary.statusUnpaid}
                       </span>
                     </div>
-                    <div className="order-card__details">
+                    <div className="mt-4 grid gap-2 text-[0.92rem] text-[#72675d]">
                       <span>{order.amount}</span>
                       <span>
                         {dictionary.createdAt}: {formatDate(order.createdAt, locale)}
                       </span>
                     </div>
-                    <p className="order-card__notice">
+                    <p className="mt-4 text-[0.9rem] font-bold text-[#9a6f43]">
                       {dictionary.visibleFor}: {order.daysLeft} дн.
                     </p>
                   </article>
                 ))}
               </div>
             ) : (
-              <p className="orders-empty">{dictionary.emptyUnpaid}</p>
+              <p className="mt-5 text-[1rem] leading-[1.7] text-[#72675d]">
+                {dictionary.emptyUnpaid}
+              </p>
             )}
           </section>
         </div>

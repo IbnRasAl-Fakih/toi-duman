@@ -29,7 +29,11 @@ export default function LogoutButton({ locale, label }: LogoutButtonProps) {
   }
 
   return (
-    <button className="button button--small button--ghost" onClick={handleLogout} type="button">
+    <button
+      className="inline-flex min-h-11 items-center justify-center rounded-full border border-[rgba(116,93,72,0.12)] bg-[rgba(255,255,255,0.72)] px-6 text-center font-sans text-[0.95rem] font-semibold text-[#2d2621] shadow-[0_8px_24px_rgba(95,72,50,0.06)] transition duration-300 hover:-translate-y-0.5"
+      onClick={handleLogout}
+      type="button"
+    >
       {isPending ? "..." : buttonLabel}
     </button>
   );

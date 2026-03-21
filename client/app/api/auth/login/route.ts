@@ -43,7 +43,7 @@ export async function POST(request: Request) {
 
   if (!userId || !password) {
     return NextResponse.json(
-      { detail: "User ID and password are required" },
+      { detail: "User ID or email and password are required" },
       { status: 400 }
     );
   }

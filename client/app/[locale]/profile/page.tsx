@@ -21,8 +21,8 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   }
 
   return (
-    <section className="profile-page">
-      <div className="container profile-page__wrap">
+    <section className="px-0 py-10">
+      <div className="mx-auto w-[min(calc(100%-32px),1120px)]">
         <ProfileBankingPanel currentUser={currentUser} locale={locale} />
       </div>
     </section>

@@ -21,6 +21,12 @@ type HeaderProps = {
   } | null;
 };
 
+const containerClass = "mx-auto w-[min(calc(100%-32px),1180px)]";
+const pillButtonClass =
+  "inline-flex min-h-11 items-center justify-center rounded-full px-6 text-center font-sans text-[0.95rem] font-semibold transition duration-300";
+const solidButtonClass = `${pillButtonClass} bg-[#b78654] text-white shadow-[0_14px_34px_rgba(183,134,84,0.22)] hover:scale-105 hover:brightness-105`;
+const ghostButtonClass = `${pillButtonClass} border border-[rgba(116,93,72,0.12)] bg-[rgba(255,255,255,0.72)] text-[#2d2621] shadow-[0_8px_24px_rgba(95,72,50,0.06)] hover:-translate-y-0.5`;
+
 export default function Header({
   locale,
   dictionary,
@@ -61,18 +67,24 @@ export default function Header({
   ];
 
   return (
-    <header className="header">
-      <div className="container header__inner">
-        <Link className="brand" href={`/${locale}`}>
-          <span className="brand__wordmark">
-            <strong>TOI</strong>
-            <strong>DUMAN</strong>
+    <header className="sticky top-0 z-10 border-b border-[rgba(116,93,72,0.08)] bg-[rgba(255,251,246,0.9)] shadow-[0_10px_30px_rgba(95,72,50,0.05)] backdrop-blur-[18px]">
+      <div className={`${containerClass} flex flex-wrap items-center justify-between gap-6 py-[18px]`}>
+        <Link className="flex shrink-0 items-center gap-4" href={`/${locale}`}>
+          <span className="flex items-baseline gap-1.5 font-sans font-extrabold tracking-[0.02em]">
+            <strong className="text-[#e85a66]">TOI</strong>
+            <strong className="text-[#2f3442]">DUMAN</strong>
           </span>
-          <span className="brand__gem" aria-hidden="true">
-            <span className="brand__spark brand__spark--one" />
-            <span className="brand__spark brand__spark--two" />
-            <span className="brand__spark brand__spark--three" />
-            <svg viewBox="0 0 64 64">
+          <span
+            aria-hidden="true"
+            className="relative grid h-[54px] w-[54px] place-items-center"
+          >
+            <span className="absolute right-1 top-[3px] h-2.5 w-2.5 rotate-45 rounded-[2px] bg-[linear-gradient(135deg,#e85a66,#f0b14b)]" />
+            <span className="absolute left-0.5 top-2.5 h-2 w-2 rotate-45 rounded-[2px] bg-[linear-gradient(135deg,#e85a66,#f0b14b)]" />
+            <span className="absolute right-3.5 top-[-2px] h-[7px] w-[7px] rotate-45 rounded-[2px] bg-[linear-gradient(135deg,#e85a66,#f0b14b)]" />
+            <svg
+              className="h-[54px] w-[54px] fill-none stroke-[#494c59] [stroke-linecap:round] [stroke-linejoin:round] [stroke-width:1.8]"
+              viewBox="0 0 64 64"
+            >
               <path d="M20 14h24l12 10-24 26L8 24l12-10Z" />
               <path d="M20 14l12 36 12-36" />
               <path d="M8 24h48" />
@@ -80,29 +92,35 @@ export default function Header({
           </span>
         </Link>
 
-        <nav className="nav">
+        <nav className="flex flex-wrap items-center gap-2 rounded-full border border-[rgba(116,93,72,0.08)] bg-[rgba(255,255,255,0.72)] p-1.5 shadow-[0_8px_24px_rgba(95,72,50,0.06)]">
           {navItems.map((item) => (
-            <Link className="nav__link" href={item.href} key={item.label}>
-              <span className="nav__icon">{item.icon}</span>
+            <Link
+              className="inline-flex min-h-[46px] items-center gap-2.5 rounded-full px-4 font-sans text-[0.98rem] font-semibold text-[#72675d] transition duration-200 hover:-translate-y-0.5 hover:bg-[rgba(183,134,84,0.08)] hover:text-[#2d2621]"
+              href={item.href}
+              key={item.label}
+            >
+              <span className="inline-flex h-5 w-5 items-center justify-center [&_svg]:h-5 [&_svg]:w-5 [&_svg]:fill-none [&_svg]:stroke-current [&_svg]:[stroke-linecap:round] [&_svg]:[stroke-linejoin:round] [&_svg]:[stroke-width:1.9]">
+                {item.icon}
+              </span>
               {item.label}
             </Link>
           ))}
         </nav>
 
-        <div className="header__actions">
+        <div className="flex flex-wrap items-center gap-3">
           <LanguageSwitcher
             currentLocale={locale}
             labels={{ ru: dictionary.russian, kk: dictionary.kazakh }}
           />
 
           {currentUser ? (
-            <div className="header__account">
-              <Link className="button button--small button--ghost" href={`/${locale}/profile`}>
+            <div>
+              <Link className={ghostButtonClass} href={`/${locale}/profile`}>
                 {dictionary.profile}
               </Link>
             </div>
           ) : (
-            <Link className="button button--small" href={`/${locale}/login`}>
+            <Link className={solidButtonClass} href={`/${locale}/login`}>
               {dictionary.login}
             </Link>
           )}
