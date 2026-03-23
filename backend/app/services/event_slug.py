@@ -20,11 +20,10 @@ def _extract_name_part(config: dict[str, Any]) -> str:
     return str(name).strip()
 
 
-def build_event_slug(*, event_type: str, config: dict[str, Any], user_id: str) -> str:
+def build_event_slug(*, event_type: str, config: dict[str, Any]) -> str:
     parts = [
         _normalize_slug_part(event_type),
         _normalize_slug_part(_extract_name_part(config)),
-        _normalize_slug_part(user_id),
     ]
     slug = "-".join(part for part in parts if part)
-    return slug or _normalize_slug_part(user_id)
+    return slug or "event"

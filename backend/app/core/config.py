@@ -7,23 +7,6 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     app_env: str = "local"
-    jwt_secret_key: str = "change-this-secret-key"
-    jwt_algorithm: str = "HS256"
-    jwt_access_token_expire_minutes: int = 60
-    jwt_refresh_token_expire_days: int = 30
-    jwt_refresh_cookie_name: str = "refresh_token"
-    email_verification_code_expire_minutes: int = 10
-    smtp_host: str = "localhost"
-    smtp_port: int = 1025
-    smtp_user: str | None = None
-    smtp_password: str | None = None
-    smtp_from_email: str = "no-reply@toi-duman.local"
-    smtp_use_tls: bool = False
-    r2_account_id: str | None = None
-    r2_access_key_id: str | None = None
-    r2_secret_access_key: str | None = None
-    r2_bucket_name: str = "toi-duman"
-    r2_public_base_url: str | None = None
     event_order_amount: Decimal = Decimal("15000.00")
 
     postgres_host: str = "localhost"
@@ -32,6 +15,13 @@ class Settings(BaseSettings):
     postgres_user: str = "postgres"
     postgres_password: str = "postgres"
     database_url: str | None = None
+
+    r2_account_id: str | None = None
+    r2_access_key_id: str | None = None
+    r2_secret_access_key: str | None = None
+    r2_bucket_name: str | None = None
+    r2_public_base_url: str | None = None
+    r2_upload_prefix: str = "events/covers"
 
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -62,7 +52,6 @@ class Settings(BaseSettings):
     def r2_endpoint_url(self) -> str | None:
         if not self.r2_account_id:
             return None
-
         return f"https://{self.r2_account_id}.r2.cloudflarestorage.com"
 
 

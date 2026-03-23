@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-from sqlalchemy import desc, select
+from sqlalchemy import select
 
 from app.models.event import Event
 from app.models.order import ORDER_STATUS_UNPAID, Order
@@ -11,14 +11,21 @@ from app.services.order_id import generate_order_id
 class EventRepository(BaseRepository[Event]):
     model = Event
 
-    async def get_latest_by_user_id(self, user_id: str) -> Event | None:
-        statement = (
-            select(self.model)
-            .where(self.model.user_id == user_id)
-            .order_by(desc(self.model.created_at), desc(self.model.id))
-        )
+    async def get_by_slug(self, slug: str) -> Event | None:
+        statement = select(self.model).where(self.model.slug == slug)
         result = await self.session.execute(statement)
         return result.scalar_one_or_none()
+
+    async def generate_unique_slug(self, base_slug: str, *, exclude_event_id: int | None = None) -> str:
+        candidate = base_slug
+        suffix = 2
+
+        while True:
+            existing_event = await self.get_by_slug(candidate)
+            if existing_event is None or existing_event.id == exclude_event_id:
+                return candidate
+            candidate = f"{base_slug}-{suffix}"
+            suffix += 1
 
     async def _generate_unique_order_id(self) -> str:
         while True:

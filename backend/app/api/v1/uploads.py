@@ -1,63 +1,47 @@
-from pathlib import Path
-from typing import Annotated
-from uuid import uuid4
+from fastapi import APIRouter, File, HTTPException, UploadFile, status
+from fastapi.concurrency import run_in_threadpool
 
-from fastapi import APIRouter, Depends, Form, HTTPException, status
-
-from app.api.auth import get_current_user
-from app.integrations.storage.r2 import R2StorageService
-from app.models.user import User
-from app.schemas.storage import PresignedUploadResponse
+from app.core.config import get_settings
+from app.schemas.upload import UploadImageRead
+from app.services.r2_storage import R2StorageService
 
 
 router = APIRouter(prefix="/uploads", tags=["uploads"])
 
-PRESIGNED_UPLOAD_EXPIRES_IN = 3600
+ALLOWED_IMAGE_TYPES = {
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "image/gif",
+    "image/svg+xml",
+}
+MAX_IMAGE_SIZE_BYTES = 10 * 1024 * 1024
 
 
-def _sanitize_folder(folder: str) -> str:
-    parts = [part for part in folder.strip("/").split("/") if part and part not in {".", ".."}]
-    return "/".join(parts)
+@router.post("/images", response_model=UploadImageRead, status_code=status.HTTP_201_CREATED)
+async def upload_image(file: UploadFile = File(...)) -> UploadImageRead:
+    if not file.filename:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Filename is required")
 
+    if file.content_type not in ALLOWED_IMAGE_TYPES:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Unsupported image type")
 
-def _build_file_key(*, user_id: str, file_name: str, folder: str | None = None) -> str:
-    extension = Path(file_name).suffix.lower()
-    safe_folder = _sanitize_folder(folder or "uploads")
-    return f"{safe_folder}/{user_id}/{uuid4().hex}{extension}"
+    content = await file.read()
+    if not content:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Empty file")
 
+    if len(content) > MAX_IMAGE_SIZE_BYTES:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="File is too large")
 
-@router.post("/presigned-url", response_model=PresignedUploadResponse)
-async def create_presigned_upload_url(
-    file_name: Annotated[str, Form()],
-    content_type: Annotated[str, Form()],
-    folder: Annotated[str | None, Form()] = None,
-    current_user: User = Depends(get_current_user),
-) -> PresignedUploadResponse:
-    if not file_name.strip():
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="file_name is required")
-    if not content_type.strip():
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="content_type is required")
-
-    file_key = _build_file_key(
-        user_id=current_user.public_id,
-        file_name=file_name,
-        folder=folder,
-    )
-
+    storage = R2StorageService(get_settings())
     try:
-        storage = R2StorageService()
-        upload_url = storage.generate_presigned_put_url(
-            key=file_key,
-            expires_in=PRESIGNED_UPLOAD_EXPIRES_IN,
-            content_type=content_type,
+        key, url = await run_in_threadpool(
+            storage.upload_image,
+            content=content,
+            filename=file.filename,
+            content_type=file.content_type,
         )
-        file_url = storage.get_public_url(file_key)
-    except ValueError as exc:
-        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(exc)) from exc
+    except RuntimeError as exc:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(exc)) from exc
 
-    return PresignedUploadResponse(
-        upload_url=upload_url,
-        file_key=file_key,
-        file_url=file_url,
-        expires_in=PRESIGNED_UPLOAD_EXPIRES_IN,
-    )
+    return UploadImageRead(key=key, url=url)

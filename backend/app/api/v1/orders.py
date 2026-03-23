@@ -1,9 +1,8 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Form, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.auth import get_current_user, require_admin
 from app.api.dependencies import get_session
 from app.repositories.order_repository import OrderRepository
 from app.schemas.order import OrderRead
@@ -16,7 +15,6 @@ router = APIRouter(prefix="/orders", tags=["orders"])
 async def list_orders(
     limit: int = Query(default=100, ge=1, le=500),
     offset: int = Query(default=0, ge=0),
-    _: object = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> list[OrderRead]:
     repository = OrderRepository(session)
@@ -26,7 +24,6 @@ async def list_orders(
 @router.get("/{order_id}", response_model=OrderRead)
 async def get_order(
     order_id: str,
-    _: object = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> OrderRead:
     repository = OrderRepository(session)
@@ -39,7 +36,6 @@ async def get_order(
 @router.patch("/{order_id}/paid", response_model=OrderRead)
 async def update_order_paid_at(
     order_id: str,
-    _: object = Depends(require_admin),
     session: AsyncSession = Depends(get_session),
 ) -> OrderRead:
     repository = OrderRepository(session)
@@ -52,7 +48,6 @@ async def update_order_paid_at(
 @router.delete("/{order_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_order(
     order_id: str,
-    _: object = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> None:
     repository = OrderRepository(session)

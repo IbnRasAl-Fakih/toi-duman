@@ -4,16 +4,11 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Form, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.auth import get_current_user, require_admin
 from app.api.dependencies import get_session
-from app.api.v1.user_serializers import serialize_event
 from app.core.config import get_settings
-from app.models.user import User, UserRole
-from app.repositories.event_claim_repository import CLAIM_EXPIRE_HOURS, EventClaimRepository
 from app.repositories.event_repository import EventRepository
-from app.repositories.user_repository import UserRepository
-from app.schemas.event_claim import EventClaimCodeResponse, EventClaimResponse
-from app.schemas.event import EventRead
+from app.repositories.order_repository import OrderRepository
+from app.schemas.event import EventRead, EventWithOrderRead
 from app.services.event_datetime import combine_event_datetime
 from app.services.event_slug import build_event_slug
 
@@ -31,7 +26,6 @@ async def create_event(
     description: Annotated[str | None, Form()] = None,
     cover_image_url: Annotated[str | None, Form()] = None,
     config: Annotated[str, Form()] = "{}",
-    current_user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> EventRead:
     repository = EventRepository(session)
@@ -41,14 +35,9 @@ async def create_event(
         parsed_date = combine_event_datetime(date_value=date, time_value=time)
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
-    slug = build_event_slug(
-        event_type=type,
-        config=parsed_config,
-        user_id=current_user.id,
-    )
+    slug = await repository.generate_unique_slug(build_event_slug(event_type=type, config=parsed_config))
     event = await repository.create_with_order(
         event_data={
-            "user_id": current_user.id,
             "slug": slug,
             "type": type,
             "date": parsed_date,
@@ -57,37 +46,52 @@ async def create_event(
             "description": description,
             "cover_image_url": cover_image_url,
             "config": parsed_config,
-            "is_created_by_admin": current_user.role == UserRole.admin,
         },
         order_amount=settings.event_order_amount,
     )
-    return await serialize_event(event, UserRepository(session))
+    return EventRead.model_validate(event)
 
 
 @router.get("", response_model=list[EventRead])
 async def list_events(
     limit: int = Query(default=100, ge=1, le=500),
     offset: int = Query(default=0, ge=0),
-    _: object = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> list[EventRead]:
     repository = EventRepository(session)
-    user_repository = UserRepository(session)
     events = await repository.get_multi(limit=limit, offset=offset)
-    return [await serialize_event(event, user_repository) for event in events]
+    return [EventRead.model_validate(event) for event in events]
+
+
+@router.get("/slug/{slug}", response_model=EventWithOrderRead)
+async def get_event_by_slug(
+    slug: str,
+    session: AsyncSession = Depends(get_session),
+) -> EventWithOrderRead:
+    event_repository = EventRepository(session)
+    order_repository = OrderRepository(session)
+    event = await event_repository.get_by_slug(slug)
+    if event is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Event not found")
+    order = await order_repository.get_by_event_id(event.id)
+    return EventWithOrderRead.model_validate(
+        {
+            **EventRead.model_validate(event).model_dump(),
+            "order": order,
+        }
+    )
 
 
 @router.get("/{event_id}", response_model=EventRead)
 async def get_event(
     event_id: int,
-    _: object = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> EventRead:
     repository = EventRepository(session)
     event = await repository.get_by_id(event_id)
     if event is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Event not found")
-    return await serialize_event(event, UserRepository(session))
+    return EventRead.model_validate(event)
 
 
 @router.patch("/{event_id}", response_model=EventRead)
@@ -101,7 +105,6 @@ async def update_event(
     description: Annotated[str | None, Form()] = None,
     cover_image_url: Annotated[str | None, Form()] = None,
     config: Annotated[str | None, Form()] = None,
-    current_user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> EventRead:
     repository = EventRepository(session)
@@ -133,74 +136,24 @@ async def update_event(
         data["config"] = parsed_config
 
     if type is not None or config is not None:
-        data["slug"] = build_event_slug(
-            event_type=resolved_type,
-            config=parsed_config,
-            user_id=current_user.id,
+        data["slug"] = await repository.generate_unique_slug(
+            build_event_slug(event_type=resolved_type, config=parsed_config),
+            exclude_event_id=event_id,
         )
 
     event = await repository.update(
         event_id,
         {key: value for key, value in data.items() if value is not None},
     )
-    return await serialize_event(event, UserRepository(session))
+    return EventRead.model_validate(event)
 
 
 @router.delete("/{event_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_event(
     event_id: int,
-    _: object = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ) -> None:
     repository = EventRepository(session)
     deleted = await repository.delete(event_id)
     if not deleted:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Event not found")
-
-
-@router.post("/{event_id}/claim-code", response_model=EventClaimCodeResponse)
-async def create_event_claim_code(
-    event_id: int,
-    current_user: User = Depends(require_admin),
-    session: AsyncSession = Depends(get_session),
-) -> EventClaimCodeResponse:
-    event_repository = EventRepository(session)
-    claim_repository = EventClaimRepository(session)
-
-    event = await event_repository.get_by_id(event_id)
-    if event is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Event not found")
-    if not event.is_created_by_admin:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Claim code can be created only for admin-created events",
-        )
-
-    claim = await claim_repository.create_claim(
-        event_id=event_id,
-        created_by_admin_id=current_user.id,
-    )
-    return EventClaimCodeResponse(
-        event_id=event_id,
-        code=claim.code,
-        expires_at=claim.expires_at,
-    )
-
-
-@router.post("/claim", response_model=EventClaimResponse)
-async def claim_event(
-    code: Annotated[str, Form()],
-    current_user: User = Depends(get_current_user),
-    session: AsyncSession = Depends(get_session),
-) -> EventClaimResponse:
-    claim_repository = EventClaimRepository(session)
-
-    try:
-        event = await claim_repository.claim_event(code=code, user_id=current_user.id)
-    except ValueError as exc:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
-
-    return EventClaimResponse(
-        message=f"Event claimed successfully.",
-        event_id=event.id,
-    )

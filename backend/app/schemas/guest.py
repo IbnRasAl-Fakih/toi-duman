@@ -7,8 +7,6 @@ class GuestBase(BaseModel):
     event_id: int
     name: str
     status: str
-    count: int = 1
-    comment: str | None = None
 
 
 class GuestRead(GuestBase):

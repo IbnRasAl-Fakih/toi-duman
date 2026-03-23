@@ -1,6 +1,8 @@
 from datetime import datetime, timezone
 from decimal import Decimal
 
+from sqlalchemy import select
+
 from app.models.order import ORDER_STATUS_PAID, ORDER_STATUS_UNPAID, Order
 from app.repositories.base import BaseRepository
 from app.services.order_id import generate_order_id
@@ -8,6 +10,11 @@ from app.services.order_id import generate_order_id
 
 class OrderRepository(BaseRepository[Order]):
     model = Order
+
+    async def get_by_event_id(self, event_id: int) -> Order | None:
+        statement = select(self.model).where(self.model.event_id == event_id)
+        result = await self.session.execute(statement)
+        return result.scalar_one_or_none()
 
     async def _generate_unique_order_id(self, created_at: datetime | None = None) -> str:
         while True:
@@ -27,7 +34,7 @@ class OrderRepository(BaseRepository[Order]):
             }
         )
 
-    async def mark_as_paid(self, order_id: int) -> Order | None:
+    async def mark_as_paid(self, order_id: str) -> Order | None:
         order = await self.get_by_id(order_id)
         if order is None:
             return None
