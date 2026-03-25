@@ -1,0 +1,13 @@
+diff --git a/node_modules/react-scripts/config/webpackDevServer.config.js b/node_modules/react-scripts/config/webpackDevServer.config.js
+index 522a81b..6fe502e 100644
+--- a/node_modules/react-scripts/config/webpackDevServer.config.js
++++ b/node_modules/react-scripts/config/webpackDevServer.config.js
+@@ -49,6 +49,8 @@ module.exports = function (proxy, allowedHost) {
+       'Access-Control-Allow-Methods': '*',
+       'Access-Control-Allow-Headers': '*',
+     },
++    hot: false,
++    liveReload: true,
+     // Enable gzip compression of generated files.
+     compress: true,
+     static: {

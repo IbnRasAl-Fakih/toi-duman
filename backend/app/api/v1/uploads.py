@@ -18,8 +18,7 @@ ALLOWED_IMAGE_TYPES = {
 MAX_IMAGE_SIZE_BYTES = 10 * 1024 * 1024
 
 
-@router.post("/images", response_model=UploadImageRead, status_code=status.HTTP_201_CREATED)
-async def upload_image(file: UploadFile = File(...)) -> UploadImageRead:
+async def upload_image_to_r2(file: UploadFile) -> UploadImageRead:
     if not file.filename:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Filename is required")
 
@@ -45,3 +44,8 @@ async def upload_image(file: UploadFile = File(...)) -> UploadImageRead:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(exc)) from exc
 
     return UploadImageRead(key=key, url=url)
+
+
+@router.post("/images", response_model=UploadImageRead, status_code=status.HTTP_201_CREATED)
+async def upload_image(file: UploadFile = File(...)) -> UploadImageRead:
+    return await upload_image_to_r2(file)

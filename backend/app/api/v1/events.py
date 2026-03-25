@@ -1,10 +1,11 @@
 import json
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Form, HTTPException, Query, status
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.dependencies import get_session
+from app.api.v1.uploads import upload_image_to_r2
 from app.core.config import get_settings
 from app.repositories.event_repository import EventRepository
 from app.repositories.order_repository import OrderRepository
@@ -26,6 +27,7 @@ async def create_event(
     description: Annotated[str | None, Form()] = None,
     cover_image_url: Annotated[str | None, Form()] = None,
     config: Annotated[str, Form()] = "{}",
+    file: Annotated[UploadFile | None, File()] = None,
     session: AsyncSession = Depends(get_session),
 ) -> EventRead:
     repository = EventRepository(session)
@@ -35,6 +37,12 @@ async def create_event(
         parsed_date = combine_event_datetime(date_value=date, time_value=time)
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+
+    resolved_cover_image_url = cover_image_url
+    if file is not None:
+        upload = await upload_image_to_r2(file)
+        resolved_cover_image_url = upload.url
+
     slug = await repository.generate_unique_slug(build_event_slug(event_type=type, config=parsed_config))
     event = await repository.create_with_order(
         event_data={
@@ -44,7 +52,7 @@ async def create_event(
             "location": location,
             "location_link": location_link,
             "description": description,
-            "cover_image_url": cover_image_url,
+            "cover_image_url": resolved_cover_image_url,
             "config": parsed_config,
         },
         order_amount=settings.event_order_amount,

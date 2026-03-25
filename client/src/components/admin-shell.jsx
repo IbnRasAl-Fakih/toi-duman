@@ -2,9 +2,9 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 
 const navigationItems = [
-  { to: "/admin", label: "Создать event", end: true },
-  { to: "/admin/events", label: "Список event-ов" },
-  { to: "/admin/orders", label: "Список заказов" }
+  { to: "/admin/events", label: "Список event-ов", end: true },
+  { to: "/admin/orders", label: "Список заказов", end: true },
+  { to: "/admin/events/create", label: "Создать event", end: true }
 ];
 
 export default function AdminShell({ title, description, children }) {
@@ -13,13 +13,11 @@ export default function AdminShell({ title, description, children }) {
       <div className="mx-auto max-w-7xl">
         <div className="space-y-4">
           <header className="w-full rounded-[32px] border border-black/10 bg-white/80 px-6 py-6 shadow-[0_20px_60px_rgba(31,26,23,0.08)] backdrop-blur md:px-8 lg:px-10">
-            <div className="max-w-5xl">
-              <p className="text-xs uppercase tracking-[0.38em] text-[#7f1118]/60">Admin Panel</p>
-              <h1 className="mt-4 w-full font-['Georgia','Times_New_Roman',serif] text-5xl leading-[0.92] text-[#7f1118] md:text-6xl lg:text-7xl">
-                {title}
-              </h1>
-              <p className="mt-5 max-w-5xl text-sm leading-7 text-black/65 md:text-base">{description}</p>
-            </div>
+            <p className="text-xs uppercase tracking-[0.38em] text-[#7f1118]/60">Admin Panel</p>
+            <h1 className="mt-4 w-full font-['Georgia','Times_New_Roman',serif] text-5xl leading-[0.92] text-[#7f1118] md:text-6xl lg:text-7xl">
+              {title}
+            </h1>
+            <p className="mt-5 w-full text-sm leading-7 text-black/65 md:text-base">{description}</p>
           </header>
 
           <div className="w-full rounded-[28px] border border-black/10 bg-white/80 px-4 py-4 shadow-[0_18px_50px_rgba(31,26,23,0.06)] backdrop-blur md:px-6">

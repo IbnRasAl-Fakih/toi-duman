@@ -18,6 +18,7 @@ const initialForm = {
 
 function buildConfigPayload(form) {
   const parsedExtra = form.configExtra.trim() ? JSON.parse(form.configExtra) : {};
+
   return {
     ...parsedExtra,
     name: form.configName
@@ -47,8 +48,9 @@ function parseTimeValue(value) {
   return Number.isNaN(parsed.getTime()) ? null : parsed;
 }
 
-export default function AdminPage() {
+export default function AdminCreateEventPage() {
   const [form, setForm] = React.useState(initialForm);
+  const [coverFile, setCoverFile] = React.useState(null);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [isUploadingCover, setIsUploadingCover] = React.useState(false);
   const [result, setResult] = React.useState(null);
@@ -72,10 +74,8 @@ export default function AdminPage() {
     }));
   }
 
-  async function uploadCoverFile(file) {
-    if (!file) {
-      return;
-    }
+  function setSelectedCoverFile(file) {
+    if (!file) return;
 
     if (!file.type.startsWith("image/")) {
       throw new Error("Нужен файл изображения");
@@ -88,49 +88,25 @@ export default function AdminPage() {
     const localPreviewUrl = URL.createObjectURL(file);
     setCoverPreview(localPreviewUrl);
     setCoverFileName(file.name);
-    setIsUploadingCover(true);
-
-    try {
-      const payload = new FormData();
-      payload.append("file", file);
-
-      const response = await fetch("/api/v1/uploads/images", {
-        method: "POST",
-        body: payload
-      });
-
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.detail || "Не удалось загрузить изображение");
-      }
-
-      updateField("coverImageUrl", data.url);
-    } catch (uploadError) {
-      URL.revokeObjectURL(localPreviewUrl);
-      setCoverPreview("");
-      setCoverFileName("");
-      updateField("coverImageUrl", "");
-      throw uploadError;
-    } finally {
-      setIsUploadingCover(false);
-    }
+    setCoverFile(file);
+    updateField("coverImageUrl", "");
   }
 
-  async function handleCoverInputChange(event) {
+  function handleCoverInputChange(event) {
     const file = event.target.files?.[0];
     if (!file) return;
 
     try {
       setError("");
-      await uploadCoverFile(file);
+      setSelectedCoverFile(file);
     } catch (fileError) {
-      setError(fileError instanceof Error ? fileError.message : "Не удалось загрузить изображение");
+      setError(fileError instanceof Error ? fileError.message : "Не удалось выбрать изображение");
     } finally {
       event.target.value = "";
     }
   }
 
-  async function handleCoverDrop(event) {
+  function handleCoverDrop(event) {
     event.preventDefault();
     setIsDraggingCover(false);
 
@@ -139,9 +115,9 @@ export default function AdminPage() {
 
     try {
       setError("");
-      await uploadCoverFile(file);
+      setSelectedCoverFile(file);
     } catch (fileError) {
-      setError(fileError instanceof Error ? fileError.message : "Не удалось загрузить изображение");
+      setError(fileError instanceof Error ? fileError.message : "Не удалось выбрать изображение");
     }
   }
 
@@ -152,7 +128,21 @@ export default function AdminPage() {
 
     setCoverPreview("");
     setCoverFileName("");
+    setCoverFile(null);
     updateField("coverImageUrl", "");
+  }
+
+  function resetForm() {
+    if (coverPreview.startsWith("blob:")) {
+      URL.revokeObjectURL(coverPreview);
+    }
+
+    setForm(initialForm);
+    setCoverFile(null);
+    setCoverPreview("");
+    setCoverFileName("");
+    setIsDraggingCover(false);
+    setError("");
   }
 
   async function handleSubmit(event) {
@@ -164,13 +154,19 @@ export default function AdminPage() {
     try {
       const configPayload = buildConfigPayload(form);
       const payload = new FormData();
+
       payload.append("type", form.type);
       payload.append("date", form.date);
       if (form.time) payload.append("time", form.time);
       payload.append("location", form.location);
       if (form.locationLink) payload.append("location_link", form.locationLink);
       if (form.description) payload.append("description", form.description);
-      if (form.coverImageUrl) payload.append("cover_image_url", form.coverImageUrl);
+      if (coverFile) {
+        setIsUploadingCover(true);
+        payload.append("file", coverFile);
+      } else if (form.coverImageUrl) {
+        payload.append("cover_image_url", form.coverImageUrl);
+      }
       payload.append("config", JSON.stringify(configPayload));
 
       const response = await fetch("/api/v1/events", {
@@ -184,9 +180,11 @@ export default function AdminPage() {
       }
 
       setResult(data);
+      resetForm();
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "Неизвестная ошибка");
     } finally {
+      setIsUploadingCover(false);
       setIsSubmitting(false);
     }
   }
@@ -194,7 +192,7 @@ export default function AdminPage() {
   return (
     <AdminShell
       title="Создание нового event"
-      description="Рабочая панель для публикации новых событий. Здесь заполняются базовые параметры, собирается конфигурация шаблона и сразу отправляется готовый event в backend."
+      description="Рабочая панель для публикации новых событий. Здесь заполняются базовые параметры и собирается конфигурация шаблона."
     >
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1.3fr)_360px]">
         <section>
@@ -237,7 +235,6 @@ export default function AdminPage() {
             <CoverUploadField
               preview={coverPreview}
               fileName={coverFileName}
-              uploadedUrl={form.coverImageUrl}
               isDragging={isDraggingCover}
               isUploading={isUploadingCover}
               onDragStateChange={setIsDraggingCover}
@@ -259,7 +256,7 @@ export default function AdminPage() {
               value={form.configName}
               onChange={(value) => updateField("configName", value)}
               placeholder="Марат, Айгерим"
-              hint="Введите через запятую. Значение будет преобразовано в массив name."
+              hint="Введите через запятую."
             />
 
             <TextAreaField
@@ -300,6 +297,7 @@ export default function AdminPage() {
                     location_link: form.locationLink,
                     description: form.description,
                     cover_image_url: form.coverImageUrl,
+                    has_cover_file: Boolean(coverFile),
                     config: safePreviewConfig(form)
                   },
                   null,
@@ -317,7 +315,7 @@ export default function AdminPage() {
                   {JSON.stringify(result, null, 2)}
                 </pre>
               ) : (
-                <p className="text-sm leading-7 text-black/60">После успешного создания здесь появится ответ backend.</p>
+                <p className="text-sm leading-7 text-black/60">После успешного создания здесь появится ответ сервера.</p>
               )
             }
           />
@@ -384,9 +382,7 @@ function TimeField({ label, selected, onChange }) {
 function CoverUploadField({
   preview,
   fileName,
-  uploadedUrl,
   isDragging,
-  isUploading,
   onDragStateChange,
   onDrop,
   onChange,
@@ -419,17 +415,16 @@ function CoverUploadField({
 
         {preview ? (
           <div className="w-full">
-            <img
-              src={preview}
-              alt="Предпросмотр обложки"
-              className="h-56 w-full rounded-[18px] object-cover shadow-[0_16px_36px_rgba(31,26,23,0.14)]"
-            />
+            <div className="flex min-h-[240px] w-full items-center justify-center overflow-hidden rounded-[18px] bg-[#f6f1eb] p-3 shadow-[0_16px_36px_rgba(31,26,23,0.14)]">
+              <img
+                src={preview}
+                alt="Предпросмотр обложки"
+                className="max-h-[420px] max-w-full rounded-[14px] object-contain"
+              />
+            </div>
             <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-left">
               <div>
-                <p className="text-sm font-medium text-[#1f1a17]">{fileName || "Изображение загружено"}</p>
-                <p className="mt-1 text-xs text-black/50">
-                  {isUploading ? "Загружаем файл в Cloudflare R2..." : uploadedUrl || "Файл загружен и URL сохранен."}
-                </p>
+                <p className="text-sm font-medium text-[#1f1a17]">{fileName || "Изображение выбрано"}</p>
               </div>
               <button
                 type="button"
@@ -445,8 +440,9 @@ function CoverUploadField({
           </div>
         ) : (
           <>
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#7f1118]/10 text-2xl text-[#7f1118]">
-              +
+            <div className="relative h-14 w-14 rounded-full bg-[#7f1118]/10 text-[#7f1118]">
+              <span className="absolute left-1/2 top-1/2 h-px w-4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-current" />
+              <span className="absolute left-1/2 top-1/2 h-4 w-px -translate-x-1/2 -translate-y-1/2 rounded-full bg-current" />
             </div>
             <p className="mt-4 text-sm font-medium text-[#1f1a17]">Перетащите изображение сюда</p>
             <p className="mt-2 text-sm text-black/55">или нажмите, чтобы выбрать файл с компьютера</p>
