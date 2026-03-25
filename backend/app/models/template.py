@@ -1,8 +1,9 @@
 from datetime import datetime
-from decimal import Decimal
+from uuid import UUID
 
-from sqlalchemy import DateTime, Numeric, String, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import DateTime, String, func, text
+from sqlalchemy.dialects.postgresql import UUID as PGUUID
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
 
@@ -10,9 +11,11 @@ from app.db.base import Base
 class Template(Base):
     __tablename__ = "templates"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), primary_key=True, nullable=False, server_default=text("gen_random_uuid()"))
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
     type: Mapped[str] = mapped_column(String(100), nullable=False)
-    amount: Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable=False)
+    path: Mapped[str] = mapped_column(String(500), nullable=False, unique=True)
+    events = relationship("Event", back_populates="template")
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,

@@ -7,13 +7,13 @@ export default function NotFoundPage() {
         <p className="text-3xl uppercase tracking-[0.55em] text-white/45 md:text-5xl">404</p>
         <h1 className="mt-6 text-5xl leading-none md:text-7xl xl:text-[4rem]">Страница не найдена</h1>
         <p className="mx-auto mt-6 max-w-4xl text-base leading-7 text-white/70 md:text-lg">
-          Такой страницы нет. Вернитесь к шаблону приглашения и продолжите просмотр.
+          Такой страницы нет. Вернитесь в админ-панель или откройте корректный slug приглашения.
         </p>
         <Link
-          to="/template-1/"
+          to="/admin/events"
           className="mt-8 inline-flex items-center justify-center rounded-full bg-[#7f1118] px-8 py-4 text-sm uppercase tracking-[0.18em] text-white shadow-[0_18px_35px_rgba(127,17,24,0.3)]"
         >
-          Открыть Template 1
+          Открыть admin
         </Link>
       </div>
     </main>

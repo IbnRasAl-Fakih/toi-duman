@@ -45,3 +45,15 @@ class OrderRepository(BaseRepository[Order]):
         await self.session.commit()
         await self.session.refresh(order)
         return order
+
+    async def set_status(self, order_id: str, status: str) -> Order | None:
+        order = await self.get_by_id(order_id)
+        if order is None:
+            return None
+
+        order.status = status
+        order.paid_at = datetime.now(timezone.utc) if status == ORDER_STATUS_PAID else None
+
+        await self.session.commit()
+        await self.session.refresh(order)
+        return order

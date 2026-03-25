@@ -1,7 +1,9 @@
 import json
 from typing import Annotated
+from uuid import UUID
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status
+from fastapi.concurrency import run_in_threadpool
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.dependencies import get_session
@@ -9,9 +11,11 @@ from app.api.v1.uploads import upload_image_to_r2
 from app.core.config import get_settings
 from app.repositories.event_repository import EventRepository
 from app.repositories.order_repository import OrderRepository
+from app.repositories.template_repository import TemplateRepository
 from app.schemas.event import EventRead, EventWithOrderRead
 from app.services.event_datetime import combine_event_datetime
 from app.services.event_slug import build_event_slug
+from app.services.r2_storage import R2StorageService
 
 
 router = APIRouter(prefix="/events", tags=["events"])
@@ -20,6 +24,7 @@ router = APIRouter(prefix="/events", tags=["events"])
 @router.post("", response_model=EventRead, status_code=status.HTTP_201_CREATED)
 async def create_event(
     type: Annotated[str, Form()],
+    template_id: Annotated[UUID, Form()],
     date: Annotated[str, Form()],
     location: Annotated[str, Form()],
     time: Annotated[str | None, Form()] = None,
@@ -31,8 +36,12 @@ async def create_event(
     session: AsyncSession = Depends(get_session),
 ) -> EventRead:
     repository = EventRepository(session)
+    template_repository = TemplateRepository(session)
     settings = get_settings()
     parsed_config = json.loads(config)
+    template = await template_repository.get_by_id(template_id)
+    if template is None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Template not found")
     try:
         parsed_date = combine_event_datetime(date_value=date, time_value=time)
     except ValueError as exc:
@@ -48,6 +57,7 @@ async def create_event(
         event_data={
             "slug": slug,
             "type": type,
+            "template_id": template_id,
             "date": parsed_date,
             "location": location,
             "location_link": location_link,
@@ -86,6 +96,7 @@ async def get_event_by_slug(
         {
             **EventRead.model_validate(event).model_dump(),
             "order": order,
+            "template": event.template,
         }
     )
 
@@ -106,6 +117,7 @@ async def get_event(
 async def update_event(
     event_id: int,
     type: Annotated[str | None, Form()] = None,
+    template_id: Annotated[UUID | None, Form()] = None,
     date: Annotated[str | None, Form()] = None,
     time: Annotated[str | None, Form()] = None,
     location: Annotated[str | None, Form()] = None,
@@ -116,9 +128,14 @@ async def update_event(
     session: AsyncSession = Depends(get_session),
 ) -> EventRead:
     repository = EventRepository(session)
+    template_repository = TemplateRepository(session)
     existing_event = await repository.get_by_id(event_id)
     if existing_event is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Event not found")
+    if template_id is not None:
+        template = await template_repository.get_by_id(template_id)
+        if template is None:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Template not found")
 
     parsed_config = json.loads(config) if config is not None else existing_event.config
     resolved_type = type if type is not None else existing_event.type
@@ -134,6 +151,7 @@ async def update_event(
 
     data = {
         "type": type,
+        "template_id": template_id,
         "date": parsed_date,
         "location": location,
         "location_link": location_link,
@@ -162,6 +180,17 @@ async def delete_event(
     session: AsyncSession = Depends(get_session),
 ) -> None:
     repository = EventRepository(session)
+    event = await repository.get_by_id(event_id)
+    if event is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Event not found")
+
+    if event.cover_image_url:
+        storage = R2StorageService(get_settings())
+        try:
+            await run_in_threadpool(storage.delete_image_by_url, event.cover_image_url)
+        except RuntimeError as exc:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(exc)) from exc
+
     deleted = await repository.delete(event_id)
     if not deleted:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Event not found")

@@ -1,11 +1,12 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, Form, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.dependencies import get_session
 from app.repositories.order_repository import OrderRepository
 from app.schemas.order import OrderRead
+from app.models.order import ORDER_STATUS_PAID, ORDER_STATUS_UNPAID
 
 
 router = APIRouter(prefix="/orders", tags=["orders"])
@@ -40,6 +41,22 @@ async def update_order_paid_at(
 ) -> OrderRead:
     repository = OrderRepository(session)
     order = await repository.mark_as_paid(order_id)
+    if order is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Order not found")
+    return order
+
+
+@router.patch("/{order_id}/status", response_model=OrderRead)
+async def update_order_status(
+    order_id: str,
+    status_value: Annotated[str, Form(alias="status")],
+    session: AsyncSession = Depends(get_session),
+) -> OrderRead:
+    if status_value not in {ORDER_STATUS_PAID, ORDER_STATUS_UNPAID}:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Unsupported order status")
+
+    repository = OrderRepository(session)
+    order = await repository.set_status(order_id, status_value)
     if order is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Order not found")
     return order

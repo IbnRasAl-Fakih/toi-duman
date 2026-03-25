@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from pathlib import Path
-from urllib.parse import quote
+from urllib.parse import quote, unquote
 from uuid import uuid4
 
 import boto3
@@ -57,3 +57,24 @@ class R2StorageService:
             ContentType=content_type or "application/octet-stream",
         )
         return key, self.build_public_url(key)
+
+    def extract_key_from_public_url(self, url: str) -> str | None:
+        if not self.settings.r2_public_base_url:
+            return None
+
+        base_url = self.settings.r2_public_base_url.rstrip("/")
+        if not url.startswith(f"{base_url}/"):
+            return None
+
+        return unquote(url.removeprefix(f"{base_url}/"))
+
+    def delete_image_by_url(self, url: str) -> bool:
+        key = self.extract_key_from_public_url(url)
+        if not key:
+            return False
+
+        self.client.delete_object(
+            Bucket=self.settings.r2_bucket_name,
+            Key=key,
+        )
+        return True

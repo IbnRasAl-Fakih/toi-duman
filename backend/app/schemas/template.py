@@ -1,12 +1,13 @@
 from datetime import datetime
-from decimal import Decimal
+from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
 
 
 class TemplateBase(BaseModel):
+    name: str
     type: str
-    amount: Decimal
+    path: str
 
 
 class TemplateCreate(TemplateBase):
@@ -14,12 +15,13 @@ class TemplateCreate(TemplateBase):
 
 
 class TemplateUpdate(BaseModel):
+    name: str | None = None
     type: str | None = None
-    amount: Decimal | None = None
+    path: str | None = None
 
 
 class TemplateRead(TemplateBase):
-    id: int
+    id: UUID
     created_at: datetime
     updated_at: datetime
 

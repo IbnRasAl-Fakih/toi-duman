@@ -1,5 +1,11 @@
 import { Link } from "react-router-dom";
 
+function formatAmount(value) {
+  const numericValue = Number(value) || 0;
+
+  return `${Math.trunc(numericValue).toLocaleString("ru-RU")} ₸`;
+}
+
 export default function TemplatePaymentBanner({ order }) {
   const paymentPath = order?.id ? `/payment/${order.id}` : "/payment";
 
@@ -9,10 +15,10 @@ export default function TemplatePaymentBanner({ order }) {
         <div className="max-w-3xl">
           <p className="text-[11px] uppercase tracking-[0.38em] text-[#f8f2ec]/60">Template Locked</p>
           <h2 className="mt-2 font-['Georgia','Times_New_Roman',serif] text-2xl leading-none md:text-3xl">
-            Template пока не оплачен
+            Приглашение пока не оплачено
           </h2>
           <p className="mt-2 text-sm leading-6 text-[#f8f2ec]/78 md:text-base">
-            После подтверждения оплаты приглашение станет доступно по этому адресу. Пока шаблон закрыт для просмотра.
+            После подтверждения оплаты приглашение станет доступно по этому адресу. Пока страница закрыта для просмотра.
           </p>
         </div>
 
@@ -21,7 +27,7 @@ export default function TemplatePaymentBanner({ order }) {
             <div className="grid gap-2 rounded-[20px] border border-white/10 bg-white/6 px-4 py-3 text-sm text-[#f8f2ec]/88 backdrop-blur-md">
               <InfoRow label="Заказ" value={order.id} />
               <InfoRow label="Статус" value={order.status} />
-              <InfoRow label="Сумма" value={order.amount} />
+              <InfoRow label="Сумма" value={formatAmount(order.amount)} />
             </div>
           ) : null}
 

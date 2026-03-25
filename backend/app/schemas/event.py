@@ -1,14 +1,17 @@
 from datetime import datetime
 from typing import Any
+from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
 from app.schemas.order import OrderRead
+from app.schemas.template import TemplateRead
 
 
 class EventBase(BaseModel):
     slug: str
     type: str
+    template_id: UUID
     date: datetime
     location: str
     location_link: str | None = None
@@ -27,3 +30,4 @@ class EventRead(EventBase):
 
 class EventWithOrderRead(EventRead):
     order: OrderRead | None = None
+    template: TemplateRead

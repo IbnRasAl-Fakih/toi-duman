@@ -1,20 +1,15 @@
 import React from "react";
+import DeleteEventModal from "../../components/admin/events/delete-event-modal.jsx";
+import EventCard from "../../components/admin/events/event-card.jsx";
+import EventsEmptyState from "../../components/admin/events/events-empty-state.jsx";
 import AdminShell from "../../components/admin-shell.jsx";
-
-function formatDateTime(value) {
-  return new Date(value).toLocaleString("ru-RU", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit"
-  });
-}
 
 export default function AdminEventsPage() {
   const [events, setEvents] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(true);
+  const [isDeleting, setIsDeleting] = React.useState(false);
   const [error, setError] = React.useState("");
+  const [pendingDeleteEvent, setPendingDeleteEvent] = React.useState(null);
 
   React.useEffect(() => {
     let isMounted = true;
@@ -46,84 +41,78 @@ export default function AdminEventsPage() {
     }
 
     loadEvents();
+
     return () => {
       isMounted = false;
     };
   }, []);
 
+  async function handleDeleteEvent() {
+    if (!pendingDeleteEvent) {
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      setError("");
+
+      const response = await fetch(`/api/v1/events/${pendingDeleteEvent.id}`, {
+        method: "DELETE"
+      });
+
+      if (!response.ok) {
+        let detail = "Не удалось удалить event";
+
+        try {
+          const data = await response.json();
+          detail = data.detail || detail;
+        } catch {
+          // Ignore non-JSON error payloads.
+        }
+
+        throw new Error(detail);
+      }
+
+      setEvents((current) => current.filter((item) => item.id !== pendingDeleteEvent.id));
+      setPendingDeleteEvent(null);
+    } catch (deleteError) {
+      setError(deleteError instanceof Error ? deleteError.message : "Не удалось удалить event");
+    } finally {
+      setIsDeleting(false);
+    }
+  }
+
   return (
-    <AdminShell
-      title="Список event-ов"
-      description="Раздел для просмотра созданных событий. Здесь можно быстро проверить slug, дату, локацию и обложку перед дальнейшей работой с шаблонами."
-    >
-      {isLoading ? (
-        <EmptyState text="Загружаем события..." />
-      ) : error ? (
-        <EmptyState text={error} tone="error" />
-      ) : events.length === 0 ? (
-        <EmptyState text="Событий пока нет." />
-      ) : (
-        <div className="grid gap-5">
-          {events.map((eventItem) => (
-            <article
-              key={eventItem.id}
-              className="grid gap-5 rounded-[28px] border border-black/10 bg-[#fcfaf7] p-5 lg:grid-cols-[180px_minmax(0,1fr)]"
-            >
-              <div className="overflow-hidden rounded-[20px] bg-[#efe5db]">
-                {eventItem.cover_image_url ? (
-                  <img src={eventItem.cover_image_url} alt={eventItem.slug} className="h-full min-h-44 w-full object-cover" />
-                ) : (
-                  <div className="flex min-h-44 items-center justify-center text-xs uppercase tracking-[0.24em] text-black/35">
-                    Нет обложки
-                  </div>
-                )}
-              </div>
+    <>
+      <AdminShell
+        title="Список event-ов"
+        description="Раздел для просмотра созданных событий. Здесь можно быстро проверить slug, дату, локацию и обложку перед дальнейшей работой с шаблонами."
+      >
+        {isLoading ? (
+          <EventsEmptyState text="Загружаем события..." />
+        ) : error ? (
+          <EventsEmptyState text={error} tone="error" />
+        ) : events.length === 0 ? (
+          <EventsEmptyState text="Событий пока нет." />
+        ) : (
+          <div className="grid gap-5">
+            {events.map((eventItem) => (
+              <EventCard key={eventItem.id} event={eventItem} onRequestDelete={setPendingDeleteEvent} />
+            ))}
+          </div>
+        )}
+      </AdminShell>
 
-              <div className="grid gap-4">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.28em] text-black/45">{eventItem.type}</p>
-                    <h2 className="mt-2 font-['Georgia','Times_New_Roman',serif] text-3xl text-[#7f1118]">
-                      {eventItem.slug}
-                    </h2>
-                  </div>
-                  <span className="rounded-full bg-[#7f1118]/10 px-4 py-2 text-xs uppercase tracking-[0.18em] text-[#7f1118]">
-                    ID {eventItem.id}
-                  </span>
-                </div>
-
-                <dl className="grid gap-3 text-sm text-black/65 md:grid-cols-2">
-                  <InfoRow label="Дата" value={formatDateTime(eventItem.date)} />
-                  <InfoRow label="Локация" value={eventItem.location} />
-                  <InfoRow label="Slug" value={eventItem.slug} />
-                  <InfoRow label="Создано" value={formatDateTime(eventItem.created_at)} />
-                </dl>
-              </div>
-            </article>
-          ))}
-        </div>
-      )}
-    </AdminShell>
-  );
-}
-
-function InfoRow({ label, value }) {
-  return (
-    <div className="rounded-[18px] border border-black/8 bg-white/70 px-4 py-3">
-      <dt className="text-xs uppercase tracking-[0.22em] text-black/40">{label}</dt>
-      <dd className="mt-2 break-words text-sm text-black/70">{value || "—"}</dd>
-    </div>
-  );
-}
-
-function EmptyState({ text, tone = "default" }) {
-  return (
-    <div
-      className={`rounded-[28px] border px-5 py-10 text-center text-sm ${
-        tone === "error" ? "border-[#b42318]/15 bg-[#fff4f2] text-[#b42318]" : "border-black/10 bg-[#fcfaf7] text-black/55"
-      }`}
-    >
-      {text}
-    </div>
+      <DeleteEventModal
+        event={pendingDeleteEvent}
+        isDeleting={isDeleting}
+        onConfirm={handleDeleteEvent}
+        onClose={() => {
+          if (!isDeleting) {
+            setPendingDeleteEvent(null);
+          }
+        }}
+      />
+    </>
   );
 }

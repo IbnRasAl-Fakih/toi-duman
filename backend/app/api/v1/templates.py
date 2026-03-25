@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -32,7 +34,7 @@ async def list_templates(
 
 @router.get("/{template_id}", response_model=TemplateRead)
 async def get_template(
-    template_id: int,
+    template_id: UUID,
     session: AsyncSession = Depends(get_session),
 ) -> TemplateRead:
     repository = TemplateRepository(session)
@@ -44,7 +46,7 @@ async def get_template(
 
 @router.patch("/{template_id}", response_model=TemplateRead)
 async def update_template(
-    template_id: int,
+    template_id: UUID,
     payload: TemplateUpdate,
     session: AsyncSession = Depends(get_session),
 ) -> TemplateRead:
@@ -60,7 +62,7 @@ async def update_template(
 
 @router.delete("/{template_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_template(
-    template_id: int,
+    template_id: UUID,
     session: AsyncSession = Depends(get_session),
 ) -> None:
     repository = TemplateRepository(session)

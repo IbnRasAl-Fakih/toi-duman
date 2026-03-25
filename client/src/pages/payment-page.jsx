@@ -1,9 +1,11 @@
 import React from "react";
 import { Link, useParams } from "react-router-dom";
 
-const PAYMENT_PHONE = "+7 777 000 00 00";
-const PAYMENT_ACCOUNT = "Kaspi Gold / 4400 4301 2345 6789";
-const WHATSAPP_PHONE = "77770000000";
+const PAYMENT_PHONE = process.env.REACT_APP_PAYMENT_PHONE || "";
+const PAYMENT_ACCOUNT = process.env.REACT_APP_PAYMENT_ACCOUNT || "";
+const WHATSAPP_PHONE = process.env.REACT_APP_WHATSAPP_PHONE || "";
+
+console.log("PaymentPage config:", { PAYMENT_PHONE, PAYMENT_ACCOUNT, WHATSAPP_PHONE });
 
 function formatAmount(value) {
   if (value == null) return null;
@@ -218,10 +220,10 @@ function PaymentCard({ eyebrow, value, hint }) {
   return (
     <div className="rounded-[28px] border border-white/10 bg-[rgba(248,242,236,0.06)] p-5">
       <p className="text-[11px] uppercase tracking-[0.28em] text-white/45">{eyebrow}</p>
+      <p className="mt-3 text-sm leading-6 text-white/58">{hint}</p>
       <p className="mt-3 break-words font-['Georgia','Times_New_Roman',serif] text-2xl leading-tight text-white">
         {value}
       </p>
-      <p className="mt-3 text-sm leading-6 text-white/58">{hint}</p>
     </div>
   );
 }

@@ -1,11 +1,17 @@
 import React from "react";
-import DatePicker from "react-datepicker";
 import { format, parse } from "date-fns";
-import { ru } from "date-fns/locale";
 import AdminShell from "../../components/admin-shell.jsx";
+import CreateEventField from "../../components/admin/create-event/create-event-field.jsx";
+import CreateEventDateField from "../../components/admin/create-event/create-event-date-field.jsx";
+import CreateEventTimeField from "../../components/admin/create-event/create-event-time-field.jsx";
+import CreateEventSelectField from "../../components/admin/create-event/create-event-select-field.jsx";
+import CreateEventCoverUploadField from "../../components/admin/create-event/create-event-cover-upload-field.jsx";
+import CreateEventTextAreaField from "../../components/admin/create-event/create-event-textarea-field.jsx";
+import CreateEventStatusCard from "../../components/admin/create-event/create-event-status-card.jsx";
 
 const initialForm = {
   type: "wedding",
+  templateId: "",
   date: "",
   time: "",
   location: "",
@@ -50,6 +56,8 @@ function parseTimeValue(value) {
 
 export default function AdminCreateEventPage() {
   const [form, setForm] = React.useState(initialForm);
+  const [templates, setTemplates] = React.useState([]);
+  const [isLoadingTemplates, setIsLoadingTemplates] = React.useState(true);
   const [coverFile, setCoverFile] = React.useState(null);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [isUploadingCover, setIsUploadingCover] = React.useState(false);
@@ -66,6 +74,44 @@ export default function AdminCreateEventPage() {
       }
     };
   }, [coverPreview]);
+
+  React.useEffect(() => {
+    let isMounted = true;
+
+    async function loadTemplates() {
+      try {
+        setIsLoadingTemplates(true);
+        const response = await fetch("/api/v1/templates");
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.detail || "Не удалось загрузить шаблоны");
+        }
+
+        if (!isMounted) return;
+
+        setTemplates(data);
+        setForm((current) => ({
+          ...current,
+          templateId: current.templateId || data[0]?.id || ""
+        }));
+      } catch (requestError) {
+        if (isMounted) {
+          setError(requestError instanceof Error ? requestError.message : "Неизвестная ошибка");
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoadingTemplates(false);
+        }
+      }
+    }
+
+    loadTemplates();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   function updateField(field, value) {
     setForm((current) => ({
@@ -137,7 +183,10 @@ export default function AdminCreateEventPage() {
       URL.revokeObjectURL(coverPreview);
     }
 
-    setForm(initialForm);
+    setForm({
+      ...initialForm,
+      templateId: templates[0]?.id || ""
+    });
     setCoverFile(null);
     setCoverPreview("");
     setCoverFileName("");
@@ -152,10 +201,15 @@ export default function AdminCreateEventPage() {
     setResult(null);
 
     try {
+      if (!form.templateId) {
+        throw new Error("Выберите шаблон");
+      }
+
       const configPayload = buildConfigPayload(form);
       const payload = new FormData();
 
       payload.append("type", form.type);
+      payload.append("template_id", form.templateId);
       payload.append("date", form.date);
       if (form.time) payload.append("time", form.time);
       payload.append("location", form.location);
@@ -189,35 +243,50 @@ export default function AdminCreateEventPage() {
     }
   }
 
+  const templateOptions = templates.length
+    ? templates.map((template) => ({
+        value: template.id,
+        label: `${template.name} · ${template.type}`
+      }))
+    : [{ value: "", label: isLoadingTemplates ? "Загрузка шаблонов..." : "Сначала создайте шаблон", disabled: true }];
+
   return (
     <AdminShell
       title="Создание нового event"
-      description="Рабочая панель для публикации новых событий. Здесь заполняются базовые параметры и собирается конфигурация шаблона."
+      description="Рабочая панель для публикации новых событий. Здесь заполняются базовые параметры, выбирается шаблон и собирается конфигурация приглашения."
     >
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1.3fr)_360px]">
         <section>
           <form onSubmit={handleSubmit} className="grid gap-5">
             <div className="grid gap-5 md:grid-cols-2">
-              <Field
+              <CreateEventField
                 label="Тип события"
                 value={form.type}
                 onChange={(value) => updateField("type", value)}
                 placeholder="wedding"
               />
 
-              <DateField
+              <CreateEventSelectField
+                label="Шаблон"
+                value={form.templateId}
+                onChange={(value) => updateField("templateId", value)}
+                options={templateOptions}
+                hint="Событие будет открываться по slug через выбранный шаблон."
+              />
+
+              <CreateEventDateField
                 label="Дата"
                 selected={parseDateValue(form.date)}
                 onChange={(value) => updateField("date", value ? format(value, "yyyy-MM-dd") : "")}
               />
 
-              <TimeField
+              <CreateEventTimeField
                 label="Время"
                 selected={parseTimeValue(form.time)}
                 onChange={(value) => updateField("time", value ? format(value, "HH:mm") : "")}
               />
 
-              <Field
+              <CreateEventField
                 label="Локация"
                 value={form.location}
                 onChange={(value) => updateField("location", value)}
@@ -225,25 +294,24 @@ export default function AdminCreateEventPage() {
               />
             </div>
 
-            <Field
+            <CreateEventField
               label="Ссылка на локацию"
               value={form.locationLink}
               onChange={(value) => updateField("locationLink", value)}
               placeholder="https://2gis.kz/..."
             />
 
-            <CoverUploadField
+            <CreateEventCoverUploadField
               preview={coverPreview}
               fileName={coverFileName}
               isDragging={isDraggingCover}
-              isUploading={isUploadingCover}
               onDragStateChange={setIsDraggingCover}
               onDrop={handleCoverDrop}
               onChange={handleCoverInputChange}
               onClear={clearCoverImage}
             />
 
-            <TextAreaField
+            <CreateEventTextAreaField
               label="Описание"
               value={form.description}
               onChange={(value) => updateField("description", value)}
@@ -251,7 +319,7 @@ export default function AdminCreateEventPage() {
               rows={4}
             />
 
-            <Field
+            <CreateEventField
               label="Имена для config.name"
               value={form.configName}
               onChange={(value) => updateField("configName", value)}
@@ -259,7 +327,7 @@ export default function AdminCreateEventPage() {
               hint="Введите через запятую."
             />
 
-            <TextAreaField
+            <CreateEventTextAreaField
               label="Дополнительный JSON config"
               value={form.configExtra}
               onChange={(value) => updateField("configExtra", value)}
@@ -269,9 +337,9 @@ export default function AdminCreateEventPage() {
             <div className="flex flex-wrap items-center gap-4 pt-2">
               <button
                 type="submit"
-                disabled={isSubmitting || isUploadingCover}
+                disabled={isSubmitting || isUploadingCover || isLoadingTemplates || !templates.length}
                 className={`inline-flex items-center justify-center rounded-full px-8 py-4 text-sm uppercase tracking-[0.18em] text-white transition ${
-                  isSubmitting || isUploadingCover
+                  isSubmitting || isUploadingCover || isLoadingTemplates || !templates.length
                     ? "cursor-default bg-[#7f1118]/50"
                     : "bg-[#7f1118] hover:bg-[#5d0b11]"
                 }`}
@@ -284,13 +352,14 @@ export default function AdminCreateEventPage() {
         </section>
 
         <aside className="space-y-5">
-          <StatusCard
+          <CreateEventStatusCard
             title="Что отправится"
             content={
               <pre className="overflow-x-auto whitespace-pre-wrap text-xs leading-6 text-black/70">
                 {JSON.stringify(
                   {
                     type: form.type,
+                    template_id: form.templateId,
                     date: form.date,
                     time: form.time,
                     location: form.location,
@@ -307,7 +376,7 @@ export default function AdminCreateEventPage() {
             }
           />
 
-          <StatusCard
+          <CreateEventStatusCard
             title="Последний результат"
             content={
               result ? (
@@ -322,157 +391,5 @@ export default function AdminCreateEventPage() {
         </aside>
       </div>
     </AdminShell>
-  );
-}
-
-function Field({ label, hint, onChange, ...props }) {
-  return (
-    <label className="block">
-      <span className="mb-2 block text-xs uppercase tracking-[0.28em] text-black/55">{label}</span>
-      <input
-        {...props}
-        onChange={(event) => onChange(event.target.value)}
-        className="w-full rounded-[18px] border border-black/10 bg-[#fcfaf7] px-4 py-3 text-sm outline-none transition placeholder:text-black/30 focus:border-[#7f1118]/40 focus:bg-white"
-      />
-      {hint ? <span className="mt-2 block text-xs text-black/45">{hint}</span> : null}
-    </label>
-  );
-}
-
-function DateField({ label, selected, onChange }) {
-  return (
-    <label className="block">
-      <span className="mb-2 block text-xs uppercase tracking-[0.28em] text-black/55">{label}</span>
-      <DatePicker
-        selected={selected}
-        onChange={onChange}
-        locale={ru}
-        dateFormat="dd.MM.yyyy"
-        placeholderText="Выберите дату"
-        className="w-full rounded-[18px] border border-black/10 bg-[#fcfaf7] px-4 py-3 text-sm outline-none transition placeholder:text-black/30 focus:border-[#7f1118]/40 focus:bg-white"
-        calendarClassName="!border-black/10 !rounded-[22px] !shadow-[0_24px_48px_rgba(31,26,23,0.12)]"
-        wrapperClassName="block w-full"
-      />
-    </label>
-  );
-}
-
-function TimeField({ label, selected, onChange }) {
-  return (
-    <label className="block">
-      <span className="mb-2 block text-xs uppercase tracking-[0.28em] text-black/55">{label}</span>
-      <DatePicker
-        selected={selected}
-        onChange={onChange}
-        locale={ru}
-        showTimeSelect
-        showTimeSelectOnly
-        timeIntervals={15}
-        timeCaption="Время"
-        dateFormat="HH:mm"
-        placeholderText="Выберите время"
-        className="w-full rounded-[18px] border border-black/10 bg-[#fcfaf7] px-4 py-3 text-sm outline-none transition placeholder:text-black/30 focus:border-[#7f1118]/40 focus:bg-white"
-        calendarClassName="!border-black/10 !rounded-[22px] !shadow-[0_24px_48px_rgba(31,26,23,0.12)]"
-        wrapperClassName="block w-full"
-      />
-    </label>
-  );
-}
-
-function CoverUploadField({
-  preview,
-  fileName,
-  isDragging,
-  onDragStateChange,
-  onDrop,
-  onChange,
-  onClear
-}) {
-  return (
-    <div className="block">
-      <span className="mb-2 block text-xs uppercase tracking-[0.28em] text-black/55">Обложка</span>
-      <label
-        onDragEnter={(event) => {
-          event.preventDefault();
-          onDragStateChange(true);
-        }}
-        onDragOver={(event) => {
-          event.preventDefault();
-          onDragStateChange(true);
-        }}
-        onDragLeave={(event) => {
-          event.preventDefault();
-          onDragStateChange(false);
-        }}
-        onDrop={onDrop}
-        className={`flex cursor-pointer flex-col items-center justify-center rounded-[24px] border border-dashed px-6 py-8 text-center transition ${
-          isDragging
-            ? "border-[#7f1118] bg-[#7f1118]/[0.06]"
-            : "border-black/15 bg-[#fcfaf7] hover:border-[#7f1118]/45 hover:bg-white"
-        }`}
-      >
-        <input type="file" accept="image/*" onChange={onChange} className="hidden" />
-
-        {preview ? (
-          <div className="w-full">
-            <div className="flex min-h-[240px] w-full items-center justify-center overflow-hidden rounded-[18px] bg-[#f6f1eb] p-3 shadow-[0_16px_36px_rgba(31,26,23,0.14)]">
-              <img
-                src={preview}
-                alt="Предпросмотр обложки"
-                className="max-h-[420px] max-w-full rounded-[14px] object-contain"
-              />
-            </div>
-            <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-left">
-              <div>
-                <p className="text-sm font-medium text-[#1f1a17]">{fileName || "Изображение выбрано"}</p>
-              </div>
-              <button
-                type="button"
-                onClick={(event) => {
-                  event.preventDefault();
-                  onClear();
-                }}
-                className="rounded-full border border-black/10 px-4 py-2 text-xs uppercase tracking-[0.18em] text-black/60 transition hover:border-[#7f1118]/30 hover:text-[#7f1118]"
-              >
-                Удалить
-              </button>
-            </div>
-          </div>
-        ) : (
-          <>
-            <div className="relative h-14 w-14 rounded-full bg-[#7f1118]/10 text-[#7f1118]">
-              <span className="absolute left-1/2 top-1/2 h-px w-4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-current" />
-              <span className="absolute left-1/2 top-1/2 h-4 w-px -translate-x-1/2 -translate-y-1/2 rounded-full bg-current" />
-            </div>
-            <p className="mt-4 text-sm font-medium text-[#1f1a17]">Перетащите изображение сюда</p>
-            <p className="mt-2 text-sm text-black/55">или нажмите, чтобы выбрать файл с компьютера</p>
-            <p className="mt-4 text-xs uppercase tracking-[0.24em] text-black/35">PNG, JPG, WEBP, GIF, SVG</p>
-          </>
-        )}
-      </label>
-    </div>
-  );
-}
-
-function TextAreaField({ label, onChange, rows = 6, ...props }) {
-  return (
-    <label className="block">
-      <span className="mb-2 block text-xs uppercase tracking-[0.28em] text-black/55">{label}</span>
-      <textarea
-        {...props}
-        rows={rows}
-        onChange={(event) => onChange(event.target.value)}
-        className="w-full rounded-[22px] border border-black/10 bg-[#fcfaf7] px-4 py-3 text-sm leading-7 outline-none transition placeholder:text-black/30 focus:border-[#7f1118]/40 focus:bg-white"
-      />
-    </label>
-  );
-}
-
-function StatusCard({ title, content }) {
-  return (
-    <section className="rounded-[24px] border border-black/10 bg-[#fcfaf7] p-5">
-      <h2 className="text-xs uppercase tracking-[0.3em] text-black/50">{title}</h2>
-      <div className="mt-4">{content}</div>
-    </section>
   );
 }

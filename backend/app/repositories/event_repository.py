@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 
 from app.models.event import Event
 from app.models.order import ORDER_STATUS_UNPAID, Order
@@ -12,7 +13,7 @@ class EventRepository(BaseRepository[Event]):
     model = Event
 
     async def get_by_slug(self, slug: str) -> Event | None:
-        statement = select(self.model).where(self.model.slug == slug)
+        statement = select(self.model).options(selectinload(self.model.template)).where(self.model.slug == slug)
         result = await self.session.execute(statement)
         return result.scalar_one_or_none()
 

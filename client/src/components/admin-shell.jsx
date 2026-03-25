@@ -4,7 +4,8 @@ import { NavLink } from "react-router-dom";
 const navigationItems = [
   { to: "/admin/events", label: "Список event-ов", end: true },
   { to: "/admin/orders", label: "Список заказов", end: true },
-  { to: "/admin/events/create", label: "Создать event", end: true }
+  { to: "/admin/events/create", label: "Создать event", end: true },
+  { to: "/admin/templates/create", label: "Создать шаблон", end: true }
 ];
 
 export default function AdminShell({ title, description, children }) {
