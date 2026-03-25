@@ -3,6 +3,7 @@ import DeleteEventModal from "../../components/admin/events/delete-event-modal.j
 import EventCard from "../../components/admin/events/event-card.jsx";
 import EventsEmptyState from "../../components/admin/events/events-empty-state.jsx";
 import AdminShell from "../../components/admin-shell.jsx";
+import { useNotification } from "../../context/notification-context.jsx";
 
 export default function AdminEventsPage() {
   const [events, setEvents] = React.useState([]);
@@ -10,6 +11,7 @@ export default function AdminEventsPage() {
   const [isDeleting, setIsDeleting] = React.useState(false);
   const [error, setError] = React.useState("");
   const [pendingDeleteEvent, setPendingDeleteEvent] = React.useState(null);
+  const notification = useNotification();
 
   React.useEffect(() => {
     let isMounted = true;
@@ -31,7 +33,9 @@ export default function AdminEventsPage() {
         }
       } catch (requestError) {
         if (isMounted) {
-          setError(requestError instanceof Error ? requestError.message : "Неизвестная ошибка");
+          const message = requestError instanceof Error ? requestError.message : "Неизвестная ошибка";
+          setError(message);
+          notification.error(message);
         }
       } finally {
         if (isMounted) {
@@ -45,7 +49,7 @@ export default function AdminEventsPage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [notification]);
 
   async function handleDeleteEvent() {
     if (!pendingDeleteEvent) {
@@ -66,17 +70,18 @@ export default function AdminEventsPage() {
         try {
           const data = await response.json();
           detail = data.detail || detail;
-        } catch {
-          // Ignore non-JSON error payloads.
-        }
+        } catch {}
 
         throw new Error(detail);
       }
 
       setEvents((current) => current.filter((item) => item.id !== pendingDeleteEvent.id));
       setPendingDeleteEvent(null);
+      notification.success("Event удален");
     } catch (deleteError) {
-      setError(deleteError instanceof Error ? deleteError.message : "Не удалось удалить event");
+      const message = deleteError instanceof Error ? deleteError.message : "Не удалось удалить event";
+      setError(message);
+      notification.error(message);
     } finally {
       setIsDeleting(false);
     }

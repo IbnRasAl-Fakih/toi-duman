@@ -1,4 +1,8 @@
 function formatDateTime(value) {
+  if (!value) {
+    return "Не оплачено";
+  }
+
   return new Date(value).toLocaleString("ru-RU", {
     year: "numeric",
     month: "2-digit",
@@ -18,7 +22,7 @@ export default function OrderRow({ order, onRequestStatusChange }) {
   const nextStatus = order.status === "paid" ? "unpaid" : "paid";
 
   return (
-    <div className="grid grid-cols-1 gap-3 px-5 py-4 text-sm text-black/70 md:grid-cols-[1.4fr_0.8fr_0.8fr_1fr_1.1fr]">
+    <div className="grid grid-cols-1 items-center gap-3 px-5 py-4 text-sm text-black/70 md:grid-cols-[1.4fr_0.7fr_0.8fr_1fr_1fr_1.1fr]">
       <div>
         <p className="font-medium text-[#1f1a17]">{order.id}</p>
         <p className="mt-1 text-xs text-black/45">{formatDateTime(order.created_at)}</p>
@@ -34,6 +38,7 @@ export default function OrderRow({ order, onRequestStatusChange }) {
           {order.status}
         </span>
       </div>
+      <div>{formatDateTime(order.paid_at)}</div>
       <div>
         <button
           type="button"

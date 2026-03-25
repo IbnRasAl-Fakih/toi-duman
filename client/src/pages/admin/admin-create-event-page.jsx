@@ -8,6 +8,7 @@ import CreateEventSelectField from "../../components/admin/create-event/create-e
 import CreateEventCoverUploadField from "../../components/admin/create-event/create-event-cover-upload-field.jsx";
 import CreateEventTextAreaField from "../../components/admin/create-event/create-event-textarea-field.jsx";
 import CreateEventStatusCard from "../../components/admin/create-event/create-event-status-card.jsx";
+import { useNotification } from "../../context/notification-context.jsx";
 
 const initialForm = {
   type: "wedding",
@@ -66,6 +67,7 @@ export default function AdminCreateEventPage() {
   const [coverPreview, setCoverPreview] = React.useState("");
   const [coverFileName, setCoverFileName] = React.useState("");
   const [isDraggingCover, setIsDraggingCover] = React.useState(false);
+  const notification = useNotification();
 
   React.useEffect(() => {
     return () => {
@@ -97,7 +99,9 @@ export default function AdminCreateEventPage() {
         }));
       } catch (requestError) {
         if (isMounted) {
-          setError(requestError instanceof Error ? requestError.message : "Неизвестная ошибка");
+          const message = requestError instanceof Error ? requestError.message : "Неизвестная ошибка";
+          setError(message);
+          notification.error(message);
         }
       } finally {
         if (isMounted) {
@@ -111,7 +115,7 @@ export default function AdminCreateEventPage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [notification]);
 
   function updateField(field, value) {
     setForm((current) => ({
@@ -146,7 +150,9 @@ export default function AdminCreateEventPage() {
       setError("");
       setSelectedCoverFile(file);
     } catch (fileError) {
-      setError(fileError instanceof Error ? fileError.message : "Не удалось выбрать изображение");
+      const message = fileError instanceof Error ? fileError.message : "Не удалось выбрать изображение";
+      setError(message);
+      notification.error(message);
     } finally {
       event.target.value = "";
     }
@@ -163,7 +169,9 @@ export default function AdminCreateEventPage() {
       setError("");
       setSelectedCoverFile(file);
     } catch (fileError) {
-      setError(fileError instanceof Error ? fileError.message : "Не удалось выбрать изображение");
+      const message = fileError instanceof Error ? fileError.message : "Не удалось выбрать изображение";
+      setError(message);
+      notification.error(message);
     }
   }
 
@@ -235,8 +243,11 @@ export default function AdminCreateEventPage() {
 
       setResult(data);
       resetForm();
+      notification.success(`Event создан: ${data.slug}`);
     } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : "Неизвестная ошибка");
+      const message = submitError instanceof Error ? submitError.message : "Неизвестная ошибка";
+      setError(message);
+      notification.error(message);
     } finally {
       setIsUploadingCover(false);
       setIsSubmitting(false);
@@ -253,25 +264,17 @@ export default function AdminCreateEventPage() {
   return (
     <AdminShell
       title="Создание нового event"
-      description="Рабочая панель для публикации новых событий. Здесь заполняются базовые параметры, выбирается шаблон и собирается конфигурация приглашения."
+      description="Рабочая панель для публикации новых событий. Здесь выбирается шаблон и заполняются данные приглашения."
     >
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1.3fr)_360px]">
         <section>
           <form onSubmit={handleSubmit} className="grid gap-5">
             <div className="grid gap-5 md:grid-cols-2">
-              <CreateEventField
-                label="Тип события"
-                value={form.type}
-                onChange={(value) => updateField("type", value)}
-                placeholder="wedding"
-              />
-
               <CreateEventSelectField
                 label="Шаблон"
                 value={form.templateId}
                 onChange={(value) => updateField("templateId", value)}
                 options={templateOptions}
-                hint="Событие будет открываться по slug через выбранный шаблон."
               />
 
               <CreateEventDateField

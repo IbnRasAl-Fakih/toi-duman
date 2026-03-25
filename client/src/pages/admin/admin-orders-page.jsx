@@ -3,6 +3,7 @@ import ChangeOrderStatusModal from "../../components/admin/orders/change-order-s
 import OrdersEmptyState from "../../components/admin/orders/orders-empty-state.jsx";
 import OrdersTable from "../../components/admin/orders/orders-table.jsx";
 import AdminShell from "../../components/admin-shell.jsx";
+import { useNotification } from "../../context/notification-context.jsx";
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = React.useState([]);
@@ -10,6 +11,7 @@ export default function AdminOrdersPage() {
   const [isUpdatingStatus, setIsUpdatingStatus] = React.useState(false);
   const [error, setError] = React.useState("");
   const [pendingStatusChange, setPendingStatusChange] = React.useState(null);
+  const notification = useNotification();
 
   React.useEffect(() => {
     let isMounted = true;
@@ -31,7 +33,9 @@ export default function AdminOrdersPage() {
         }
       } catch (requestError) {
         if (isMounted) {
-          setError(requestError instanceof Error ? requestError.message : "Неизвестная ошибка");
+          const message = requestError instanceof Error ? requestError.message : "Неизвестная ошибка";
+          setError(message);
+          notification.error(message);
         }
       } finally {
         if (isMounted) {
@@ -45,7 +49,7 @@ export default function AdminOrdersPage() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [notification]);
 
   async function handleStatusChange() {
     if (!pendingStatusChange) {
@@ -72,8 +76,13 @@ export default function AdminOrdersPage() {
 
       setOrders((current) => current.map((item) => (item.id === pendingStatusChange.order.id ? data : item)));
       setPendingStatusChange(null);
+      notification.success(
+        pendingStatusChange.nextStatus === "paid" ? "Оплата подтверждена" : "Статус заказа обновлен"
+      );
     } catch (statusError) {
-      setError(statusError instanceof Error ? statusError.message : "Не удалось обновить статус заказа");
+      const message = statusError instanceof Error ? statusError.message : "Не удалось обновить статус заказа";
+      setError(message);
+      notification.error(message);
     } finally {
       setIsUpdatingStatus(false);
     }

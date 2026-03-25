@@ -5,8 +5,6 @@ const PAYMENT_PHONE = process.env.REACT_APP_PAYMENT_PHONE || "";
 const PAYMENT_ACCOUNT = process.env.REACT_APP_PAYMENT_ACCOUNT || "";
 const WHATSAPP_PHONE = process.env.REACT_APP_WHATSAPP_PHONE || "";
 
-console.log("PaymentPage config:", { PAYMENT_PHONE, PAYMENT_ACCOUNT, WHATSAPP_PHONE });
-
 function formatAmount(value) {
   if (value == null) return null;
 

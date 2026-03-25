@@ -4,6 +4,7 @@ import { NavLink } from "react-router-dom";
 const navigationItems = [
   { to: "/admin/events", label: "Список event-ов", end: true },
   { to: "/admin/orders", label: "Список заказов", end: true },
+  { to: "/admin/templates", label: "Список шаблонов", end: true },
   { to: "/admin/events/create", label: "Создать event", end: true },
   { to: "/admin/templates/create", label: "Создать шаблон", end: true }
 ];
@@ -21,24 +22,33 @@ export default function AdminShell({ title, description, children }) {
             <p className="mt-5 w-full text-sm leading-7 text-black/65 md:text-base">{description}</p>
           </header>
 
-          <div className="w-full rounded-[28px] border border-black/10 bg-white/80 px-4 py-4 shadow-[0_18px_50px_rgba(31,26,23,0.06)] backdrop-blur md:px-6">
-            <nav className="flex flex-wrap gap-3">
-              {navigationItems.map((item) => (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  end={item.end}
-                  className={({ isActive }) =>
-                    `inline-flex items-center justify-center rounded-full px-5 py-3 text-xs uppercase tracking-[0.2em] transition ${
-                      isActive
-                        ? "bg-[#7f1118] text-white shadow-[0_14px_28px_rgba(127,17,24,0.2)]"
-                        : "border border-black/10 bg-[#fcfaf7] text-black/60 hover:border-[#7f1118]/25 hover:text-[#7f1118]"
-                    }`
-                  }
-                >
-                  {item.label}
-                </NavLink>
-              ))}
+          <div className="w-full rounded-[28px] border border-black/10 bg-white/80 px-4 py-3 shadow-[0_18px_50px_rgba(31,26,23,0.06)] backdrop-blur md:px-6">
+            <nav className="overflow-x-auto">
+              <div className="flex min-w-max items-end gap-1 border-b border-black/8 pb-1">
+                {navigationItems.map((item) => (
+                  <NavLink
+                    key={item.to}
+                    to={item.to}
+                    end={item.end}
+                    className={({ isActive }) =>
+                      `relative inline-flex items-center whitespace-nowrap px-4 py-3 text-xs uppercase tracking-[0.18em] transition ${
+                        isActive ? "text-[#7f1118]" : "text-black/45 hover:text-[#7f1118]"
+                      }`
+                    }
+                  >
+                    {({ isActive }) => (
+                      <>
+                        <span className={isActive ? "font-semibold" : "font-medium"}>{item.label}</span>
+                        <span
+                          className={`absolute inset-x-3 bottom-[-5px] h-[2px] rounded-full transition ${
+                            isActive ? "bg-[#7f1118]" : "bg-transparent"
+                          }`}
+                        />
+                      </>
+                    )}
+                  </NavLink>
+                ))}
+              </div>
             </nav>
           </div>
 
