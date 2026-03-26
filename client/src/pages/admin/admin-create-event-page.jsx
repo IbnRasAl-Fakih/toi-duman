@@ -55,6 +55,13 @@ function parseTimeValue(value) {
   return Number.isNaN(parsed.getTime()) ? null : parsed;
 }
 
+function getTomorrowDateString() {
+  const tomorrow = new Date();
+  tomorrow.setHours(0, 0, 0, 0);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  return format(tomorrow, "yyyy-MM-dd");
+}
+
 export default function AdminCreateEventPage() {
   const [form, setForm] = React.useState(initialForm);
   const [templates, setTemplates] = React.useState([]);
@@ -68,6 +75,8 @@ export default function AdminCreateEventPage() {
   const [coverFileName, setCoverFileName] = React.useState("");
   const [isDraggingCover, setIsDraggingCover] = React.useState(false);
   const notification = useNotification();
+  const isFormValid = Boolean(form.date.trim() && form.time.trim() && form.location.trim() && form.configName.trim());
+  const minimumEventDate = getTomorrowDateString();
 
   React.useEffect(() => {
     return () => {
@@ -213,13 +222,21 @@ export default function AdminCreateEventPage() {
         throw new Error("Выберите шаблон");
       }
 
+      if (!isFormValid) {
+        throw new Error("Заполните обязательные поля: дата, время, локация и имя");
+      }
+
+      if (form.date < minimumEventDate) {
+        throw new Error("Дата event должна быть не раньше завтрашнего дня");
+      }
+
       const configPayload = buildConfigPayload(form);
       const payload = new FormData();
 
       payload.append("type", form.type);
       payload.append("template_id", form.templateId);
       payload.append("date", form.date);
-      if (form.time) payload.append("time", form.time);
+      payload.append("time", form.time);
       payload.append("location", form.location);
       if (form.locationLink) payload.append("location_link", form.locationLink);
       if (form.description) payload.append("description", form.description);
@@ -328,6 +345,7 @@ export default function AdminCreateEventPage() {
               onChange={(value) => updateField("configName", value)}
               placeholder="Марат, Айгерим"
               hint="Введите через запятую."
+              required
             />
 
             <CreateEventTextAreaField
@@ -340,9 +358,9 @@ export default function AdminCreateEventPage() {
             <div className="flex flex-wrap items-center justify-end gap-4 pt-2">
               <button
                 type="submit"
-                disabled={isSubmitting || isUploadingCover || isLoadingTemplates || !templates.length}
+                disabled={isSubmitting || isUploadingCover || isLoadingTemplates || !templates.length || !isFormValid}
                 className={`inline-flex items-center justify-center rounded-full px-6 py-3 text-sm uppercase tracking-[0.14em] text-white transition ${
-                  isSubmitting || isUploadingCover || isLoadingTemplates || !templates.length
+                  isSubmitting || isUploadingCover || isLoadingTemplates || !templates.length || !isFormValid
                     ? "cursor-default bg-[#7f1118]/50"
                     : "bg-[#7f1118] hover:bg-[#5d0b11]"
                 }`}

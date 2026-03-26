@@ -16,6 +16,7 @@ export default function AdminCreateTemplatePage() {
   const [error, setError] = React.useState("");
   const [result, setResult] = React.useState(null);
   const notification = useNotification();
+  const isFormValid = Boolean(form.name.trim() && form.type.trim() && form.path.trim());
 
   function updateField(field, value) {
     setForm((current) => ({
@@ -31,6 +32,10 @@ export default function AdminCreateTemplatePage() {
     setResult(null);
 
     try {
+      if (!isFormValid) {
+        throw new Error("Заполните все обязательные поля");
+      }
+
       const response = await fetch("/api/v1/templates", {
         method: "POST",
         headers: {
@@ -73,33 +78,37 @@ export default function AdminCreateTemplatePage() {
               value={form.name}
               onChange={(value) => updateField("name", value)}
               placeholder="Template 1"
+              required
             />
 
             <CreateTemplateField
               label="Тип шаблона"
               value={form.type}
               onChange={(value) => updateField("type", value)}
-              placeholder="invitation_v1"
+              placeholder="wedding"
+              required
             />
 
             <CreateTemplateField
               label="Путь к шаблону"
               value={form.path}
               onChange={(value) => updateField("path", value)}
-              placeholder="templates/invitation-page_template_1.jsx"
-              hint="Храните относительный путь."
+              placeholder="templates/invitation-page_template_X.jsx"
+              hint="Храните относительный путь. Например: templates/invitation-page_template_X.jsx"
+              required
             />
 
             <div className="flex flex-wrap items-center justify-end gap-4 pt-2">
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || !isFormValid}
                 className={`inline-flex items-center justify-center rounded-full px-6 py-3 text-sm uppercase tracking-[0.14em] text-white transition ${
-                  isSubmitting ? "cursor-default bg-[#7f1118]/50" : "bg-[#7f1118] hover:bg-[#5d0b11]"
+                  isSubmitting || !isFormValid ? "cursor-default bg-[#7f1118]/70" : "bg-[#7f1118] hover:bg-[#5d0b11]"
                 }`}
               >
                 {isSubmitting ? "Создание..." : "Создать шаблон"}
               </button>
+              {error ? <p className="text-sm text-[#b42318]">{error}</p> : null}
             </div>
           </form>
         </section>

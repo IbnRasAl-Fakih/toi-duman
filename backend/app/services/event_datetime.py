@@ -1,4 +1,4 @@
-from datetime import date, datetime, time, timezone
+from datetime import date, datetime, time, timedelta, timezone
 
 
 SUPPORTED_DATE_FORMATS = (
@@ -10,6 +10,8 @@ SUPPORTED_TIME_FORMATS = (
     "%H:%M",
     "%H:%M:%S",
 )
+
+KAZAKHSTAN_TIMEZONE = timezone(timedelta(hours=5))
 
 
 def parse_event_date(value: str) -> date:
@@ -39,4 +41,4 @@ def parse_event_time(value: str) -> time:
 def combine_event_datetime(*, date_value: str, time_value: str | None = None) -> datetime:
     parsed_date = parse_event_date(date_value)
     parsed_time = parse_event_time(time_value) if time_value and time_value.strip() else time(0, 0)
-    return datetime.combine(parsed_date, parsed_time, tzinfo=timezone.utc)
+    return datetime.combine(parsed_date, parsed_time, tzinfo=KAZAKHSTAN_TIMEZONE)

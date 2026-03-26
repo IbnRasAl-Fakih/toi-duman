@@ -4,6 +4,7 @@ import InvitationTemplate1Page, {
   TEMPLATE_1_PATH,
   TEMPLATE_1_TYPE
 } from "./templates/invitation-page_template_1.jsx";
+import NotFoundPage from "../pages/not-found-page.jsx";
 
 const templateRegistry = {
   [TEMPLATE_1_TYPE]: InvitationTemplate1Page,
@@ -55,22 +56,16 @@ export default function InvitationPageResolver() {
   }, [slug]);
 
   if (isLoading) {
-    return <TemplateState title="Загрузка приглашения" description="Подгружаем данные события с сервера." />;
+    return <TemplateState title="Загрузка приглашения" description="Подгружаем данные события." />;
   }
 
   if (error || !eventData?.template) {
-    return <TemplateState title="Приглашение не найдено" description={error || "Не удалось получить данные события по указанному slug."} />;
+    return <NotFoundPage />;
   }
-  console.log(eventData);
   const TemplateComponent = templateRegistry[eventData.template.type] || templateRegistry[eventData.template.path];
 
   if (!TemplateComponent) {
-    return (
-      <TemplateState
-        title="Шаблон не найден"
-        description={`Для шаблона ${eventData.template.name} не зарегистрирован React-компонент.`}
-      />
-    );
+    return <NotFoundPage />;
   }
 
   return <TemplateComponent event={eventData} order={eventData.order || null} />;

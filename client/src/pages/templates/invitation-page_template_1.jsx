@@ -5,6 +5,7 @@ import InvitationIntroTemplate1 from "../../components/template-1/invitation-int
 import InvitationRsvpTemplate1 from "../../components/template-1/invitation-rsvp_template_1.jsx";
 import InvitationVenueTemplate1 from "../../components/template-1/invitation-venue_template_1.jsx";
 import TemplatePaymentBanner from "../../components/template-payment-banner.jsx";
+import { useNotification } from "../../context/notification-context.jsx";
 
 export const TEMPLATE_1_TYPE = "wedding";
 export const TEMPLATE_1_PATH = "templates/invitation-page_template_1.jsx";
@@ -76,7 +77,8 @@ export function mapEventToTemplate1(event) {
   const signature = names.length ? names.join(" & ") : `${leftName} & ${rightName}`;
 
   return {
-    id: event.slug,
+    id: event.id,
+    slug: event.slug,
     name: event.config?.theme || "Template 1",
     category: event.type === "wedding" ? "Свадебное приглашение" : "Приглашение",
     coverImageUrl: event.cover_image_url || "",
@@ -114,13 +116,50 @@ export function mapEventToTemplate1(event) {
 }
 
 export default function InvitationTemplate1Page({ event, order }) {
+  const [guestName, setGuestName] = React.useState("");
   const [selectedStatus, setSelectedStatus] = React.useState("");
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
   const template = React.useMemo(() => mapEventToTemplate1(event), [event]);
   const isPaid = order?.status === ORDER_STATUS_PAID;
+  const notification = useNotification();
 
-  function handleSubmit() {
-    if (!selectedStatus) {
+  async function handleSubmit() {
+    if (!guestName.trim()) {
+      notification.error("Введите ФИО");
       return;
+    }
+
+    if (!selectedStatus) {
+      notification.error("Выберите вариант ответа");
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+
+      const payload = new FormData();
+      payload.append("event_id", String(template.id));
+      payload.append("name", guestName.trim());
+      payload.append("status", selectedStatus);
+
+      const response = await fetch("/api/v1/guests", {
+        method: "POST",
+        body: payload
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.detail || "Не удалось отправить ответ");
+      }
+
+      setGuestName("");
+      setSelectedStatus("");
+      notification.success("Ответ успешно отправлен");
+    } catch (submitError) {
+      const message = submitError instanceof Error ? submitError.message : "Не удалось отправить ответ";
+      notification.error(message);
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -137,9 +176,12 @@ export default function InvitationTemplate1Page({ event, order }) {
               <InvitationVenueTemplate1 template={template} />
               <InvitationRsvpTemplate1
                 template={template}
+                guestName={guestName}
+                onGuestNameChange={setGuestName}
                 selectedStatus={selectedStatus}
                 onSelectStatus={setSelectedStatus}
                 onSubmit={handleSubmit}
+                isSubmitting={isSubmitting}
                 responseOptions={responseOptions}
               />
             </div>
