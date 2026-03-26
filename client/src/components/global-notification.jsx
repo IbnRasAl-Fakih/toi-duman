@@ -1,4 +1,5 @@
 import React from "react";
+import CloseIcon from "../assets/close.jsx";
 
 function NotificationItem({ notification, onClose }) {
   const isSuccess = notification.type === "success";
@@ -21,10 +22,10 @@ function NotificationItem({ notification, onClose }) {
         <button
           type="button"
           onClick={() => onClose(notification.id)}
-          className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xl leading-none text-[#f24857] transition hover:bg-[#fff1f3]"
+          className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[#f24857] transition hover:bg-[#fff1f3]"
           aria-label="Закрыть уведомление"
         >
-          ×
+          <CloseIcon className="h-4 w-4" />
         </button>
       </div>
     </div>

@@ -10,12 +10,23 @@ function formatDateTime(value) {
   });
 }
 
+function buildInvitationUrl(slug) {
+  if (typeof window === "undefined") {
+    return `/${slug}`;
+  }
+
+  return `${window.location.origin}/${slug}`;
+}
+
 export default function EventCard({ event, onRequestDelete }) {
+  const invitationUrl = buildInvitationUrl(event.slug);
+  const templateName = event.template?.name || event.template_id;
+
   return (
-    <article className="grid gap-5 rounded-[28px] border border-black/10 bg-[#fcfaf7] p-5 lg:grid-cols-[180px_minmax(0,1fr)]">
-      <div className="overflow-hidden rounded-[20px] bg-[#efe5db]">
+    <article className="grid items-center gap-5 rounded-[28px] border border-black/10 bg-[#fcfaf7] p-5 lg:grid-cols-[180px_minmax(0,1fr)]">
+      <div className="aspect-[4/5] overflow-hidden rounded-[20px] bg-[#efe5db]">
         {event.cover_image_url ? (
-          <img src={event.cover_image_url} alt={event.slug} className="h-full min-h-44 w-full object-cover" />
+          <img src={event.cover_image_url} alt={event.slug} className="h-full w-full object-cover" />
         ) : (
           <div className="flex h-full items-center justify-center text-xs uppercase tracking-[0.24em] text-black/35">
             Нет обложки
@@ -24,10 +35,9 @@ export default function EventCard({ event, onRequestDelete }) {
       </div>
 
       <div className="grid gap-4">
-        <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="text-xs uppercase tracking-[0.28em] text-black/45">{event.type}</p>
-            <h2 className="mt-2 font-['Georgia','Times_New_Roman',serif] text-3xl text-[#7f1118]">{event.slug}</h2>
           </div>
 
           <div className="flex flex-wrap items-center justify-end gap-2">
@@ -47,6 +57,20 @@ export default function EventCard({ event, onRequestDelete }) {
         <dl className="grid gap-3 text-sm text-black/65 md:grid-cols-2">
           <EventInfoRow label="Дата" value={formatDateTime(event.date)} />
           <EventInfoRow label="Локация" value={event.location} />
+          <EventInfoRow label="Шаблон" value={templateName} />
+          <EventInfoRow
+            label="Ссылка"
+            value={
+              <a
+                href={invitationUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="text-[#7f1118] underline decoration-[#7f1118]/35 underline-offset-4 transition hover:decoration-[#7f1118]"
+              >
+                {invitationUrl}
+              </a>
+            }
+          />
           <EventInfoRow label="Slug" value={event.slug} />
           <EventInfoRow label="Создано" value={formatDateTime(event.created_at)} />
         </dl>

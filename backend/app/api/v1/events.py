@@ -12,7 +12,7 @@ from app.core.config import get_settings
 from app.repositories.event_repository import EventRepository
 from app.repositories.order_repository import OrderRepository
 from app.repositories.template_repository import TemplateRepository
-from app.schemas.event import EventRead, EventWithOrderRead
+from app.schemas.event import EventListRead, EventRead, EventWithOrderRead
 from app.services.event_datetime import combine_event_datetime
 from app.services.event_slug import build_event_slug
 from app.services.r2_storage import R2StorageService
@@ -70,15 +70,15 @@ async def create_event(
     return EventRead.model_validate(event)
 
 
-@router.get("", response_model=list[EventRead])
+@router.get("", response_model=list[EventListRead])
 async def list_events(
     limit: int = Query(default=100, ge=1, le=500),
     offset: int = Query(default=0, ge=0),
     session: AsyncSession = Depends(get_session),
-) -> list[EventRead]:
+) -> list[EventListRead]:
     repository = EventRepository(session)
     events = await repository.get_multi(limit=limit, offset=offset)
-    return [EventRead.model_validate(event) for event in events]
+    return [EventListRead.model_validate(event) for event in events]
 
 
 @router.get("/slug/{slug}", response_model=EventWithOrderRead)

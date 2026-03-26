@@ -337,11 +337,11 @@ export default function AdminCreateEventPage() {
               rows={8}
             />
 
-            <div className="flex flex-wrap items-center gap-4 pt-2">
+            <div className="flex flex-wrap items-center justify-end gap-4 pt-2">
               <button
                 type="submit"
                 disabled={isSubmitting || isUploadingCover || isLoadingTemplates || !templates.length}
-                className={`inline-flex items-center justify-center rounded-full px-8 py-4 text-sm uppercase tracking-[0.18em] text-white transition ${
+                className={`inline-flex items-center justify-center rounded-full px-6 py-3 text-sm uppercase tracking-[0.14em] text-white transition ${
                   isSubmitting || isUploadingCover || isLoadingTemplates || !templates.length
                     ? "cursor-default bg-[#7f1118]/50"
                     : "bg-[#7f1118] hover:bg-[#5d0b11]"
@@ -349,7 +349,6 @@ export default function AdminCreateEventPage() {
               >
                 {isUploadingCover ? "Загрузка изображения..." : isSubmitting ? "Создание..." : "Создать event"}
               </button>
-              {error ? <p className="text-sm text-[#b42318]">{error}</p> : null}
             </div>
           </form>
         </section>

@@ -12,6 +12,11 @@ from app.services.order_id import generate_order_id
 class EventRepository(BaseRepository[Event]):
     model = Event
 
+    async def get_multi(self, *, limit: int = 100, offset: int = 0):
+        statement = select(self.model).options(selectinload(self.model.template)).limit(limit).offset(offset)
+        result = await self.session.execute(statement)
+        return result.scalars().all()
+
     async def get_by_slug(self, slug: str) -> Event | None:
         statement = select(self.model).options(selectinload(self.model.template)).where(self.model.slug == slug)
         result = await self.session.execute(statement)

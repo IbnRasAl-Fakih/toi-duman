@@ -28,6 +28,10 @@ class EventRead(EventBase):
     model_config = ConfigDict(from_attributes=True)
 
 
+class EventListRead(EventRead):
+    template: TemplateRead
+
+
 class EventWithOrderRead(EventRead):
     order: OrderRead | None = None
     template: TemplateRead

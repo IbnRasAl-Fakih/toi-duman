@@ -1,4 +1,5 @@
 import React from "react";
+import DropdownButton from "../../../assets/dropdown-button.jsx";
 
 export default function CreateEventSelectField({ label, hint, options, value, onChange }) {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -54,13 +55,11 @@ export default function CreateEventSelectField({ label, hint, options, value, on
           aria-expanded={isOpen}
         >
           <span className="min-w-0 truncate text-[#1f1a17]">{selectedOption?.label || "Выберите значение"}</span>
-          <span
-            className={`shrink-0 text-lg leading-none text-[#7f1118] transition-transform ${
+          <DropdownButton
+            className={`h-5 w-5 shrink-0 text-[#7f1118] transition-transform ${
               isOpen ? "rotate-180" : ""
             }`}
-          >
-            ˅
-          </span>
+          />
         </button>
 
         {isOpen ? (
