@@ -9,13 +9,14 @@ import AdminOrdersPage from "./pages/admin/admin-orders-page.jsx";
 import AdminTemplatesPage from "./pages/admin/admin-templates-page.jsx";
 import GuestsPage from "./pages/guests-page.jsx";
 import InvitationPageResolver from "./pages/invitation-page-resolver.jsx";
+import LandingPage from "./pages/landing-page.jsx";
 import PaymentPage from "./pages/payment-page.jsx";
 import NotFoundPage from "./pages/not-found-page.jsx";
 
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/admin/events" replace />} />
+      <Route path="/" element={<LandingPage />} />
       <Route path="/admin/login" element={<AdminLoginPage />} />
       <Route path="/payment/:orderId" element={<PaymentPage />} />
 
