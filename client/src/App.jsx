@@ -14,7 +14,6 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Navigate to="/admin/events" replace />} />
       <Route path="/admin" element={<Navigate to="/admin/events" replace />} />
-      <Route path="/payment" element={<PaymentPage />} />
       <Route path="/payment/:orderId" element={<PaymentPage />} />
       <Route path="/admin/events/create" element={<AdminCreateEventPage />} />
       <Route path="/admin/templates/create" element={<AdminCreateTemplatePage />} />

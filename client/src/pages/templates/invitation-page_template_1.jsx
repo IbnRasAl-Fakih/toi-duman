@@ -125,7 +125,8 @@ export default function InvitationTemplate1Page({ event, order }) {
   }
 
   return (
-    <>
+    <div className="min-h-screen bg-[#240f11]">
+      {!isPaid ? <TemplatePaymentBanner order={order} /> : null}
       <main className="min-h-screen bg-gradient-to-b from-[#240f11] to-[#111112] font-['Georgia','Times_New_Roman',serif] text-[#f5e7dc]">
         <section className="w-full">
           <div className="w-full bg-[#f5e7dc] text-[#7f1118]">
@@ -145,7 +146,6 @@ export default function InvitationTemplate1Page({ event, order }) {
           </div>
         </section>
       </main>
-      {!isPaid ? <TemplatePaymentBanner order={order} /> : null}
-    </>
+    </div>
   );
 }
