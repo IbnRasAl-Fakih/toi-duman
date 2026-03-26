@@ -33,9 +33,9 @@ export default function GuestsTable({ guests }) {
 
       {guests.length ? (
         <div className="divide-y divide-black/8">
-          {guests.map((guest) => (
+          {guests.map((guest, index) => (
             <div key={guest.id} className="grid grid-cols-[72px_minmax(0,1fr)_180px] gap-4 px-5 py-4 text-sm text-black/70">
-              <span className="text-black/45">{guest.id}</span>
+              <span className="text-black/45">{index + 1}</span>
               <span className="break-words font-medium text-[#1f1a17]">{guest.name}</span>
               <span>
                 <span className={`inline-flex rounded-full px-3 py-1 text-xs uppercase tracking-[0.16em] ${getStatusBadgeClass(guest.status)}`}>

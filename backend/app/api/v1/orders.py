@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Form, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.dependencies import get_session
+from app.api.dependencies import get_session, require_admin
 from app.repositories.order_repository import OrderRepository
 from app.schemas.order import OrderRead
 from app.models.order import ORDER_STATUS_PAID, ORDER_STATUS_UNPAID
@@ -16,6 +16,7 @@ router = APIRouter(prefix="/orders", tags=["orders"])
 async def list_orders(
     limit: int = Query(default=100, ge=1, le=500),
     offset: int = Query(default=0, ge=0),
+    _admin: None = Depends(require_admin),
     session: AsyncSession = Depends(get_session),
 ) -> list[OrderRead]:
     repository = OrderRepository(session)
@@ -37,6 +38,7 @@ async def get_order(
 @router.patch("/{order_id}/paid", response_model=OrderRead)
 async def update_order_paid_at(
     order_id: str,
+    _admin: None = Depends(require_admin),
     session: AsyncSession = Depends(get_session),
 ) -> OrderRead:
     repository = OrderRepository(session)
@@ -50,6 +52,7 @@ async def update_order_paid_at(
 async def update_order_status(
     order_id: str,
     status_value: Annotated[str, Form(alias="status")],
+    _admin: None = Depends(require_admin),
     session: AsyncSession = Depends(get_session),
 ) -> OrderRead:
     if status_value not in {ORDER_STATUS_PAID, ORDER_STATUS_UNPAID}:
@@ -65,6 +68,7 @@ async def update_order_status(
 @router.delete("/{order_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_order(
     order_id: str,
+    _admin: None = Depends(require_admin),
     session: AsyncSession = Depends(get_session),
 ) -> None:
     repository = OrderRepository(session)

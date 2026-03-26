@@ -3,7 +3,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.dependencies import get_session
+from app.api.dependencies import get_session, require_admin
 from app.repositories.template_repository import TemplateRepository
 from app.schemas.template import TemplateCreate, TemplateRead, TemplateUpdate
 
@@ -14,6 +14,7 @@ router = APIRouter(prefix="/templates", tags=["templates"])
 @router.post("", response_model=TemplateRead, status_code=status.HTTP_201_CREATED)
 async def create_template(
     payload: TemplateCreate,
+    _admin: None = Depends(require_admin),
     session: AsyncSession = Depends(get_session),
 ) -> TemplateRead:
     repository = TemplateRepository(session)
@@ -25,6 +26,7 @@ async def create_template(
 async def list_templates(
     limit: int = Query(default=100, ge=1, le=500),
     offset: int = Query(default=0, ge=0),
+    _admin: None = Depends(require_admin),
     session: AsyncSession = Depends(get_session),
 ) -> list[TemplateRead]:
     repository = TemplateRepository(session)
@@ -35,6 +37,7 @@ async def list_templates(
 @router.get("/{template_id}", response_model=TemplateRead)
 async def get_template(
     template_id: UUID,
+    _admin: None = Depends(require_admin),
     session: AsyncSession = Depends(get_session),
 ) -> TemplateRead:
     repository = TemplateRepository(session)
@@ -48,6 +51,7 @@ async def get_template(
 async def update_template(
     template_id: UUID,
     payload: TemplateUpdate,
+    _admin: None = Depends(require_admin),
     session: AsyncSession = Depends(get_session),
 ) -> TemplateRead:
     repository = TemplateRepository(session)
@@ -63,6 +67,7 @@ async def update_template(
 @router.delete("/{template_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_template(
     template_id: UUID,
+    _admin: None = Depends(require_admin),
     session: AsyncSession = Depends(get_session),
 ) -> None:
     repository = TemplateRepository(session)

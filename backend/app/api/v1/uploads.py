@@ -1,6 +1,7 @@
-from fastapi import APIRouter, File, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from fastapi.concurrency import run_in_threadpool
 
+from app.api.dependencies import require_admin
 from app.core.config import get_settings
 from app.schemas.upload import UploadImageRead
 from app.services.r2_storage import R2StorageService
@@ -47,5 +48,5 @@ async def upload_image_to_r2(file: UploadFile) -> UploadImageRead:
 
 
 @router.post("/images", response_model=UploadImageRead, status_code=status.HTTP_201_CREATED)
-async def upload_image(file: UploadFile = File(...)) -> UploadImageRead:
+async def upload_image(file: UploadFile = File(...), _admin: None = Depends(require_admin)) -> UploadImageRead:
     return await upload_image_to_r2(file)

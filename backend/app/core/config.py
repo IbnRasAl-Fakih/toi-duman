@@ -8,6 +8,11 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     app_env: str = "local"
     event_order_amount: Decimal = Decimal("15000.00")
+    admin_username: str = "admin"
+    admin_password: str = "change-me"
+    admin_session_secret: str = "change-this-session-secret"
+    admin_session_cookie_name: str = "toi_duman_admin_session"
+    admin_session_max_age_seconds: int = 60 * 60 * 24 * 7
 
     postgres_host: str = "localhost"
     postgres_port: int = 5432

@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, Upload
 from fastapi.concurrency import run_in_threadpool
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.dependencies import get_session
+from app.api.dependencies import get_session, require_admin
 from app.api.v1.uploads import upload_image_to_r2
 from app.core.config import get_settings
 from app.repositories.event_repository import EventRepository
@@ -33,6 +33,7 @@ async def create_event(
     cover_image_url: Annotated[str | None, Form()] = None,
     config: Annotated[str, Form()] = "{}",
     file: Annotated[UploadFile | None, File()] = None,
+    _admin: None = Depends(require_admin),
     session: AsyncSession = Depends(get_session),
 ) -> EventRead:
     repository = EventRepository(session)
@@ -74,6 +75,7 @@ async def create_event(
 async def list_events(
     limit: int = Query(default=100, ge=1, le=500),
     offset: int = Query(default=0, ge=0),
+    _admin: None = Depends(require_admin),
     session: AsyncSession = Depends(get_session),
 ) -> list[EventListRead]:
     repository = EventRepository(session)
@@ -104,6 +106,7 @@ async def get_event_by_slug(
 @router.get("/{event_id}", response_model=EventRead)
 async def get_event(
     event_id: int,
+    _admin: None = Depends(require_admin),
     session: AsyncSession = Depends(get_session),
 ) -> EventRead:
     repository = EventRepository(session)
@@ -125,6 +128,7 @@ async def update_event(
     description: Annotated[str | None, Form()] = None,
     cover_image_url: Annotated[str | None, Form()] = None,
     config: Annotated[str | None, Form()] = None,
+    _admin: None = Depends(require_admin),
     session: AsyncSession = Depends(get_session),
 ) -> EventRead:
     repository = EventRepository(session)
@@ -177,6 +181,7 @@ async def update_event(
 @router.delete("/{event_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_event(
     event_id: int,
+    _admin: None = Depends(require_admin),
     session: AsyncSession = Depends(get_session),
 ) -> None:
     repository = EventRepository(session)
