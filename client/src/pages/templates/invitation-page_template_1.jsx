@@ -1,9 +1,10 @@
 import React from "react";
-import InvitationCalendarTemplate1 from "../../components/template-1/invitation-calendar_template_1.jsx";
-import InvitationHeroTemplate1 from "../../components/template-1/invitation-hero_template_1.jsx";
-import InvitationIntroTemplate1 from "../../components/template-1/invitation-intro_template_1.jsx";
-import InvitationRsvpTemplate1 from "../../components/template-1/invitation-rsvp_template_1.jsx";
-import InvitationVenueTemplate1 from "../../components/template-1/invitation-venue_template_1.jsx";
+import InvitationCalendarTemplate1 from "../../components/templates/template-1/invitation-calendar_template_1.jsx";
+import InvitationHeroTemplate1 from "../../components/templates/template-1/invitation-hero_template_1.jsx";
+import InvitationIntroTemplate1 from "../../components/templates/template-1/invitation-intro_template_1.jsx";
+import InvitationRsvpTemplate1 from "../../components/templates/template-1/invitation-rsvp_template_1.jsx";
+import InvitationVenueTemplate1 from "../../components/templates/template-1/invitation-venue_template_1.jsx";
+import Footer from "../../components/footer.jsx";
 import TemplatePaymentBanner from "../../components/template-payment-banner.jsx";
 import { useNotification } from "../../context/notification-context.jsx";
 
@@ -123,6 +124,14 @@ export default function InvitationTemplate1Page({ event, order }) {
   const isPaid = order?.status === ORDER_STATUS_PAID;
   const notification = useNotification();
 
+  React.useEffect(() => {
+    document.documentElement.classList.add("theme-template-1");
+
+    return () => {
+      document.documentElement.classList.remove("theme-template-1");
+    };
+  }, []);
+
   async function handleSubmit() {
     if (!guestName.trim()) {
       notification.error("Введите ФИО");
@@ -165,7 +174,13 @@ export default function InvitationTemplate1Page({ event, order }) {
 
   return (
     <div className="min-h-screen bg-[#240f11]">
-      {!isPaid ? <TemplatePaymentBanner order={order} /> : null}
+      {!isPaid ? (
+        <TemplatePaymentBanner
+          order={order}
+          backgroundClass="bg-[rgba(20,18,18,0.82)]"
+          buttonClass="bg-[#7f1118] hover:bg-[#5d0b11]"
+        />
+      ) : null}
       <main className="min-h-screen bg-gradient-to-b from-[#240f11] to-[#111112] font-['Georgia','Times_New_Roman',serif] text-[#f5e7dc]">
         <section className="w-full">
           <div className="w-full bg-[#f5e7dc] text-[#7f1118]">
@@ -184,6 +199,9 @@ export default function InvitationTemplate1Page({ event, order }) {
                 isSubmitting={isSubmitting}
                 responseOptions={responseOptions}
               />
+            </div>
+            <div className="px-5 py-6 pb-3">
+              <Footer />
             </div>
           </div>
         </section>

@@ -20,7 +20,7 @@ const initialForm = {
   description: "",
   coverImageUrl: "",
   configName: "",
-  configExtra: '{\n  "theme": "rose-romance"\n}'
+  configExtra: '{\n  "key": "value"\n}'
 };
 
 function buildConfigPayload(form) {

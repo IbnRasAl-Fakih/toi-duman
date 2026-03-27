@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import "react-datepicker/dist/react-datepicker.css";
+import "./globals.css";
 import App from "./App.jsx";
 import { AdminAuthProvider } from "./context/admin-auth-context.jsx";
 import { NotificationProvider } from "./context/notification-context.jsx";
