@@ -39,8 +39,8 @@ export default function InvitationRsvpTemplate1({
                   onClick={() => onSelectStatus(option.value)}
                   className="flex w-full items-center gap-4 rounded-[4px] border border-[#d6dce0] bg-white px-4 py-4 text-left"
                 >
-                  <span className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-[#1f2b35]">
-                    {isSelected ? <span className="h-4 w-4 rounded-full bg-[#1f2b35]" /> : null}
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-[#1f2b35]">
+                    {isSelected ? <span className="h-3 w-3 rounded-full bg-[#1f2b35]" /> : null}
                   </span>
                   <span className="text-[15px]">{option.label}</span>
                 </button>
