@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   color-scheme: dark;
   --scrollbar-track: rgba(10, 18, 22, 0.92);
@@ -29,6 +33,14 @@ html.theme-template-2 {
   --scrollbar-thumb-hover: linear-gradient(180deg, #4f87a6 0%, #a8d2e8 100%);
   --scrollbar-track-color: rgba(126, 176, 204, 0.45);
   --scrollbar-thumb-color: #6fa7c6;
+}
+
+html.theme-template-3 {
+  --scrollbar-track: rgba(212, 205, 196, 0.82);
+  --scrollbar-thumb: linear-gradient(180deg, #b7aa9b 0%, #8f8478 100%);
+  --scrollbar-thumb-hover: linear-gradient(180deg, #c7bbaf 0%, #9f9488 100%);
+  --scrollbar-track-color: rgba(212, 205, 196, 0.82);
+  --scrollbar-thumb-color: #9b8f83;
 }
 
 *::-webkit-scrollbar {

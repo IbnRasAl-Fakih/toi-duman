@@ -2,11 +2,13 @@ import React from "react";
 import { useParams } from "react-router-dom";
 import InvitationTemplate1Page, { TEMPLATE_1_PATH } from "./templates/invitation-page_template_1.jsx";
 import InvitationTemplate2Page, { TEMPLATE_2_PATH } from "./templates/invitation-page_template_2.jsx";
+import InvitationTemplate3Page, { TEMPLATE_3_PATH } from "./templates/invitation-page_template_3.jsx";
 import NotFoundPage from "../pages/not-found-page.jsx";
 
 const templateRegistry = {
   [TEMPLATE_1_PATH]: InvitationTemplate1Page,
-  [TEMPLATE_2_PATH]: InvitationTemplate2Page
+  [TEMPLATE_2_PATH]: InvitationTemplate2Page,
+  [TEMPLATE_3_PATH]: InvitationTemplate3Page
 };
 
 export default function InvitationPageResolver() {
