@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import InstagramIcon from "../assets/instagram.jsx";
+import PriglasitelnoeLogo from "../assets/priglasitelnoe-logo.jsx";
 import ThreadsIcon from "../assets/threads.jsx";
 import TiktokIcon from "../assets/tiktok.jsx";
 
@@ -62,7 +63,13 @@ export default function LandingPage() {
                     Digital Invitation
                   </div>
                   <div>
-                    <p className="text-[11px] uppercase tracking-[0.38em] text-[#d7bea8]/72">Toi Duman</p>
+                    <PriglasitelnoeLogo
+                      width={520}
+                      color="#58b8eb"
+                      goldColor="#d7bea8"
+                      coralColor="#ef8b7d"
+                      className="h-auto max-w-[280px] md:max-w-[360px] lg:max-w-[520px]"
+                    />
                     <h1 className="mt-5 font-['Georgia','Times_New_Roman',serif] text-5xl leading-[0.88] text-[#f7efe6] md:text-7xl lg:text-[6.2rem]">
                       Приглашение
                       <br />

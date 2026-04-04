@@ -1,0 +1,16 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 256 256"
+  width="256"
+  height="256"
+  role="img"
+  aria-label="priglasitelnoe.com favicon"
+>
+  <rect width="256" height="256" rx="64" fill="#ffffff" />
+  <rect x="54" y="46" width="13" height="57" transform="rotate(-46 60.5 74.5)" rx="1" fill="#d8b05b" />
+  <rect x="102" y="31" width="13" height="52" transform="rotate(-3 108.5 57)" rx="1" fill="#d8b05b" />
+  <rect x="158" y="43" width="13" height="58" transform="rotate(34 164.5 72)" rx="1" fill="#f67d73" />
+  <rect x="193" y="92" width="13" height="57" transform="rotate(78 199.5 120.5)" rx="1" fill="#f67d73" />
+  <rect x="31" y="108" width="13" height="56" transform="rotate(-84 37.5 136)" rx="1" fill="#d8b05b" />
+  <path d="M121 89L224 138L177 151L205 185L185 197L158 160L133 193L121 89Z" fill="#46a9de" />
+</svg>
