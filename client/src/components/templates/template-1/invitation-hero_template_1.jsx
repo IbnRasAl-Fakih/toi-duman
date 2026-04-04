@@ -9,7 +9,7 @@ export default function InvitationHeroTemplate1({ template }) {
         alt=""
         className="pointer-events-none absolute inset-x-0 top-0 w-full"
       />
-      <div className="relative flex items-center justify-center gap-3 pt-24 font-['Palatino_Linotype','Book_Antiqua','Palatino',serif] text-[2.2rem] italic text-[#fff2ef] md:gap-6 md:text-[3.25rem] lg:text-[4.5rem]">
+      <div className="relative flex items-center justify-center gap-3 pt-24 font-['Cormorant_Garamond','Times_New_Roman',serif] text-[2.4rem] italic font-medium leading-[0.88] tracking-[-0.02em] text-[#fff2ef] md:gap-6 md:text-[3.6rem] lg:text-[5rem]">
         <span>{template.couple.left}</span>
         <span className="text-[1.8rem] md:text-[2.1rem] lg:text-[2.8rem]">🕊</span>
         <span>{template.couple.right}</span>

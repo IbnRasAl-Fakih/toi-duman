@@ -177,6 +177,11 @@ export default function InvitationTemplate2Page({ event, order }) {
   }, []);
 
   async function handleSubmit() {
+    if (!isPaid) {
+      notification.error("Жауаптар шаблон төленгеннен кейін ғана қолжетімді");
+      return;
+    }
+
     if (!guestName.trim()) {
       notification.error("Аты-жөніңізді енгізіңіз");
       return;
@@ -242,6 +247,7 @@ export default function InvitationTemplate2Page({ event, order }) {
               onSelectStatus={setSelectedStatus}
               onSubmit={handleSubmit}
               isSubmitting={isSubmitting}
+              isPaid={isPaid}
               responseOptions={responseOptions}
             />
             <div className="px-5 pt-2">

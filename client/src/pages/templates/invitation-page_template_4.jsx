@@ -300,7 +300,7 @@ function Template4Intro({ template }) {
       <p className="mt-9 text-[1.15rem] text-[#f7e8df]">{template.intro.overline}</p>
       <h2
         className="mt-5 text-[2.9rem] leading-none text-white"
-        style={{ fontFamily: '"Snell Roundhand", "Brush Script MT", "Segoe Script", cursive' }}
+        style={{ fontFamily: '"Cormorant Garamond", "Times New Roman", serif' }}
       >
         {template.intro.title}
       </h2>
@@ -386,7 +386,7 @@ function Template4Hosts({ template }) {
       <p className="mt-4 text-[1.2rem] text-[#f5e4db]">{template.hosts.title}</p>
       <p
         className="mt-4 text-[2rem] text-white"
-        style={{ fontFamily: '"Snell Roundhand", "Brush Script MT", "Segoe Script", cursive' }}
+        style={{ fontFamily: '"Cormorant Garamond", "Times New Roman", serif' }}
       >
         {template.hosts.names}
       </p>
@@ -409,16 +409,18 @@ function Template4Rsvp({
   onSelectStatus,
   onSubmit,
   isSubmitting,
+  isPaid,
   responseOptions
 }) {
-  const isReadyToSubmit = Boolean(guestName.trim() && selectedStatus && !isSubmitting);
+  const isReadyToSubmit = Boolean(isPaid && guestName.trim() && selectedStatus && !isSubmitting);
+  const isDisabled = !isPaid || isSubmitting;
 
   return (
     <section className="pb-12 pt-12">
       <div className="mx-auto max-w-[380px]">
         <h3
           className="text-center text-[2.65rem] leading-none text-black"
-          style={{ fontFamily: '"Snell Roundhand", "Brush Script MT", "Segoe Script", cursive' }}
+          style={{ fontFamily: '"Cormorant Garamond", "Times New Roman", serif' }}
         >
           {template.rsvp.title}
         </h3>
@@ -429,8 +431,9 @@ function Template4Rsvp({
               type="text"
               value={guestName}
               onChange={(event) => onGuestNameChange(event.target.value)}
+              disabled={isDisabled}
               placeholder="Аты-жөніңізді енгізіңіз"
-              className="w-full rounded-[8px] border border-[#ded7d2] bg-white px-4 py-3 text-[15px] text-[#332c29] outline-none placeholder:text-[#9f9a96] focus:border-[#9b5962]"
+              className="w-full rounded-[8px] border border-[#ded7d2] bg-white px-4 py-3 text-[15px] text-[#332c29] outline-none placeholder:text-[#9f9a96] focus:border-[#9b5962] disabled:cursor-not-allowed disabled:opacity-50"
             />
           </label>
 
@@ -442,8 +445,11 @@ function Template4Rsvp({
                 <button
                   key={option.value}
                   type="button"
-                  onClick={() => onSelectStatus(option.value)}
+                  disabled={isDisabled}
+                  onClick={() => (isDisabled ? null : onSelectStatus(option.value))}
                   className={`flex w-full items-center gap-4 rounded-[12px] border px-4 py-4 text-left transition duration-200 ${
+                    isDisabled ? "cursor-not-allowed opacity-50" : ""
+                  } ${
                     isSelected
                       ? "border-[#93535d] bg-[#93535d] text-white shadow-[0_12px_24px_rgba(147,83,93,0.18)]"
                       : "border-[#ded7d2] bg-white text-[#332c29] hover:border-[#b97c84] hover:bg-[#fbf1f2]"
@@ -465,6 +471,7 @@ function Template4Rsvp({
 
         <button
           type="button"
+          disabled={!isReadyToSubmit}
           className={`mt-6 h-14 w-full rounded-[12px] text-[1rem] font-semibold uppercase tracking-[0.14em] text-white ${
             isReadyToSubmit ? "opacity-100" : "opacity-60"
           }`}
@@ -531,6 +538,11 @@ export default function InvitationTemplate4Page({ event, order }) {
   }, []);
 
   async function handleSubmit() {
+    if (!isPaid) {
+      notification.error("Отправка ответов будет доступна после оплаты шаблона");
+      return;
+    }
+
     if (!guestName.trim()) {
       notification.error("Аты-жөніңізді енгізіңіз");
       return;
@@ -626,6 +638,7 @@ export default function InvitationTemplate4Page({ event, order }) {
               onSelectStatus={setSelectedStatus}
               onSubmit={handleSubmit}
               isSubmitting={isSubmitting}
+              isPaid={isPaid}
               responseOptions={responseOptions}
             />
           </div>

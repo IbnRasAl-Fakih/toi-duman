@@ -133,6 +133,11 @@ export default function InvitationTemplate1Page({ event, order }) {
   }, []);
 
   async function handleSubmit() {
+    if (!isPaid) {
+      notification.error("Ответы доступны только после оплаты шаблона");
+      return;
+    }
+
     if (!guestName.trim()) {
       notification.error("Введите ФИО");
       return;
@@ -197,6 +202,7 @@ export default function InvitationTemplate1Page({ event, order }) {
                 onSelectStatus={setSelectedStatus}
                 onSubmit={handleSubmit}
                 isSubmitting={isSubmitting}
+                isPaid={isPaid}
                 responseOptions={responseOptions}
               />
             </div>

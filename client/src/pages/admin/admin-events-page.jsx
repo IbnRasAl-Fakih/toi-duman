@@ -91,7 +91,7 @@ export default function AdminEventsPage() {
     <>
       <AdminShell
         title="Список event-ов"
-        description="Раздел для просмотра созданных событий. Здесь можно быстро проверить slug, дату, локацию и обложку перед дальнейшей работой с шаблонами."
+        description="Раздел для просмотра созданных событий. Здесь можно быстро проверить slug, дату, локацию и обложку."
       >
         {isLoading ? (
           <EventsEmptyState text="Загружаем события..." />

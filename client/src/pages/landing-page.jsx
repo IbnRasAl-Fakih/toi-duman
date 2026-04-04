@@ -1,7 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import InstagramIcon from "../assets/instagram.jsx";
-import PriglasitelnoeLogo from "../assets/priglasitelnoe-logo.jsx";
 import ThreadsIcon from "../assets/threads.jsx";
 import TiktokIcon from "../assets/tiktok.jsx";
 
@@ -34,8 +33,8 @@ export default function LandingPage() {
   const whatsappHref = buildWhatsappHref();
 
   return (
-    <main className="min-h-screen bg-[#0d1b22] text-[#f6eee6]">
-      <section className="relative min-h-screen overflow-hidden bg-[#10232c] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)]">
+    <main className="h-screen overflow-hidden bg-[#0d1b22] text-[#f6eee6]">
+      <section className="relative h-screen overflow-hidden bg-[#10232c] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)]">
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,18,24,0.18),rgba(7,18,24,0.9))]" />
           <div
@@ -47,46 +46,43 @@ export default function LandingPage() {
           <div className="absolute right-[8%] top-[24%] hidden h-28 w-28 rounded-full border border-[#d7bea8]/10 bg-[#d7bea8]/10 blur-2xl lg:block" />
         </div>
 
-        <div className="relative flex min-h-screen flex-col px-4 py-4 md:px-6 md:py-6">
+        <div className="relative flex h-screen flex-col px-4 py-4 md:px-6 md:py-5">
           <header className="flex items-center justify-between border-b border-white/10 px-2 py-2 text-[10px] uppercase tracking-[0.3em] text-white/56 md:px-4">
-            <div>Menu</div>
+            <img
+              src="/images/priglasitelnoe-logo.svg"
+              alt="priglasitelnoe.com"
+              className="h-8 w-auto md:h-10"
+            />
             <Link to="/admin/login" className="transition hover:text-white">
               Admin
             </Link>
           </header>
 
-          <div className="relative flex flex-1 items-start px-2 pt-12 md:px-4 md:pt-16 lg:pt-20">
-            <div className="grid w-full gap-10 lg:grid-cols-[minmax(0,1fr)_430px] lg:items-start">
+          <div className="relative flex flex-1 items-start px-2 pt-8 md:px-4 md:pt-10 lg:pt-8">
+            <div className="grid w-full gap-8 lg:grid-cols-[minmax(0,1fr)_390px] lg:items-start">
               <div className="max-w-5xl">
                 <div className="flex items-start gap-4">
                   <div className="hidden pt-3 text-[10px] uppercase tracking-[0.42em] text-white/34 lg:block [writing-mode:vertical-rl]">
                     Digital Invitation
                   </div>
                   <div>
-                    <PriglasitelnoeLogo
-                      width={520}
-                      color="#58b8eb"
-                      goldColor="#d7bea8"
-                      coralColor="#ef8b7d"
-                      className="h-auto max-w-[280px] md:max-w-[360px] lg:max-w-[520px]"
-                    />
-                    <h1 className="mt-5 font-['Georgia','Times_New_Roman',serif] text-5xl leading-[0.88] text-[#f7efe6] md:text-7xl lg:text-[6.2rem]">
+                    <h1 className="font-['Georgia','Times_New_Roman',serif] text-5xl leading-[0.88] text-[#f7efe6] md:text-7xl lg:text-[5.4rem]">
                       Приглашение
                       <br />
                       на праздник
                       <br />
                       за{" "}
-                      <span className="font-['Baskerville','Times_New_Roman',serif] text-8xl">
+                      <span className="font-['Baskerville','Times_New_Roman',serif] text-7xl lg:text-[7rem]">
                         3
                       </span>{" "}
                       минуты
                     </h1>
-                    <p className="mt-6 max-w-2xl text-sm leading-8 text-white/72 md:text-base">
+                    <p className="mt-5 max-w-2xl text-sm leading-7 text-white/72 md:text-base">
                       Красивые приглашения для свадеб, юбилеев и семейных мероприятий: одна ссылка,
                       быстрый запуск и аккуратный сценарий ответа для гостей.
                     </p>
 
-                    <div className="mt-10 flex flex-wrap items-center gap-3">
+                    <div className="mt-8 flex flex-wrap items-center gap-3">
                       <a
                         href={whatsappHref || "#contacts"}
                         target={whatsappHref ? "_blank" : undefined}
@@ -102,7 +98,7 @@ export default function LandingPage() {
                       </a>
                     </div>
 
-                    <div className="mt-6 flex items-center gap-3">
+                    <div className="mt-5 flex items-center gap-3">
                       <SocialLink href="https://www.instagram.com/rassul_yeletay/" label="Instagram">
                         <InstagramIcon className="h-4 w-4" />
                       </SocialLink>
@@ -117,18 +113,18 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              <div className="hidden justify-self-end lg:block lg:w-full lg:max-w-[430px]">
-                <div className="relative mt-16 min-h-[620px]">
+              <div className="hidden justify-self-end lg:block lg:w-full lg:max-w-[390px]">
+                <div className="relative mt-8 min-h-[520px]">
                   <div className="absolute right-0 top-0 z-20 w-[58%] overflow-hidden rounded-[28px] border border-white/12 bg-[#18313a] shadow-[0_20px_60px_rgba(0,0,0,0.3)]">
-                    <img src="/images/1-section.jpg" alt="" className="h-[180px] w-full object-cover" />
+                    <img src="/images/1-section.jpg" alt="" className="h-[160px] w-full object-cover" />
                   </div>
 
-                  <div className="absolute left-0 top-[190px] z-10 w-[72%] overflow-hidden rounded-[34px] border border-white/12 bg-[#18313a] shadow-[0_20px_60px_rgba(0,0,0,0.3)]">
-                    <img src="/images/2-section.jpg" alt="" className="h-[240px] w-full object-cover" />
+                  <div className="absolute left-0 top-[165px] z-10 w-[72%] overflow-hidden rounded-[34px] border border-white/12 bg-[#18313a] shadow-[0_20px_60px_rgba(0,0,0,0.3)]">
+                    <img src="/images/2-section.jpg" alt="" className="h-[210px] w-full object-cover" />
                   </div>
 
-                  <div className="absolute bottom-[48px] right-0 z-20 w-[54%] overflow-hidden rounded-[26px] border border-white/12 bg-[#18313a] shadow-[0_20px_60px_rgba(0,0,0,0.3)]">
-                    <img src="/images/3-section.jpg" alt="" className="h-[170px] w-full object-cover" />
+                  <div className="absolute bottom-[18px] right-0 z-20 w-[54%] overflow-hidden rounded-[26px] border border-white/12 bg-[#18313a] shadow-[0_20px_60px_rgba(0,0,0,0.3)]">
+                    <img src="/images/3-section.jpg" alt="" className="h-[145px] w-full object-cover" />
                   </div>
                 </div>
               </div>
