@@ -3,12 +3,18 @@ import { useParams } from "react-router-dom";
 import InvitationTemplate1Page, { TEMPLATE_1_PATH } from "./templates/invitation-page_template_1.jsx";
 import InvitationTemplate2Page, { TEMPLATE_2_PATH } from "./templates/invitation-page_template_2.jsx";
 import InvitationTemplate3Page, { TEMPLATE_3_PATH } from "./templates/invitation-page_template_3.jsx";
+import InvitationTemplate4Page, {
+  TEMPLATE_4_PATH,
+  TEMPLATE_4_TYPE
+} from "./templates/invitation-page_template_4.jsx";
 import NotFoundPage from "../pages/not-found-page.jsx";
 
 const templateRegistry = {
   [TEMPLATE_1_PATH]: InvitationTemplate1Page,
   [TEMPLATE_2_PATH]: InvitationTemplate2Page,
-  [TEMPLATE_3_PATH]: InvitationTemplate3Page
+  [TEMPLATE_3_PATH]: InvitationTemplate3Page,
+  [TEMPLATE_4_TYPE]: InvitationTemplate4Page,
+  [TEMPLATE_4_PATH]: InvitationTemplate4Page
 };
 
 export default function InvitationPageResolver() {
