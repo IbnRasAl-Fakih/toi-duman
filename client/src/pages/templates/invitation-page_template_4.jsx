@@ -621,7 +621,7 @@ export default function InvitationTemplate4Page({ event, order }) {
         }}
       >
         <audio ref={audioRef} preload="metadata" src="/audio/template-4-theme.mp3" />
-        <div className="relative mx-auto w-full max-w-[430px] overflow-hidden rounded-t-[28px] bg-[#fbf5e7] px-[42px] pb-0 pt-0 shadow-[0_24px_80px_rgba(92,59,51,0.10)]">
+        <div className="relative mx-auto w-full max-w-[430px] overflow-hidden bg-[#fbf5e7] px-[42px] pb-0 pt-0 shadow-[0_24px_80px_rgba(92,59,51,0.10)]">
           <SideOrnament side="left" />
           <SideOrnament side="right" />
           <div className="mx-auto max-w-[390px] pb-0 pt-0">
