@@ -5,20 +5,18 @@ const WHATSAPP_PHONE = process.env.REACT_APP_WHATSAPP_PHONE || "";
 const PRICING_ITEMS = [
   {
     name: "Стандартный сайт",
-    price: "15,000",
+    price: "7 000",
     suffix: "₸",
-    features: ["Готовый шаблон", "Интерактивная карта", "Таймер обратного отсчета", "Бессрочный доступ по ссылке"],
+    features: ["Готовый шаблон", "Интерактивная карта", "Таймер обратного отсчета", "Бессрочный доступ по ссылке", "Сбор ответов гостей (RSVP)", "Личный кабинет со списком гостей"],
     cta: "Выбрать план",
     featured: false,
   },
   {
     name: "Продвинутый RSVP",
-    price: "25,000",
+    price: "10 000",
     suffix: "₸",
     features: [
-      "Сбор ответов гостей (RSVP)",
-      "Список меню и аллергий",
-      "Личный кабинет со списком гостей",
+      "Продвинутый RSVP",
       "Музыкальное сопровождение",
     ],
     cta: "Выбрать план",
@@ -27,9 +25,9 @@ const PRICING_ITEMS = [
   },
   {
     name: "Индивидуальный",
-    price: "45,000",
-    suffix: "₸+",
-    features: ["Дизайн с нуля (Custom)", "Уникальная анимация", "Мультиязычность (KZ/RU/EN)", "Подключение своего домена"],
+    price: "15 000",
+    suffix: "₸",
+    features: ["Дизайн с нуля (Custom)", "Уникальная анимация", "Мультиязычность (KZ/RU/EN)"],
     cta: "Консультация",
     featured: false,
   },
@@ -53,7 +51,7 @@ function PricingCard({ name, price, suffix, features, cta, featured = false, bad
 
   return (
     <article
-      className={`relative rounded-[24px] bg-white px-7 py-8 shadow-[0_16px_44px_rgba(26,31,44,0.05)] ${
+      className={`relative flex h-full flex-col rounded-[24px] bg-white px-7 py-8 shadow-[0_16px_44px_rgba(26,31,44,0.05)] ${
         featured ? "border-2 border-[#cda24b] shadow-[0_24px_54px_rgba(161,123,34,0.16)]" : "border border-[#f0ece4]"
       }`}
     >
@@ -82,7 +80,7 @@ function PricingCard({ name, price, suffix, features, cta, featured = false, bad
         href={whatsappHref || "#contacts"}
         target={whatsappHref ? "_blank" : undefined}
         rel={whatsappHref ? "noreferrer" : undefined}
-        className={`mt-8 inline-flex w-full items-center justify-center rounded-full px-6 py-3.5 text-[0.98rem] font-semibold transition duration-300 hover:-translate-y-0.5 ${
+        className={`mt-auto inline-flex w-full items-center justify-center rounded-full px-6 py-3.5 text-[0.98rem] font-semibold transition duration-300 hover:-translate-y-0.5 ${
           featured
             ? "bg-[#9a741d] text-white shadow-[0_12px_24px_rgba(154,116,29,0.22)] hover:bg-[#825f16]"
             : "border border-[#b9954a] text-[#9a741d] hover:bg-[#fbf7ee]"
@@ -106,7 +104,7 @@ export default function LandingPricing() {
         </p>
       </div>
 
-      <div className="mt-12 grid gap-5 xl:grid-cols-3 xl:items-start">
+      <div className="mt-12 grid gap-5 xl:grid-cols-3 xl:items-stretch">
         {PRICING_ITEMS.map((item) => (
           <PricingCard key={item.name} {...item} />
         ))}

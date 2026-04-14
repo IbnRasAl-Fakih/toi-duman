@@ -46,7 +46,7 @@ function ServiceIcon({ type }) {
 function ServiceCard({ title, description, icon }) {
   return (
     <article className="min-h-[255px] rounded-[28px] bg-white px-7 py-7 shadow-[0_18px_50px_rgba(24,28,37,0.06)] ring-1 ring-[#f4efe7]">
-      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#f8f5ef] text-[#27282d]">
+      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#f8f5ef] text-[#9a741d]">
         <ServiceIcon type={icon} />
       </div>
 

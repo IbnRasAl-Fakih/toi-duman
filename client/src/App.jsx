@@ -12,11 +12,15 @@ import InvitationPageResolver from "./pages/invitation-page-resolver.jsx";
 import LandingPage from "./pages/landing-page.jsx";
 import PaymentPage from "./pages/payment-page.jsx";
 import NotFoundPage from "./pages/not-found-page.jsx";
+import PrivacyPage from "./pages/privacy-page.jsx";
+import TermsPage from "./pages/terms-page.jsx";
 
 export default function App() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
+      <Route path="/privacy" element={<PrivacyPage />} />
+      <Route path="/terms" element={<TermsPage />} />
       <Route path="/admin/login" element={<AdminLoginPage />} />
       <Route path="/payment/:orderId" element={<PaymentPage />} />
 

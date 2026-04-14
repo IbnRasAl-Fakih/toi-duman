@@ -18,8 +18,6 @@ export default function LandingPage() {
     >
       <LandingHeader />
 
-      <section id="terms" className="h-px w-full" />
-      <section id="privacy" className="h-px w-full" />
       <section id="templates" className="flex-1">
         <LandingHero />
         <LandingServices />

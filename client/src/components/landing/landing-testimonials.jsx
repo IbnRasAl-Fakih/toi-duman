@@ -49,6 +49,13 @@ export default function LandingTestimonials() {
           {TESTIMONIALS.map((item) => (
             <TestimonialCard key={item.author} {...item} />
           ))}
+
+          <button
+            type="button"
+            className="inline-flex items-center justify-center rounded-full border border-[#b9954a] px-6 py-3 text-[0.95rem] font-semibold text-[#9a741d] transition duration-300 hover:-translate-y-0.5 hover:bg-[#fbf7ee]"
+          >
+            Смотреть все отзывы
+          </button>
         </div>
       </div>
     </section>

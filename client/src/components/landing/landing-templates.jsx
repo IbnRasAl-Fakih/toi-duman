@@ -3,19 +3,19 @@ import React from "react";
 const TEMPLATE_ITEMS = [
   {
     title: "Темный минимализм",
-    image: "/images/first-template.jpg",
+    image: "/images/image_2026-04-14_23-11-04.png",
   },
   {
     title: "Современная типографика",
-    image: "/images/second-template.jpg",
+    image: "/images/image_2026-04-14_23-14-17.png",
   },
   {
     title: "Атмосферная классика",
-    image: "/images/third-template.jpg",
+    image: "/images/image_2026-04-14_23-16-22.png",
   },
   {
     title: "Премиальный свет",
-    image: "/images/fourth-template.jpg",
+    image: "/images/image_2026-04-14_23-16-54.png",
   },
 ];
 

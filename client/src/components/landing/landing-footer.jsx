@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import InstagramIcon from "../../assets/instagram.jsx";
 import ThreadsIcon from "../../assets/threads.jsx";
 import TiktokIcon from "../../assets/tiktok.jsx";
@@ -40,12 +41,12 @@ export default function LandingFooter() {
 
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:gap-10">
             <nav className="flex flex-wrap items-center gap-x-6 gap-y-3 text-[0.88rem] font-medium text-[#92939a] md:text-sm">
-              <a href="#terms" className="transition hover:text-[#202127]">
+              <Link to="/terms" className="transition hover:text-[#202127]">
                 Условия использования
-              </a>
-              <a href="#privacy" className="transition hover:text-[#202127]">
+              </Link>
+              <Link to="/privacy" className="transition hover:text-[#202127]">
                 Политика конфиденциальности
-              </a>
+              </Link>
               <a href="#contacts" className="transition hover:text-[#202127]">
                 Контакты
               </a>

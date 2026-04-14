@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import DropdownButton from "../../assets/dropdown-button.jsx";
 
 const FAQ_ITEMS = [
   {
@@ -27,12 +28,7 @@ function FaqItem({ item, isOpen, onToggle }) {
         className="flex w-full items-center justify-between gap-6 px-6 py-5 text-left md:px-7"
       >
         <span className="text-[1.05rem] font-semibold leading-7 text-[#2c2d32] md:text-[1.15rem]">{item.question}</span>
-        <span
-          aria-hidden="true"
-          className={`shrink-0 text-xl font-semibold text-[#9a741d] transition duration-300 ${isOpen ? "rotate-180" : ""}`}
-        >
-          ˅
-        </span>
+        <DropdownButton className={`h-6 w-6 shrink-0 text-[#9a741d] transition duration-300 ${isOpen ? "rotate-180" : ""}`} />
       </button>
 
       {isOpen ? (

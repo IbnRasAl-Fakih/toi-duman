@@ -57,10 +57,10 @@ export default function LandingHero() {
         </div>
 
         <div className="relative mx-auto w-full max-w-[580px]">
-          <div className="relative ml-auto w-[88%] origin-bottom-left rotate-[1.8deg]">
+          <div className="relative ml-auto w-[88%]">
             <div className="absolute inset-x-[8%] bottom-[-4%] h-[14%] rounded-full bg-[radial-gradient(circle,rgba(26,31,44,0.14),transparent_68%)] blur-2xl" />
             <img
-              src="/images/hero.jpg"
+              src="/images/IMG_1372.PNG.webp"
               alt="Превью цифрового приглашения"
               className="relative z-10 block w-full rounded-[30px] object-cover shadow-[0_30px_80px_rgba(26,31,44,0.18)]"
             />
