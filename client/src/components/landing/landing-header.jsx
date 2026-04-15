@@ -3,9 +3,9 @@ import React from "react";
 const WHATSAPP_PHONE = process.env.REACT_APP_WHATSAPP_PHONE || "";
 
 const NAV_ITEMS = [
-  { href: "#templates", label: "Шаблоны" },
-  { href: "#how-it-works", label: "Как это работает" },
-  { href: "#pricing", label: "Цены" },
+  { href: "#templates", label: "Үлгілер" },
+  { href: "#how-it-works", label: "Қалай жұмыс істейді" },
+  { href: "#pricing", label: "Бағалар" },
   { href: "#faq", label: "FAQ" },
 ];
 
@@ -14,7 +14,7 @@ function buildWhatsappHref() {
     return "";
   }
 
-  const message = encodeURIComponent("Здравствуйте! Хочу узнать подробнее о цифровых приглашениях.");
+  const message = encodeURIComponent("Сәлеметсіз бе! Цифрлық шақырулар туралы толығырақ білгім келеді.");
   return `https://wa.me/${WHATSAPP_PHONE}?text=${message}`;
 }
 
@@ -54,7 +54,7 @@ export default function LandingHeader() {
                 rel={whatsappHref ? "noreferrer" : undefined}
                 className="inline-flex items-center justify-center rounded-full bg-[#9a741d] px-5 py-2 text-[0.84rem] font-semibold text-white shadow-[0_10px_20px_rgba(154,116,29,0.24)] transition duration-300 hover:-translate-y-0.5 hover:bg-[#846216] md:px-6 md:text-[0.9rem]"
               >
-                Заказать сейчас
+                Тапсырыс беру
               </a>
             </div>
           </div>

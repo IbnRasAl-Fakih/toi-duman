@@ -35,20 +35,20 @@ export default function LandingFooter() {
               priglasitelnoe.com
             </a>
             <p className="mt-2 text-[0.84rem] font-medium text-[#8c8d94] md:text-sm">
-              © 2026 priglasitelnoe.com. Современные цифровые приглашения.
+              © 2026 priglasitelnoe.com. Заманауи цифрлық шақырулар.
             </p>
           </div>
 
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:gap-10">
             <nav className="flex flex-wrap items-center gap-x-6 gap-y-3 text-[0.88rem] font-medium text-[#92939a] md:text-sm">
               <Link to="/terms" className="transition hover:text-[#202127]">
-                Условия использования
+                Қолдану шарттары
               </Link>
               <Link to="/privacy" className="transition hover:text-[#202127]">
-                Политика конфиденциальности
+                Құпиялылық саясаты
               </Link>
               <a href="#contacts" className="transition hover:text-[#202127]">
-                Контакты
+                Байланыс
               </a>
             </nav>
 

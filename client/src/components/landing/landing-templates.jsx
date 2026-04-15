@@ -2,19 +2,19 @@ import React from "react";
 
 const TEMPLATE_ITEMS = [
   {
-    title: "Темный минимализм",
+    title: "Қою минимализм",
     image: "/images/image_2026-04-14_23-11-04.png",
   },
   {
-    title: "Современная типографика",
+    title: "Заманауи типографика",
     image: "/images/image_2026-04-14_23-14-17.png",
   },
   {
-    title: "Атмосферная классика",
+    title: "Атмосфералы классика",
     image: "/images/image_2026-04-14_23-16-22.png",
   },
   {
-    title: "Премиальный свет",
+    title: "Премиум жарық",
     image: "/images/image_2026-04-14_23-16-54.png",
   },
 ];
@@ -34,9 +34,9 @@ export default function LandingTemplates() {
     <section className="mx-auto w-full max-w-[1240px] px-4 pb-20 pt-6 md:px-5 md:pb-24 md:pt-8">
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
         <div>
-          <p className="text-[0.75rem] font-semibold uppercase tracking-[0.18em] text-[#b28a2d]">Наши шаблоны"</p>
+          <p className="text-[0.75rem] font-semibold uppercase tracking-[0.18em] text-[#b28a2d]">Біздің үлгілер</p>
           <h2 className="mt-3 font-['Georgia','Times_New_Roman',serif] text-[2.55rem] leading-[0.94] tracking-[-0.04em] text-[#27282d] md:text-[3.4rem]">
-            Галерея элегантности
+            Әсемдік галереясы
           </h2>
         </div>
 
@@ -46,7 +46,7 @@ export default function LandingTemplates() {
             href="#templates"
             className="inline-flex items-center gap-3 text-base font-semibold text-[#a27b24] transition duration-300 hover:text-[#87651b]"
           >
-            <span>Смотреть все работы</span>
+            <span>Барлық жұмыстарды көру</span>
             <span aria-hidden="true" className="text-lg leading-none">
               →
             </span>

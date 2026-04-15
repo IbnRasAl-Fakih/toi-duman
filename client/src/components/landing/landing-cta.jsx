@@ -7,7 +7,7 @@ function buildWhatsappHref() {
     return "";
   }
 
-  const message = encodeURIComponent("Здравствуйте! Хочу создать свой сайт-приглашение.");
+  const message = encodeURIComponent("Сәлеметсіз бе! Өзімнің сайт-шақыруымды жасағым келеді.");
   return `https://wa.me/${WHATSAPP_PHONE}?text=${message}`;
 }
 
@@ -25,13 +25,13 @@ export default function LandingCta() {
 
       <div className="relative mx-auto flex max-w-[900px] flex-col items-center text-center">
         <h2 className="font-['Georgia','Times_New_Roman',serif] text-[3.4rem] leading-[0.94] tracking-[-0.05em] text-[#232429] md:text-[4.7rem]">
-          Начните праздник
+          Мерекені
           <br />
-          <span className="text-[#a17922] italic">сегодня</span>
+          <span className="text-[#a17922] italic">бүгін бастаңыз</span>
         </h2>
 
         <p className="mt-7 max-w-[36rem] text-[1.2rem] leading-9 text-[#7a7c82]">
-          Создайте цифровой шедевр, который удивит ваших гостей еще до начала события.
+          Қонақтарыңызды іс-шара басталмай тұрып-ақ таңғалдыратын цифрлық туынды жасаңыз.
         </p>
 
         <a
@@ -40,7 +40,7 @@ export default function LandingCta() {
           rel={whatsappHref ? "noreferrer" : undefined}
           className="mt-10 inline-flex items-center justify-center rounded-full bg-[#b58b31] px-9 py-4 text-[1.3rem] font-semibold text-white shadow-[0_18px_36px_rgba(181,139,49,0.26)] transition duration-300 hover:-translate-y-0.5 hover:bg-[#9b7424]"
         >
-          Создать свой сайт
+          Өз сайтыңызды жасау
         </a>
       </div>
     </section>

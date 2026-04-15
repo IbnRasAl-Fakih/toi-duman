@@ -6,23 +6,23 @@ import ShareIcon from "../../assets/share.jsx";
 
 const STEP_ITEMS = [
   {
-    title: "Заявка",
-    description: "Выберите шаблон и заполните анкету мероприятия.",
+    title: "Өтінім",
+    description: "Үлгіні таңдап, шара туралы анкетаны толтырыңыз.",
     icon: "request",
   },
   {
-    title: "Настройка",
-    description: "Мы адаптируем дизайн и добавим ваш контент.",
+    title: "Баптау",
+    description: "Біз дизайнды бейімдеп, сіздің контентіңізді енгіземіз.",
     icon: "settings",
   },
   {
-    title: "Рассылка",
-    description: "Получите ссылку для мгновенной отправки гостям.",
+    title: "Жіберу",
+    description: "Қонақтарға бірден жолдауға арналған сілтемені алыңыз.",
     icon: "share",
   },
   {
-    title: "Контроль",
-    description: "Отслеживайте подтверждения (RSVP) в реальном времени.",
+    title: "Бақылау",
+    description: "Расталған жауаптарды (RSVP) нақты уақытта бақылаңыз.",
     icon: "check",
   },
 ];
@@ -60,10 +60,10 @@ export default function LandingHowItWorks() {
     <section id="how-it-works" className="mx-auto w-full max-w-[1240px] px-4 pb-20 pt-6 md:px-5 md:pb-24 md:pt-8">
       <div className="mx-auto max-w-[780px] text-center">
         <h2 className="font-['Georgia','Times_New_Roman',serif] text-[2.55rem] leading-[0.96] tracking-[-0.04em] text-[#28292e] md:text-[3.4rem]">
-          Путь к совершенству
+          Мінсіздікке апарар жол
         </h2>
         <p className="mx-auto mt-4 max-w-[36rem] text-[1rem] leading-8 text-[#8a8b91]">
-          Четыре простых шага к запуску вашего праздничного сайта.
+          Мерекелік сайтыңызды іске қосуға арналған төрт қарапайым қадам.
         </p>
       </div>
 

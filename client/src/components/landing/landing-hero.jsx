@@ -8,7 +8,7 @@ function buildWhatsappHref() {
     return "";
   }
 
-  const message = encodeURIComponent("Здравствуйте! Хочу узнать подробнее о цифровых приглашениях.");
+  const message = encodeURIComponent("Сәлеметсіз бе! Цифрлық шақырулар туралы толығырақ білгім келеді.");
   return `https://wa.me/${WHATSAPP_PHONE}?text=${message}`;
 }
 
@@ -20,20 +20,20 @@ export default function LandingHero() {
       <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(390px,590px)] lg:gap-8">
         <div className="max-w-[31rem]">
           <p className="text-[0.75rem] font-semibold uppercase tracking-[0.18em] text-[#b28a2d]">
-            Цифровая элегантность
+            Цифрлық әсемдік
           </p>
 
           <h1 className="mt-6 font-['Georgia','Times_New_Roman',serif] text-[2.95rem] leading-[0.9] tracking-[-0.04em] text-[#2a2a2f] md:text-[4rem]">
-            Ваше идеальное
+            Сіздің мінсіз
             <br />
-            приглашение в
+            шақыруыңыз
             <br />
-            <span className="text-[#a17922] italic">формате веб-сайта</span>
+            <span className="text-[#a17922] italic">веб-сайт форматында</span>
           </h1>
 
           <p className="mt-6 max-w-[27rem] text-[1rem] leading-7 text-[#7e7f84]">
-            Гармоничное сочетание казахских традиций с современными технологиями. Создайте стильный
-            интерактивный сайт для вашего торжества за считанные минуты.
+            Қазақи дәстүр мен заманауи технологияның үйлесімі. Мерекеңізге арналған стильді
+            интерактивті сайтты санаулы минутта жасаңыз.
           </p>
 
           <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center">
@@ -41,7 +41,7 @@ export default function LandingHero() {
               href="#templates"
               className="inline-flex items-center justify-center rounded-full bg-[#a27b24] px-6 py-3 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(162,123,36,0.24)] transition duration-300 hover:-translate-y-0.5 hover:bg-[#8b691d]"
             >
-              Выбрать дизайн
+              Дизайн таңдау
             </a>
 
             <a
@@ -51,7 +51,7 @@ export default function LandingHero() {
               className="inline-flex items-center justify-center gap-2 rounded-full border border-[#cfe8d8] bg-[#effaf3] px-6 py-3 text-sm font-semibold text-[#1f8c4d] transition duration-300 hover:-translate-y-0.5 hover:border-[#b7ddc5] hover:bg-[#e4f7eb] hover:text-[#187640]"
             >
               <WhatsappIcon className="h-4 w-4" />
-              <span>Написать в Whatsapp</span>
+              <span>Whatsapp-қа жазу</span>
             </a>
           </div>
         </div>
@@ -61,16 +61,16 @@ export default function LandingHero() {
             <div className="absolute inset-x-[8%] bottom-[-4%] h-[14%] rounded-full bg-[radial-gradient(circle,rgba(26,31,44,0.14),transparent_68%)] blur-2xl" />
             <img
               src="/images/IMG_1372.PNG.webp"
-              alt="Превью цифрового приглашения"
+              alt="Цифрлық шақырудың алдын ала көрінісі"
               className="relative z-10 block w-full rounded-[30px] object-cover shadow-[0_30px_80px_rgba(26,31,44,0.18)]"
             />
           </div>
 
           <div className="absolute bottom-[5%] left-[2%] z-20 max-w-[12rem] rounded-[18px] bg-white px-4 py-3.5 shadow-[0_18px_40px_rgba(26,31,44,0.14)]">
             <p className="font-['Georgia','Times_New_Roman',serif] text-base italic leading-7 text-[#a17922]">
-              "Удобно, красиво и очень современно."
+              "Ыңғайлы, әдемі және өте заманауи."
             </p>
-            <p className="mt-2 text-xs font-medium text-[#9a9ba1]">Современный сайт для вашего торжества</p>
+            <p className="mt-2 text-xs font-medium text-[#9a9ba1]">Мерекеңізге арналған заманауи сайт</p>
           </div>
         </div>
       </div>

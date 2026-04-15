@@ -4,31 +4,31 @@ const WHATSAPP_PHONE = process.env.REACT_APP_WHATSAPP_PHONE || "";
 
 const PRICING_ITEMS = [
   {
-    name: "Стандартный сайт",
+    name: "Стандарт сайт",
     price: "7 000",
     suffix: "₸",
-    features: ["Готовый шаблон", "Интерактивная карта", "Таймер обратного отсчета", "Бессрочный доступ по ссылке", "Сбор ответов гостей (RSVP)", "Личный кабинет со списком гостей"],
-    cta: "Выбрать план",
+    features: ["Дайын үлгі", "Интерактивті карта", "Кері санақ таймері", "Сілтеме арқылы мерзімсіз қолжетімділік", "Қонақ жауаптарын жинау (RSVP)", "Қонақтар тізімі бар жеке кабинет"],
+    cta: "Тарифті таңдау",
     featured: false,
   },
   {
-    name: "Продвинутый RSVP",
+    name: "Кеңейтілген RSVP",
     price: "10 000",
     suffix: "₸",
     features: [
-      "Продвинутый RSVP",
-      "Музыкальное сопровождение",
+      "Кеңейтілген RSVP",
+      "Музыкалық сүйемелдеу",
     ],
-    cta: "Выбрать план",
+    cta: "Тарифті таңдау",
     featured: true,
-    badge: "Популярный",
+    badge: "Танымал",
   },
   {
-    name: "Индивидуальный",
+    name: "Жеке тапсырыс",
     price: "15 000",
     suffix: "₸",
-    features: ["Дизайн с нуля (Custom)", "Уникальная анимация", "Мультиязычность (KZ/RU/EN)"],
-    cta: "Консультация",
+    features: ["Нөлден жасалатын дизайн (Custom)", "Бірегей анимация", "Көптілділік (KZ/RU/EN)"],
+    cta: "Кеңес алу",
     featured: false,
   },
 ];
@@ -38,7 +38,7 @@ function buildWhatsappHref(planName) {
     return "";
   }
 
-  const message = encodeURIComponent(`Здравствуйте! Хочу узнать подробнее о тарифе "${planName}".`);
+  const message = encodeURIComponent(`Сәлеметсіз бе! "${planName}" тарифі туралы толығырақ білгім келеді.`);
   return `https://wa.me/${WHATSAPP_PHONE}?text=${message}`;
 }
 
@@ -97,10 +97,10 @@ export default function LandingPricing() {
     <section id="pricing" className="mx-auto w-full max-w-[1240px] px-4 pb-20 pt-8 md:px-5 md:pb-24 md:pt-10">
       <div className="mx-auto max-w-[700px] text-center">
         <h2 className="font-['Georgia','Times_New_Roman',serif] text-[2.55rem] leading-[0.96] tracking-[-0.04em] text-[#28292e] md:text-[3.4rem]">
-          Тарифные планы
+          Тариф жоспарлары
         </h2>
         <p className="mx-auto mt-4 max-w-[31rem] text-[1rem] leading-8 text-[#8a8b91]">
-          Выберите формат сайта для вашего торжества.
+          Мерекеңізге сай сайт форматын таңдаңыз.
         </p>
       </div>
 

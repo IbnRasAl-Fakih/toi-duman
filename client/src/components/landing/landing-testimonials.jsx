@@ -3,12 +3,12 @@ import React from "react";
 const TESTIMONIALS = [
   {
     quote:
-      "Цифровое приглашение было очень удобным для родственников за границей. Нам не пришлось ничего распечатывать, а гости были в восторге от интерактивной карты.",
+      "Цифрлық шақыру шетелдегі туыстарымыз үшін өте ыңғайлы болды. Ештеңе басып шығарудың қажеті болмады, ал қонақтар интерактивті картаға қатты риза болды.",
     author: "Айжан М., Алматы",
   },
   {
     quote:
-      "Идеальное решение для нашего Тоя. Список гостей сформировался сам собой через форму на сайте. Очень сэкономило время.",
+      "Біздің той үшін тамаша шешім болды. Қонақтар тізімі сайттағы форма арқылы өздігінен жиналды. Уақытты қатты үнемдеді.",
     author: "Бауыржан С., Астана",
   },
 ];
@@ -39,9 +39,9 @@ export default function LandingTestimonials() {
         <div className="pt-5">
           <QuoteMark />
           <h2 className="mt-7 font-['Georgia','Times_New_Roman',serif] text-[2.55rem] leading-[0.98] tracking-[-0.04em] text-[#2a2b31] md:text-[3.4rem]">
-            Отзывы наших
+            Біздің
             <br />
-            <span className="text-[#a17922] italic">клиентов</span>
+            <span className="text-[#a17922] italic">клиенттердің пікірі</span>
           </h2>
         </div>
 
@@ -54,7 +54,7 @@ export default function LandingTestimonials() {
             type="button"
             className="inline-flex items-center justify-center rounded-full border border-[#b9954a] px-6 py-3 text-[0.95rem] font-semibold text-[#9a741d] transition duration-300 hover:-translate-y-0.5 hover:bg-[#fbf7ee]"
           >
-            Смотреть все отзывы
+            Барлық пікірді көру
           </button>
         </div>
       </div>
