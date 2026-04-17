@@ -12,22 +12,17 @@ import LandingTemplates from "../components/landing/landing-templates.jsx";
 
 export default function LandingPage() {
   return (
-    <main
-      id="top"
-      className="flex min-h-screen flex-col overflow-x-hidden bg-white text-[#2b2b31]"
-    >
+    <main className="flex min-h-screen flex-col overflow-x-hidden bg-white text-[#2b2b31]">
       <LandingHeader />
 
-      <section id="templates" className="flex-1">
-        <LandingHero />
-        <LandingServices />
-        <LandingTemplates />
-        <LandingHowItWorks />
-        <LandingPricing />
-        <LandingTestimonials />
-        <LandingFaq />
-        <LandingCta />
-      </section>
+      <LandingHero />
+      <LandingServices />
+      <LandingTemplates />
+      <LandingHowItWorks />
+      <LandingPricing />
+      <LandingTestimonials />
+      <LandingFaq />
+      <LandingCta />
 
       <LandingFooter />
     </main>

@@ -160,6 +160,7 @@ export default function InvitationTemplate2Page({ event, order }) {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [nowTimestamp, setNowTimestamp] = React.useState(() => Date.now());
   const template = React.useMemo(() => mapEventToTemplate2(event, nowTimestamp), [event, nowTimestamp]);
+  const isExample = event.is_example === true;
   const isPaid = order?.status === ORDER_STATUS_PAID;
   const notification = useNotification();
 
@@ -177,6 +178,11 @@ export default function InvitationTemplate2Page({ event, order }) {
   }, []);
 
   async function handleSubmit() {
+    if (isExample) {
+      notification.error("Для demo event ответы гостей отключены");
+      return;
+    }
+
     if (!isPaid) {
       notification.error("Жауаптар шаблон төленгеннен кейін ғана қолжетімді");
       return;
@@ -223,7 +229,7 @@ export default function InvitationTemplate2Page({ event, order }) {
 
   return (
     <div className="min-h-screen bg-[#dceff2]">
-      {!isPaid ? (
+      {!isExample && !isPaid ? (
         <TemplatePaymentBanner
           order={order}
           backgroundClass="bg-[rgba(111,167,198,0.88)]"
@@ -247,7 +253,7 @@ export default function InvitationTemplate2Page({ event, order }) {
               onSelectStatus={setSelectedStatus}
               onSubmit={handleSubmit}
               isSubmitting={isSubmitting}
-              isPaid={isPaid}
+              isPaid={!isExample && isPaid}
               responseOptions={responseOptions}
             />
             <div className="px-5 pt-2">

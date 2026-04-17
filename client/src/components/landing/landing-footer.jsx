@@ -29,7 +29,7 @@ export default function LandingFooter() {
         <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <a
-              href="#top"
+              href="/"
               className="font-['Georgia','Times_New_Roman',serif] text-[1rem] font-semibold tracking-[-0.03em] text-[#9a741d] md:text-[1.12rem]"
             >
               priglasitelnoe.com

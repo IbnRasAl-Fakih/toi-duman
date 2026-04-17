@@ -35,7 +35,7 @@ export default function InvitationPageResolver() {
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.detail || "Не удалось загрузить приглашение");
+          throw new Error(data.detail || "Failed to load invitation");
         }
 
         if (isMounted) {
@@ -43,7 +43,7 @@ export default function InvitationPageResolver() {
         }
       } catch (requestError) {
         if (isMounted) {
-          setError(requestError instanceof Error ? requestError.message : "Неизвестная ошибка");
+          setError(requestError instanceof Error ? requestError.message : "Unknown error");
         }
       } finally {
         if (isMounted) {
@@ -62,13 +62,15 @@ export default function InvitationPageResolver() {
   }, [slug]);
 
   if (isLoading) {
-    return <TemplateState title="Загрузка приглашения" description="Подгружаем данные события." />;
+    return <TemplateState title="Loading Invitation" description="Fetching event data." />;
   }
 
-  if (error || !eventData?.template) {
+  if (error || !eventData?.config) {
     return <NotFoundPage />;
   }
-  const TemplateComponent = templateRegistry[eventData.template.path];
+
+  const templateKey = eventData.config.template_path || eventData.config.template_type || eventData.template?.path;
+  const TemplateComponent = templateRegistry[templateKey];
 
   if (!TemplateComponent) {
     return <NotFoundPage />;

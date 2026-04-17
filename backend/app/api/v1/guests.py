@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, Form, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.dependencies import get_session
+from app.repositories.event_repository import EventRepository
 from app.repositories.guest_repository import GuestRepository
 from app.schemas.guest import GuestRead
 
@@ -18,6 +19,13 @@ async def create_guest(
     status: Annotated[str, Form()],
     session: AsyncSession = Depends(get_session),
 ) -> GuestRead:
+    event_repository = EventRepository(session)
+    event = await event_repository.get_by_id(event_id)
+    if event is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Event not found")
+    if event.is_example:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Guest responses are disabled for example events")
+
     repository = GuestRepository(session)
     return await repository.create(
         {
@@ -33,6 +41,13 @@ async def list_guests(
     event_id: int = Query(..., ge=1),
     session: AsyncSession = Depends(get_session),
 ) -> list[GuestRead]:
+    event_repository = EventRepository(session)
+    event = await event_repository.get_by_id(event_id)
+    if event is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Event not found")
+    if event.is_example:
+        return []
+
     repository = GuestRepository(session)
     return await repository.get_by_event_id(event_id)
 

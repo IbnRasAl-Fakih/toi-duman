@@ -20,16 +20,19 @@ function buildInvitationUrl(slug) {
 
 export default function EventCard({ event, onRequestDelete }) {
   const invitationUrl = buildInvitationUrl(event.slug);
-  const templateName = event.template?.name || event.template_id;
+  const eventDate = event.config?.date || event.date;
+  const location = event.config?.location || event.location;
+  const coverImageUrl = event.config?.cover_image_url || event.cover_image_url;
+  const templateName = event.template?.name || event.config?.template_name || event.config?.template_path || event.template_id;
 
   return (
     <article className="grid items-center gap-5 rounded-[28px] border border-black/10 bg-[#fcfaf7] p-5 lg:grid-cols-[180px_minmax(0,1fr)]">
       <div className="aspect-[4/5] overflow-hidden rounded-[20px] bg-[#efe5db]">
-        {event.cover_image_url ? (
-          <img src={event.cover_image_url} alt={event.slug} className="h-full w-full object-cover" />
+        {coverImageUrl ? (
+          <img src={coverImageUrl} alt={event.slug} className="h-full w-full object-cover" />
         ) : (
           <div className="flex h-full items-center justify-center text-xs uppercase tracking-[0.24em] text-black/35">
-            Нет обложки
+            No cover
           </div>
         )}
       </div>
@@ -49,17 +52,17 @@ export default function EventCard({ event, onRequestDelete }) {
               onClick={() => onRequestDelete(event)}
               className="rounded-full bg-[#b42318] px-4 py-2 text-xs uppercase tracking-[0.18em] text-white transition hover:bg-[#8f1d15]"
             >
-              Удалить
+              Delete
             </button>
           </div>
         </div>
 
         <dl className="grid gap-3 text-sm text-black/65 md:grid-cols-2">
-          <EventInfoRow label="Дата" value={formatDateTime(event.date)} />
-          <EventInfoRow label="Локация" value={event.location} />
-          <EventInfoRow label="Шаблон" value={templateName} />
+          <EventInfoRow label="Date" value={eventDate ? formatDateTime(eventDate) : "-"} />
+          <EventInfoRow label="Location" value={location || "-"} />
+          <EventInfoRow label="Template" value={templateName || "-"} />
           <EventInfoRow
-            label="Ссылка"
+            label="Link"
             value={
               <a
                 href={invitationUrl}
@@ -72,7 +75,7 @@ export default function EventCard({ event, onRequestDelete }) {
             }
           />
           <EventInfoRow label="Slug" value={event.slug} />
-          <EventInfoRow label="Создано" value={formatDateTime(event.created_at)} />
+          <EventInfoRow label="Created" value={formatDateTime(event.created_at)} />
         </dl>
       </div>
     </article>

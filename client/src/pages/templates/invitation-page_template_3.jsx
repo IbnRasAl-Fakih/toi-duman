@@ -150,6 +150,7 @@ export default function InvitationTemplate3Page({ event, order }) {
   const [nowTimestamp, setNowTimestamp] = React.useState(() => Date.now());
   const notification = useNotification();
   const template = React.useMemo(() => mapEventToTemplate3(event, nowTimestamp), [event, nowTimestamp]);
+  const isExample = event.is_example === true;
   const isPaid = order?.status === ORDER_STATUS_PAID;
 
   React.useEffect(() => {
@@ -166,6 +167,11 @@ export default function InvitationTemplate3Page({ event, order }) {
   }, []);
 
   async function handleSubmit() {
+    if (isExample) {
+      notification.error("Для demo event ответы гостей отключены");
+      return;
+    }
+
     if (!isPaid) {
       notification.error("Жауаптар шаблон төленгеннен кейін ғана қолжетімді");
       return;
@@ -212,7 +218,7 @@ export default function InvitationTemplate3Page({ event, order }) {
 
   return (
     <div className="min-h-screen bg-[#ece7e1]">
-      {!isPaid ? (
+      {!isExample && !isPaid ? (
         <TemplatePaymentBanner
           order={order}
           backgroundClass="bg-[rgba(116,107,97,0.9)]"
@@ -236,7 +242,7 @@ export default function InvitationTemplate3Page({ event, order }) {
           onSelectStatus={setSelectedStatus}
           onSubmit={handleSubmit}
           isSubmitting={isSubmitting}
-          isPaid={isPaid}
+          isPaid={!isExample && isPaid}
           responseOptions={responseOptions}
         />
       </main>

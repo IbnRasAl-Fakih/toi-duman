@@ -121,6 +121,7 @@ export default function InvitationTemplate1Page({ event, order }) {
   const [selectedStatus, setSelectedStatus] = React.useState("");
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const template = React.useMemo(() => mapEventToTemplate1(event), [event]);
+  const isExample = event.is_example === true;
   const isPaid = order?.status === ORDER_STATUS_PAID;
   const notification = useNotification();
 
@@ -133,6 +134,11 @@ export default function InvitationTemplate1Page({ event, order }) {
   }, []);
 
   async function handleSubmit() {
+    if (isExample) {
+      notification.error("Для demo event ответы гостей отключены");
+      return;
+    }
+
     if (!isPaid) {
       notification.error("Ответы доступны только после оплаты шаблона");
       return;
@@ -179,7 +185,7 @@ export default function InvitationTemplate1Page({ event, order }) {
 
   return (
     <div className="min-h-screen bg-[#240f11]">
-      {!isPaid ? (
+      {!isExample && !isPaid ? (
         <TemplatePaymentBanner
           order={order}
           backgroundClass="bg-[rgba(20,18,18,0.82)]"
@@ -202,7 +208,7 @@ export default function InvitationTemplate1Page({ event, order }) {
                 onSelectStatus={setSelectedStatus}
                 onSubmit={handleSubmit}
                 isSubmitting={isSubmitting}
-                isPaid={isPaid}
+                isPaid={!isExample && isPaid}
                 responseOptions={responseOptions}
               />
             </div>

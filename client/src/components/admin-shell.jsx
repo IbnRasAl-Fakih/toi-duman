@@ -3,11 +3,9 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useAdminAuth } from "../context/admin-auth-context.jsx";
 
 const navigationItems = [
-  { to: "/admin/events", label: "Список event-ов", end: true },
-  { to: "/admin/orders", label: "Список заказов", end: true },
-  { to: "/admin/templates", label: "Список шаблонов", end: true },
-  { to: "/admin/events/create", label: "Создать event", end: true },
-  { to: "/admin/templates/create", label: "Создать шаблон", end: true }
+  { to: "/admin/events", label: "Events", end: true },
+  { to: "/admin/orders", label: "Orders", end: true },
+  { to: "/admin/events/create", label: "Create Event", end: true }
 ];
 
 export default function AdminShell({ title, description, children }) {
@@ -38,7 +36,7 @@ export default function AdminShell({ title, description, children }) {
                 onClick={handleLogout}
                 className="inline-flex shrink-0 items-center justify-center rounded-full border border-black/10 px-5 py-3 text-xs uppercase tracking-[0.18em] text-black/60 transition hover:border-[#7f1118]/25 hover:text-[#7f1118]"
               >
-                Выйти
+                Log Out
               </button>
             </div>
           </header>

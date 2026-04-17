@@ -21,15 +21,9 @@ function normalizeEventTitle(eventData) {
 }
 
 function getStatusLabel(status) {
-  if (status === "yes") {
-    return "Придет";
-  }
-
-  if (status === "no") {
-    return "Не придет";
-  }
-
-  return status || "Неизвестно";
+  if (status === "yes") return "Attending";
+  if (status === "no") return "Declined";
+  return status || "Unknown";
 }
 
 function sortGuests(guests, sortKey) {
@@ -76,14 +70,21 @@ export default function GuestsPage() {
         const eventPayload = await eventResponse.json();
 
         if (!eventResponse.ok) {
-          throw new Error(eventPayload.detail || "Не удалось загрузить событие");
+          throw new Error(eventPayload.detail || "Failed to load event");
+        }
+
+        if (eventPayload.is_example) {
+          if (!isMounted) return;
+          setEventData(eventPayload);
+          setGuests([]);
+          return;
         }
 
         const guestsResponse = await fetch(`/api/v1/guests?event_id=${eventPayload.id}`);
         const guestsPayload = await guestsResponse.json();
 
         if (!guestsResponse.ok) {
-          throw new Error(guestsPayload.detail || "Не удалось загрузить гостей");
+          throw new Error(guestsPayload.detail || "Failed to load guests");
         }
 
         if (!isMounted) return;
@@ -92,7 +93,7 @@ export default function GuestsPage() {
         setGuests(Array.isArray(guestsPayload) ? guestsPayload : []);
       } catch (requestError) {
         if (isMounted) {
-          setError(requestError instanceof Error ? requestError.message : "Неизвестная ошибка");
+          setError(requestError instanceof Error ? requestError.message : "Unknown error");
         }
       } finally {
         if (isMounted) {
@@ -125,7 +126,7 @@ export default function GuestsPage() {
   );
 
   if (isLoading) {
-    return <GuestsState title="Загрузка гостей" description="Подгружаем список ответивших гостей." />;
+    return <GuestsState title="Loading guests" description="Fetching guest responses." />;
   }
 
   if (error || !eventData) {
@@ -143,7 +144,7 @@ export default function GuestsPage() {
                 {normalizeEventTitle(eventData)}
               </h1>
               <p className="mt-4 text-sm leading-7 text-black/65 md:text-base">
-                Ответы гостей для приглашения <span className="font-medium text-[#7f1118]">{eventData.slug}</span>.
+                Guest responses for invitation <span className="font-medium text-[#7f1118]">{eventData.slug}</span>.
               </p>
             </div>
 
@@ -151,15 +152,15 @@ export default function GuestsPage() {
               to={`/${eventData.slug}`}
               className="inline-flex items-center justify-center rounded-full border border-black/10 px-5 py-3 text-xs uppercase tracking-[0.18em] text-black/60 transition hover:border-[#7f1118]/25 hover:text-[#7f1118]"
             >
-              Открыть приглашение
+              Open Invitation
             </Link>
           </div>
         </header>
 
         <section className="grid gap-4 md:grid-cols-3">
-          <SummaryCard label="Ответили" value={respondedCount} />
-          <SummaryCard label="Придут" value={attendingCount} tone="success" />
-          <SummaryCard label="Не придут" value={declinedCount} />
+          <SummaryCard label="Responded" value={respondedCount} />
+          <SummaryCard label="Attending" value={attendingCount} tone="success" />
+          <SummaryCard label="Declined" value={declinedCount} />
         </section>
 
         <section className="rounded-[32px] border border-black/10 bg-white/80 px-6 py-6 shadow-[0_20px_60px_rgba(31,26,23,0.08)] backdrop-blur md:px-8">

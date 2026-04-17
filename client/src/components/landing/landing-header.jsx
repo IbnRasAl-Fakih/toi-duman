@@ -3,10 +3,10 @@ import React from "react";
 const WHATSAPP_PHONE = process.env.REACT_APP_WHATSAPP_PHONE || "";
 
 const NAV_ITEMS = [
-  { href: "#templates", label: "Үлгілер" },
-  { href: "#how-it-works", label: "Қалай жұмыс істейді" },
-  { href: "#pricing", label: "Бағалар" },
-  { href: "#faq", label: "FAQ" },
+  { href: "/#templates", label: "Үлгілер" },
+  { href: "/#how-it-works", label: "Қалай жұмыс істейді" },
+  { href: "/#pricing", label: "Бағалар" },
+  { href: "/#faq", label: "FAQ" },
 ];
 
 function buildWhatsappHref() {
@@ -29,7 +29,7 @@ export default function LandingHeader() {
 
           <div className="flex items-center justify-between gap-6">
             <a
-              href="#top"
+              href="/"
               className="shrink-0 font-['Georgia','Times_New_Roman',serif] text-[1.05rem] font-semibold tracking-[-0.03em] text-[#9a741d] transition duration-300 hover:text-[#7f5e14] md:text-[1.2rem]"
             >
               priglasitelnoe.com

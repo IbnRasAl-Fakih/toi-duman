@@ -31,7 +31,7 @@ function TemplateCard({ title, image, className = "" }) {
 
 export default function LandingTemplates() {
   return (
-    <section className="mx-auto w-full max-w-[1240px] px-4 pb-20 pt-6 md:px-5 md:pb-24 md:pt-8">
+    <section id="templates" className="mx-auto w-full max-w-[1240px] px-4 pb-20 pt-6 md:px-5 md:pb-24 md:pt-8">
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
         <div>
           <p className="text-[0.75rem] font-semibold uppercase tracking-[0.18em] text-[#b28a2d]">Біздің үлгілер</p>

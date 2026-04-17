@@ -503,6 +503,7 @@ export default function InvitationTemplate4Page({ event, order }) {
   const template = React.useMemo(() => mapEventToTemplate4(event, nowTimestamp), [event, nowTimestamp]);
   const [isPlaying, setIsPlaying] = React.useState(false);
   const audioRef = React.useRef(null);
+  const isExample = event.is_example === true;
   const isPaid = order?.status === ORDER_STATUS_PAID;
   const notification = useNotification();
 
@@ -538,6 +539,11 @@ export default function InvitationTemplate4Page({ event, order }) {
   }, []);
 
   async function handleSubmit() {
+    if (isExample) {
+      notification.error("Для demo event ответы гостей отключены");
+      return;
+    }
+
     if (!isPaid) {
       notification.error("Отправка ответов будет доступна после оплаты шаблона");
       return;
@@ -604,7 +610,7 @@ export default function InvitationTemplate4Page({ event, order }) {
 
   return (
     <>
-      {!isPaid ? (
+      {!isExample && !isPaid ? (
         <TemplatePaymentBanner
           order={order}
           backgroundClass="bg-[rgba(147,83,93,0.94)]"
@@ -638,7 +644,7 @@ export default function InvitationTemplate4Page({ event, order }) {
               onSelectStatus={setSelectedStatus}
               onSubmit={handleSubmit}
               isSubmitting={isSubmitting}
-              isPaid={isPaid}
+              isPaid={!isExample && isPaid}
               responseOptions={responseOptions}
             />
           </div>

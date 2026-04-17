@@ -11,13 +11,14 @@ from app.schemas.template import TemplateRead
 class EventBase(BaseModel):
     slug: str
     type: str
-    template_id: UUID
-    date: datetime
-    location: str
+    template_id: UUID | None = None
+    date: datetime | None = None
+    location: str | None = None
     location_link: str | None = None
     description: str | None = None
     cover_image_url: str | None = None
     config: dict[str, Any] = Field(default_factory=dict)
+    is_example: bool = False
 
 
 class EventRead(EventBase):
@@ -29,9 +30,9 @@ class EventRead(EventBase):
 
 
 class EventListRead(EventRead):
-    template: TemplateRead
+    template: TemplateRead | None = None
 
 
 class EventWithOrderRead(EventRead):
     order: OrderRead | None = None
-    template: TemplateRead
+    template: TemplateRead | None = None
