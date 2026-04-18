@@ -4,6 +4,59 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: "Bickham Script Display";
+  src:
+    url("./assets/fonts/bickhamscriptthree.ttf") format("truetype"),
+    local("Bickham Script Pro 3"),
+    local("Bickham Script Pro"),
+    local("Bickham Script Std"),
+    local("Bickham Script");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Template Welcome Serif";
+  src: url("./assets/fonts/NotoSerif-BoldItalic.ttf") format("truetype");
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Template Boyarsky";
+  src: url("./assets/fonts/boyarsky_bold_italic_00.ttf") format("truetype");
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Template Alistair";
+  src: url("./assets/fonts/Alistair Signature.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Template Aquarelle";
+  src: url("./assets/fonts/Aquarelle.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Template Igrunok";
+  src: url("./assets/fonts/IgrunokSPDemo-Black.otf") format("opentype");
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+}
+
 :root {
   color-scheme: dark;
   --scrollbar-track: rgba(10, 18, 22, 0.92);
@@ -121,10 +174,31 @@ html.theme-template-3 {
   }
 }
 
+@keyframes rsvp-favicon-pop {
+  0% {
+    transform: scale(0.82);
+    opacity: 0;
+  }
+
+  60% {
+    transform: scale(1.14);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 .landing-header-shell {
   animation: landing-header-reveal 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .landing-header-glow {
   animation: landing-header-glow 3.8s ease-in-out infinite;
+}
+
+.rsvp-favicon-pop {
+  animation: rsvp-favicon-pop 280ms cubic-bezier(0.22, 1, 0.36, 1);
 }

@@ -13,12 +13,14 @@ import { TEMPLATE_1_PATH } from "../templates/invitation-page_template_1.jsx";
 import { TEMPLATE_2_PATH } from "../templates/invitation-page_template_2.jsx";
 import { TEMPLATE_3_PATH } from "../templates/invitation-page_template_3.jsx";
 import { TEMPLATE_4_PATH } from "../templates/invitation-page_template_4.jsx";
+import { TEMPLATE_6_PATH } from "../templates/invitation-page_template_6.jsx";
 
 const templateOptions = [
   { value: TEMPLATE_1_PATH, label: "Template 1" },
   { value: TEMPLATE_2_PATH, label: "Template 2" },
   { value: TEMPLATE_3_PATH, label: "Template 3" },
-  { value: TEMPLATE_4_PATH, label: "Template 4" }
+  { value: TEMPLATE_4_PATH, label: "Template 4" },
+  { value: TEMPLATE_6_PATH, label: "Template 6" }
 ];
 
 const initialForm = {

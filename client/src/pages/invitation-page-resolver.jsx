@@ -7,6 +7,10 @@ import InvitationTemplate4Page, {
   TEMPLATE_4_PATH,
   TEMPLATE_4_TYPE
 } from "./templates/invitation-page_template_4.jsx";
+import InvitationTemplate6Page, {
+  TEMPLATE_6_PATH,
+  TEMPLATE_6_TYPE
+} from "./templates/invitation-page_template_6.jsx";
 import NotFoundPage from "../pages/not-found-page.jsx";
 
 const templateRegistry = {
@@ -14,7 +18,9 @@ const templateRegistry = {
   [TEMPLATE_2_PATH]: InvitationTemplate2Page,
   [TEMPLATE_3_PATH]: InvitationTemplate3Page,
   [TEMPLATE_4_TYPE]: InvitationTemplate4Page,
-  [TEMPLATE_4_PATH]: InvitationTemplate4Page
+  [TEMPLATE_4_PATH]: InvitationTemplate4Page,
+  [TEMPLATE_6_TYPE]: InvitationTemplate6Page,
+  [TEMPLATE_6_PATH]: InvitationTemplate6Page
 };
 
 export default function InvitationPageResolver() {
