@@ -11,12 +11,16 @@ import LandingPage from "./pages/landing-page.jsx";
 import PaymentPage from "./pages/payment-page.jsx";
 import NotFoundPage from "./pages/not-found-page.jsx";
 import PrivacyPage from "./pages/privacy-page.jsx";
+import Template5FormPage from "./pages/template-5-form-page.jsx";
+import Template6FormPage from "./pages/template-6-form-page.jsx";
 import TermsPage from "./pages/terms-page.jsx";
 
 export default function App() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
+      <Route path="/template-5/form" element={<Template5FormPage />} />
+      <Route path="/template-6/form" element={<Template6FormPage />} />
       <Route path="/privacy" element={<PrivacyPage />} />
       <Route path="/terms" element={<TermsPage />} />
       <Route path="/admin/login" element={<AdminLoginPage />} />

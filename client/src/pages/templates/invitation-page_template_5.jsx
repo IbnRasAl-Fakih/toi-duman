@@ -1,0 +1,455 @@
+import React from "react";
+import Template5AudioToggle from "../../components/templates/template-5/audio-toggle.jsx";
+import InvitationCountdownTemplate5 from "../../components/templates/template-5/invitation-countdown.jsx";
+import InvitationDetailsTemplate5 from "../../components/templates/template-5/invitation-details.jsx";
+import InvitationHeroTemplate5 from "../../components/templates/template-5/invitation-hero.jsx";
+import InvitationNoteTemplate5 from "../../components/templates/template-5/invitation-note.jsx";
+import InvitationRsvpTemplate5 from "../../components/templates/template-5/invitation-rsvp.jsx";
+import InvitationTimelineTemplate5 from "../../components/templates/template-5/invitation-timeline.jsx";
+import Footer from "../../components/footer.jsx";
+import TemplatePaymentBanner from "../../components/template-payment-banner.jsx";
+import { useNotification } from "../../context/notification-context.jsx";
+
+export const TEMPLATE_5_TYPE = "invitation_v5";
+export const TEMPLATE_5_PATH = "templates/invitation-page_template_5.jsx";
+
+const ORDER_STATUS_PAID = "paid";
+
+const monthFormatter = new Intl.DateTimeFormat("ru-RU", { month: "long" });
+
+function pad(value) {
+  return String(value).padStart(2, "0");
+}
+
+function normalizeNames(value) {
+  if (Array.isArray(value)) {
+    return value.map((item) => String(item).trim()).filter(Boolean);
+  }
+
+  if (typeof value === "string") {
+    return value
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
+
+  return [];
+}
+
+function formatDateLabel(date) {
+  return `${date.getDate()} ${monthFormatter.format(date)} ${date.getFullYear()}`;
+}
+
+function formatTime(date) {
+  return date.toLocaleTimeString("ru-RU", {
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+
+function buildCountdownParts(date, nowTimestamp) {
+  const diff = date.getTime() - nowTimestamp;
+
+  if (diff <= 0) {
+    return [
+      { label: "дней", value: "00" },
+      { label: "часов", value: "00" },
+      { label: "минут", value: "00" },
+      { label: "секунд", value: "00" }
+    ];
+  }
+
+  const totalSeconds = Math.floor(diff / 1000);
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  return [
+    { label: "дней", value: pad(days) },
+    { label: "часов", value: pad(hours) },
+    { label: "минут", value: pad(minutes) },
+    { label: "секунд", value: pad(seconds) }
+  ];
+}
+
+function getConfigText(config, key, fallback) {
+  return typeof config?.[key] === "string" && config[key].trim() ? config[key].trim() : fallback;
+}
+
+export function mapEventToTemplate5(event, nowTimestamp = Date.now()) {
+  const config = event.config || {};
+  const date = new Date(event.date);
+  const names = normalizeNames(config?.name);
+  const leftName = names[0] || "Данияр";
+  const rightName = names[1] || "Аружан";
+  const hosts = getConfigText(config, "hosts", "С нетерпением ждём вас");
+  const venueName = getConfigText(config, "venue_name", "Grand Ballroom");
+  const scheduleItems =
+    Array.isArray(config?.schedule) && config.schedule.length
+      ? config.schedule
+      : [
+          { time: "18:30", title: "Сбор гостей" },
+          { time: "19:30", title: "Начало торжества" }
+        ];
+  const rsvpOptions =
+    Array.isArray(config?.rsvpOptions) && config.rsvpOptions.length
+      ? config.rsvpOptions
+      : [
+          { value: "yes", label: getConfigText(config, "rsvpYesLabel", "С удовольствием приду") },
+          { value: "no", label: getConfigText(config, "rsvpNoLabel", "К сожалению, не смогу") }
+        ];
+
+  return {
+    id: event.id,
+    slug: event.slug,
+    title: getConfigText(config, "theme", "Template 5"),
+    couple: {
+      left: leftName,
+      right: rightName,
+      signature: `${leftName} & ${rightName}`
+    },
+    intro: {
+      overline: getConfigText(config, "overline", "INVITATION"),
+      title: getConfigText(config, "heroTitle", `${leftName}\n${rightName}`),
+      message: event.description || getConfigText(config, "introText", "Будем рады видеть вас")
+    },
+    hero: {
+      openLabel: getConfigText(config, "heroOpenLabel", "Открыть"),
+      openAriaLabel: getConfigText(config, "heroOpenAriaLabel", "Открыть приглашение"),
+      scrollLabel: getConfigText(config, "heroScrollLabel", "Листать")
+    },
+    details: {
+      day: pad(date.getDate()),
+      month: monthFormatter.format(date),
+      year: String(date.getFullYear()),
+      dateLabel: formatDateLabel(date),
+      timeLabel: formatTime(date),
+      placeLabel: event.location || "Алматы",
+      galleryImages: Array.isArray(config?.galleryImages) && config.galleryImages.length ? config.galleryImages : null,
+      labels: {
+        date: getConfigText(config, "detailsDateLabel", "Дата"),
+        time: getConfigText(config, "detailsTimeLabel", "Время"),
+        place: getConfigText(config, "detailsPlaceLabel", "Место")
+      }
+    },
+    countdown: {
+      title: getConfigText(config, "countdownTitle", "До торжества осталось"),
+      items: buildCountdownParts(date, nowTimestamp)
+    },
+    venue: {
+      sectionLabel: getConfigText(config, "venueSectionLabel", "Место"),
+      subtitle: getConfigText(config, "venueSubtitle", "Праздник состоится здесь"),
+      title: getConfigText(config, "venueTitle", venueName),
+      location: event.location || "Алматы",
+      dateLabel: formatDateLabel(date),
+      mapUrl: event.location_link || "#",
+      mapLabel: getConfigText(config, "mapLabel", "Открыть карту")
+    },
+    timeline: {
+      title: getConfigText(config, "timelineTitle", "Тайминг"),
+      items: scheduleItems
+    },
+    note: {
+      title: getConfigText(config, "noteTitle", "Будем рады вашему присутствию"),
+      text: getConfigText(
+        config,
+        "noteText",
+        "Пожалуйста, подтвердите участие заранее, чтобы мы подготовили праздник для вас."
+      )
+    },
+    hosts: {
+      label: getConfigText(config, "hostsLabel", "С любовью"),
+      value: hosts
+    },
+    rsvp: {
+      title: getConfigText(config, "rsvpTitle", "Подтвердите участие"),
+      description: getConfigText(config, "rsvpDescription", "Заполните форму ниже и отправьте ваш ответ."),
+      namePlaceholder: getConfigText(config, "rsvpNamePlaceholder", "Ваше имя и фамилия"),
+      submitLabel: getConfigText(config, "rsvpSubmitLabel", "Отправить ответ"),
+      submittingLabel: getConfigText(config, "rsvpSubmittingLabel", "Отправка..."),
+      options: rsvpOptions
+    }
+  };
+}
+
+export default function InvitationTemplate5Page({
+  event,
+  order,
+  previewMode = false,
+  previewViewportHeight = null,
+  onPreviewOpenChange,
+  onPreviewAudioOverlayChange,
+  onPreviewNotify
+}) {
+  const [guestName, setGuestName] = React.useState("");
+  const [selectedStatus, setSelectedStatus] = React.useState("");
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [nowTimestamp, setNowTimestamp] = React.useState(() => Date.now());
+  const [isPlaying, setIsPlaying] = React.useState(false);
+  const [isInvitationOpened, setIsInvitationOpened] = React.useState(false);
+  const audioRef = React.useRef(null);
+  const notification = useNotification();
+  const template = React.useMemo(() => mapEventToTemplate5(event, nowTimestamp), [event, nowTimestamp]);
+  const isExample = event.is_example === true;
+  const isPaid = order?.status === ORDER_STATUS_PAID;
+
+  React.useEffect(() => {
+    if (typeof onPreviewOpenChange === "function") {
+      onPreviewOpenChange(isInvitationOpened);
+    }
+  }, [isInvitationOpened, onPreviewOpenChange]);
+
+  React.useEffect(() => {
+    if (typeof onPreviewAudioOverlayChange === "function") {
+      onPreviewAudioOverlayChange({
+        isOpened: isInvitationOpened,
+        isPlaying,
+        onToggleAudio: handleToggleAudio
+      });
+    }
+  }, [isInvitationOpened, isPlaying, onPreviewAudioOverlayChange]);
+
+  React.useEffect(() => {
+    if (!previewMode) {
+      document.documentElement.classList.add("theme-template-5");
+    }
+
+    const timerId = window.setInterval(() => {
+      setNowTimestamp(Date.now());
+    }, 1000);
+
+    const audio = audioRef.current;
+    const handleEnded = () => {
+      if (!audio) {
+        return;
+      }
+
+      audio.currentTime = 0;
+      audio.play().catch(() => {
+        setIsPlaying(false);
+      });
+    };
+    const handlePlay = () => {
+      setIsPlaying(true);
+    };
+    const handlePause = () => {
+      setIsPlaying(false);
+    };
+
+    if (audio) {
+      audio.addEventListener("ended", handleEnded);
+      audio.addEventListener("play", handlePlay);
+      audio.addEventListener("pause", handlePause);
+    }
+
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousHtmlOverflow = document.documentElement.style.overflow;
+    if (!previewMode && !isInvitationOpened) {
+      document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
+    }
+
+    return () => {
+      if (!previewMode) {
+        document.documentElement.classList.remove("theme-template-5");
+      }
+      window.clearInterval(timerId);
+      if (!previewMode) {
+        document.body.style.overflow = previousBodyOverflow;
+        document.documentElement.style.overflow = previousHtmlOverflow;
+      }
+
+      if (audio) {
+        audio.pause();
+        audio.removeEventListener("ended", handleEnded);
+        audio.removeEventListener("play", handlePlay);
+        audio.removeEventListener("pause", handlePause);
+      }
+    };
+  }, [isInvitationOpened, previewMode]);
+
+  React.useEffect(() => {
+    if (!isInvitationOpened) {
+      return undefined;
+    }
+
+    const audio = audioRef.current;
+    if (!audio) {
+      return undefined;
+    }
+
+    let isCancelled = false;
+    const startPlayback = () => {
+      audio.play().catch(() => {
+        if (!isCancelled) {
+          setIsPlaying(false);
+        }
+      });
+    };
+
+    if (audio.readyState >= 2) {
+      startPlayback();
+      return () => {
+        isCancelled = true;
+      };
+    }
+
+    audio.load();
+    audio.addEventListener("canplay", startPlayback, { once: true });
+
+    return () => {
+      isCancelled = true;
+      audio.removeEventListener("canplay", startPlayback);
+    };
+  }, [isInvitationOpened]);
+
+  async function handleToggleAudio() {
+    const audio = audioRef.current;
+    if (!audio) {
+      return;
+    }
+
+    if (audio.paused) {
+      try {
+        await audio.play();
+        setIsPlaying(true);
+      } catch {
+        setIsPlaying(false);
+      }
+      return;
+    }
+
+    audio.pause();
+    setIsPlaying(false);
+  }
+
+  function handleOpenInvitation() {
+    setIsInvitationOpened(true);
+  }
+
+  async function handleSubmit() {
+    if (previewMode) {
+      setIsSubmitting(true);
+      window.setTimeout(() => {
+        setGuestName("");
+        setSelectedStatus("");
+        setIsSubmitting(false);
+        if (typeof onPreviewNotify === "function") {
+          onPreviewNotify({ type: "success", message: "Ответ успешно отправлен" });
+        } else {
+          notification.success("Ответ успешно отправлен");
+        }
+      }, 250);
+      return;
+    }
+
+    if (isExample) {
+      notification.error("Для demo event ответы гостей отключены");
+      return;
+    }
+
+    if (!isPaid) {
+      notification.error("Отправка ответов станет доступна после оплаты шаблона");
+      return;
+    }
+
+    if (!guestName.trim()) {
+      notification.error("Введите имя и фамилию");
+      return;
+    }
+
+    if (!selectedStatus) {
+      notification.error("Выберите вариант ответа");
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+
+      const payload = new FormData();
+      payload.append("event_id", String(template.id));
+      payload.append("name", guestName.trim());
+      payload.append("status", selectedStatus);
+
+      const response = await fetch("/api/v1/guests", {
+        method: "POST",
+        body: payload
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.detail || "Не удалось отправить ответ");
+      }
+
+      setGuestName("");
+      setSelectedStatus("");
+      notification.success("Ответ успешно отправлен");
+    } catch (submitError) {
+      const message = submitError instanceof Error ? submitError.message : "Не удалось отправить ответ";
+      notification.error(message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  return (
+    <div className={`${previewMode ? "relative" : "min-h-screen "}bg-[linear-gradient(180deg,#fff6f1_0%,#fdf3ee_32%,#fff9f5_100%)]`}>
+      {!isExample && !isPaid ? (
+        <TemplatePaymentBanner
+          order={order}
+          backgroundClass="bg-[rgba(143,64,52,0.94)]"
+          buttonClass="bg-[#723127] text-[#fff9f5] hover:bg-[#60271f]"
+          infoCardClass="border-white/20 bg-white/10 text-[#fff9f5]"
+          infoLabelClass="text-white/70"
+          infoValueClass="text-white"
+        />
+      ) : null}
+
+      <audio ref={audioRef} preload="auto" src="/musics/intro-music-CzqJOUtA.mp3" />
+
+      <main
+        className={`mx-auto w-full max-w-[430px] overflow-hidden bg-[#fff9f5] shadow-[0_0_0_1px_rgba(171,110,95,0.08),0_36px_80px_rgba(110,46,37,0.12)] ${
+          isInvitationOpened ? (previewMode ? "min-h-[100svh]" : "min-h-screen") : "h-[100svh]"
+        }`}
+        style={
+          previewMode && previewViewportHeight
+            ? isInvitationOpened
+              ? { minHeight: `${previewViewportHeight}px` }
+              : { height: `${previewViewportHeight}px` }
+            : undefined
+        }
+      >
+        {isInvitationOpened && !previewMode ? <Template5AudioToggle isPlaying={isPlaying} onToggleAudio={handleToggleAudio} /> : null}
+
+        <InvitationHeroTemplate5
+          template={template}
+          isOpened={isInvitationOpened}
+          onOpen={handleOpenInvitation}
+          viewportHeight={previewMode ? previewViewportHeight : null}
+        />
+        {isInvitationOpened ? (
+          <>
+            <InvitationDetailsTemplate5 template={template} viewportHeight={previewMode ? previewViewportHeight : null} />
+            <InvitationCountdownTemplate5 template={template} viewportHeight={previewMode ? previewViewportHeight : null} />
+            <InvitationTimelineTemplate5 template={template} viewportHeight={previewMode ? previewViewportHeight : null} />
+            <InvitationNoteTemplate5 template={template} />
+            <InvitationRsvpTemplate5
+              template={template}
+              guestName={guestName}
+              selectedStatus={selectedStatus}
+              onGuestNameChange={setGuestName}
+              onSelectStatus={setSelectedStatus}
+              onSubmit={handleSubmit}
+              isSubmitting={isSubmitting}
+              isPaid={previewMode || (!isExample && isPaid)}
+            />
+            <div className="px-5 pb-5">
+              <Footer />
+            </div>
+          </>
+        ) : null}
+      </main>
+    </div>
+  );
+}

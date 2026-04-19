@@ -50,3 +50,8 @@ async def upload_image_to_r2(file: UploadFile) -> UploadImageRead:
 @router.post("/images", response_model=UploadImageRead, status_code=status.HTTP_201_CREATED)
 async def upload_image(file: UploadFile = File(...), _admin: None = Depends(require_admin)) -> UploadImageRead:
     return await upload_image_to_r2(file)
+
+
+@router.post("/public-images", response_model=UploadImageRead, status_code=status.HTTP_201_CREATED)
+async def upload_public_image(file: UploadFile = File(...)) -> UploadImageRead:
+    return await upload_image_to_r2(file)

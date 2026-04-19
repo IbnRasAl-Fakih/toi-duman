@@ -32,9 +32,13 @@ function NotificationItem({ notification, onClose }) {
   );
 }
 
-export default function GlobalNotification({ notifications, onClose }) {
+export default function GlobalNotification({ notifications, onClose, className = "" }) {
+  const baseClassName = className
+    ? "pointer-events-none z-[90] flex flex-col gap-3"
+    : "pointer-events-none fixed bottom-5 right-5 z-[90] flex w-[min(100%-1.5rem,22rem)] flex-col gap-3 md:bottom-6 md:right-6";
+
   return (
-    <div className="pointer-events-none fixed bottom-5 right-5 z-[90] flex w-[min(100%-1.5rem,22rem)] flex-col gap-3 md:bottom-6 md:right-6">
+    <div className={`${baseClassName} ${className}`}>
       {notifications.map((notification) => (
         <NotificationItem key={notification.id} notification={notification} onClose={onClose} />
       ))}

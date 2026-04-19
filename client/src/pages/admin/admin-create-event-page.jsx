@@ -13,6 +13,7 @@ import { TEMPLATE_1_PATH } from "../templates/invitation-page_template_1.jsx";
 import { TEMPLATE_2_PATH } from "../templates/invitation-page_template_2.jsx";
 import { TEMPLATE_3_PATH } from "../templates/invitation-page_template_3.jsx";
 import { TEMPLATE_4_PATH } from "../templates/invitation-page_template_4.jsx";
+import { TEMPLATE_5_PATH } from "../templates/invitation-page_template_5.jsx";
 import { TEMPLATE_6_PATH } from "../templates/invitation-page_template_6.jsx";
 
 const templateOptions = [
@@ -20,6 +21,7 @@ const templateOptions = [
   { value: TEMPLATE_2_PATH, label: "Template 2" },
   { value: TEMPLATE_3_PATH, label: "Template 3" },
   { value: TEMPLATE_4_PATH, label: "Template 4" },
+  { value: TEMPLATE_5_PATH, label: "Template 5" },
   { value: TEMPLATE_6_PATH, label: "Template 6" }
 ];
 

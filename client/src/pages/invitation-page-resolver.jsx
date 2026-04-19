@@ -7,6 +7,10 @@ import InvitationTemplate4Page, {
   TEMPLATE_4_PATH,
   TEMPLATE_4_TYPE
 } from "./templates/invitation-page_template_4.jsx";
+import InvitationTemplate5Page, {
+  TEMPLATE_5_PATH,
+  TEMPLATE_5_TYPE
+} from "./templates/invitation-page_template_5.jsx";
 import InvitationTemplate6Page, {
   TEMPLATE_6_PATH,
   TEMPLATE_6_TYPE
@@ -19,6 +23,8 @@ const templateRegistry = {
   [TEMPLATE_3_PATH]: InvitationTemplate3Page,
   [TEMPLATE_4_TYPE]: InvitationTemplate4Page,
   [TEMPLATE_4_PATH]: InvitationTemplate4Page,
+  [TEMPLATE_5_TYPE]: InvitationTemplate5Page,
+  [TEMPLATE_5_PATH]: InvitationTemplate5Page,
   [TEMPLATE_6_TYPE]: InvitationTemplate6Page,
   [TEMPLATE_6_PATH]: InvitationTemplate6Page
 };
