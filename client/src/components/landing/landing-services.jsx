@@ -50,7 +50,7 @@ function ServiceCard({ title, description, icon }) {
         <ServiceIcon type={icon} />
       </div>
 
-      <h3 className="mt-7 font-['Georgia','Times_New_Roman',serif] text-[1.7rem] leading-none tracking-[-0.03em] text-[#2c2d31]">
+      <h3 className="landing-serif mt-7 text-[1.7rem] leading-none tracking-[-0.03em] text-[#2c2d31]">
         {title}
       </h3>
 
@@ -63,7 +63,7 @@ export default function LandingServices() {
   return (
     <section className="mx-auto w-full max-w-[1240px] px-4 pb-20 pt-8 md:px-5 md:pb-24 md:pt-10">
       <div className="mx-auto max-w-[820px] text-center">
-        <h2 className="font-['Georgia','Times_New_Roman',serif] text-[2.5rem] leading-tight tracking-[-0.04em] text-[#25262b] md:text-[3.4rem]">
+        <h2 className="landing-serif text-[2.5rem] leading-tight tracking-[-0.04em] text-[#25262b] md:text-[3.4rem]">
           Ең маңызды сәттерге арналған
         </h2>
         <p className="mx-auto mt-4 max-w-[39rem] text-[1rem] leading-8 text-[#8b8c92]">

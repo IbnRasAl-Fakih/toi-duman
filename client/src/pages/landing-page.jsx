@@ -12,7 +12,7 @@ import LandingTemplates from "../components/landing/landing-templates.jsx";
 
 export default function LandingPage() {
   return (
-    <main className="flex min-h-screen flex-col overflow-x-hidden bg-white text-[#2b2b31]">
+    <main className="flex min-h-screen flex-col overflow-x-hidden bg-white text-[#2b2b31]" style={{ fontFamily: "var(--font-body)" }}>
       <LandingHeader />
 
       <LandingHero />

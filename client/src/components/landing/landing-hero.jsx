@@ -23,7 +23,7 @@ export default function LandingHero() {
             Цифрлық әсемдік
           </p>
 
-          <h1 className="mt-6 font-['Georgia','Times_New_Roman',serif] text-[2.95rem] leading-[0.9] tracking-[-0.04em] text-[#2a2a2f] md:text-[4rem]">
+          <h1 className="landing-serif mt-6 text-[2.95rem] leading-[0.9] tracking-[-0.04em] text-[#2a2a2f] md:text-[4rem]">
             Сіздің мінсіз
             <br />
             шақыруыңыз
@@ -67,7 +67,7 @@ export default function LandingHero() {
           </div>
 
           <div className="absolute bottom-[5%] left-[2%] z-20 max-w-[12rem] rounded-[18px] bg-white px-4 py-3.5 shadow-[0_18px_40px_rgba(26,31,44,0.14)]">
-            <p className="font-['Georgia','Times_New_Roman',serif] text-base italic leading-7 text-[#a17922]">
+            <p className="landing-serif text-base italic leading-7 text-[#a17922]">
               "Ыңғайлы, әдемі және өте заманауи."
             </p>
             <p className="mt-2 text-xs font-medium text-[#9a9ba1]">Мерекеңізге арналған заманауи сайт</p>

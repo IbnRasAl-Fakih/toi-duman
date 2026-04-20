@@ -48,8 +48,8 @@ export default function PaymentCard({ eyebrow, value, hint, copyValue, ownerName
                 ? "border-[#b42318]/40 bg-[#b42318]/14 text-[#f38f89]"
                 : "border-white/10 bg-white/6 text-white/72 hover:bg-white/10"
           }`}
-          aria-label="Скопировать значение"
-          title="Скопировать"
+          aria-label="Мәнді көшіру"
+          title="Көшіру"
         >
           <CopyIcon className="h-4 w-4" />
         </button>
@@ -76,7 +76,7 @@ export default function PaymentCard({ eyebrow, value, hint, copyValue, ownerName
                 : "bg-transparent text-transparent"
           }`}
         >
-          {copyState === "success" ? "Скопировано" : copyState === "error" ? "Ошибка" : ""}
+          {copyState === "success" ? "Көшірілді" : copyState === "error" ? "Қате" : ""}
         </span>
       </div>
     </div>

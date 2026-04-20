@@ -23,7 +23,7 @@ function NotificationItem({ notification, onClose }) {
           type="button"
           onClick={() => onClose(notification.id)}
           className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[#f24857] transition hover:bg-[#fff1f3]"
-          aria-label="Закрыть уведомление"
+          aria-label="Хабарламаны жабу"
         >
           <CloseIcon className="h-4 w-4" />
         </button>

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 function formatAmount(value) {
   const numericValue = Number(value) || 0;
 
-  return `${Math.trunc(numericValue).toLocaleString("ru-RU")} ₸`;
+  return `${Math.trunc(numericValue).toLocaleString("kk-KZ")} ₸`;
 }
 
 export default function TemplatePaymentBanner({
@@ -22,20 +22,20 @@ export default function TemplatePaymentBanner({
     >
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 px-4 py-3 md:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-10">
         <div className="max-w-3xl">
-          <p className="text-[10px] uppercase tracking-[0.34em] text-[#f8f2ec]/60">Template Locked</p>
+          <p className="text-[10px] uppercase tracking-[0.34em] text-[#f8f2ec]/60">Үлгі құлыптаулы</p>
           <h2 className="mt-1 font-['Georgia','Times_New_Roman',serif] text-xl leading-tight md:text-2xl">
-            Приглашение пока не оплачено
+            Шақыру әлі төленбеген
           </h2>
           <p className="mt-1 text-sm leading-5 text-[#f8f2ec]/78">
-            После подтверждения оплаты приглашение станет доступно по этому адресу.
+            Төлем расталғаннан кейін шақыру осы мекенжай бойынша толық ашылады.
           </p>
         </div>
 
         <div className="flex flex-col gap-2 md:min-w-[300px]">
           {order ? (
             <div className={`grid gap-1.5 rounded-[18px] border px-4 py-2.5 text-sm backdrop-blur-md ${infoCardClass}`}>
-              <InfoRow label="Заказ" value={order.id} labelClass={infoLabelClass} valueClass={infoValueClass} />
-              <InfoRow label="Сумма" value={formatAmount(order.amount)} labelClass={infoLabelClass} valueClass={infoValueClass} />
+              <InfoRow label="Тапсырыс" value={order.id} labelClass={infoLabelClass} valueClass={infoValueClass} />
+              <InfoRow label="Сома" value={formatAmount(order.amount)} labelClass={infoLabelClass} valueClass={infoValueClass} />
             </div>
           ) : null}
 
@@ -43,7 +43,7 @@ export default function TemplatePaymentBanner({
             to={paymentPath}
             className={`inline-flex items-center justify-center rounded-full px-6 py-2.5 text-[11px] uppercase tracking-[0.16em] text-white shadow-[0_10px_24px_rgba(127,17,24,0.22)] transition ${buttonClass}`}
           >
-            Перейти к оплате
+            Төлем бетіне өту
           </Link>
         </div>
       </div>

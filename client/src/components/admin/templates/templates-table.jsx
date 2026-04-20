@@ -1,7 +1,7 @@
 import React from "react";
 
 function formatDateTime(value) {
-  return new Date(value).toLocaleString("ru-RU", {
+  return new Date(value).toLocaleString("kk-KZ", {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
@@ -14,11 +14,11 @@ export default function TemplatesTable({ templates, onRequestDelete }) {
   return (
     <div className="overflow-hidden rounded-[24px] border border-black/10 bg-[#fcfaf7]">
       <div className="grid grid-cols-1 gap-3 border-b border-black/10 px-5 py-4 text-xs uppercase tracking-[0.24em] text-black/45 md:grid-cols-[1.2fr_0.9fr_1.7fr_0.9fr_0.9fr]">
-        <div>Название</div>
-        <div>Тип</div>
-        <div>Путь</div>
-        <div>Создан</div>
-        <div>Действие</div>
+        <div>Атауы</div>
+        <div>Түрі</div>
+        <div>Жолы</div>
+        <div>Құрылған күні</div>
+        <div>Әрекет</div>
       </div>
 
       <div className="divide-y divide-black/10">
@@ -39,7 +39,7 @@ export default function TemplatesTable({ templates, onRequestDelete }) {
                 onClick={() => onRequestDelete(template)}
                 className="rounded-full border border-black/10 bg-white px-4 py-1 text-[11px] uppercase tracking-[0.18em] text-black/60 transition hover:border-[#7f1118]/25 hover:text-[#7f1118]"
               >
-                Удалить
+                Өшіру
               </button>
             </div>
           </div>

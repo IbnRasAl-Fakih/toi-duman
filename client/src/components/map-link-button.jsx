@@ -2,7 +2,7 @@ import React from "react";
 
 export default function MapLinkButton({
   href,
-  label = "Открыть карту",
+  label = "Картаны ашу",
   className = "",
   iconClassName = "",
   textClassName = ""

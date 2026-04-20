@@ -25,7 +25,7 @@ export default function AdminTemplatesPage() {
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.detail || "Не удалось загрузить список шаблонов");
+          throw new Error(data.detail || "Үлгілер тізімін жүктеу мүмкін болмады");
         }
 
         if (isMounted) {
@@ -33,7 +33,7 @@ export default function AdminTemplatesPage() {
         }
       } catch (requestError) {
         if (isMounted) {
-          const message = requestError instanceof Error ? requestError.message : "Неизвестная ошибка";
+          const message = requestError instanceof Error ? requestError.message : "Белгісіз қате";
           setError(message);
           notification.error(message);
         }
@@ -65,7 +65,7 @@ export default function AdminTemplatesPage() {
       });
 
       if (!response.ok) {
-        let detail = "Не удалось удалить шаблон";
+        let detail = "Үлгіні өшіру мүмкін болмады";
 
         try {
           const data = await response.json();
@@ -77,9 +77,9 @@ export default function AdminTemplatesPage() {
 
       setTemplates((current) => current.filter((item) => item.id !== pendingDeleteTemplate.id));
       setPendingDeleteTemplate(null);
-      notification.success("Шаблон удален");
+      notification.success("Үлгі өшірілді");
     } catch (deleteError) {
-      const message = deleteError instanceof Error ? deleteError.message : "Не удалось удалить шаблон";
+      const message = deleteError instanceof Error ? deleteError.message : "Үлгіні өшіру мүмкін болмады";
       setError(message);
       notification.error(message);
     } finally {
@@ -90,15 +90,15 @@ export default function AdminTemplatesPage() {
   return (
     <>
       <AdminShell
-        title="Список шаблонов"
-        description="Раздел для просмотра зарегистрированных шаблонов. Здесь можно проверить тип, путь и дату создания перед привязкой шаблона к событию."
+        title="Үлгілер тізімі"
+        description="Бұл бөлімде тіркелген үлгілерді қарап, оқиғаға байланыстырмас бұрын түрін, жолын және құрылған күнін тексеруге болады."
       >
         {isLoading ? (
-          <TemplatesEmptyState text="Загружаем шаблоны..." />
+          <TemplatesEmptyState text="Үлгілер жүктелуде..." />
         ) : error ? (
           <TemplatesEmptyState text={error} tone="error" />
         ) : templates.length === 0 ? (
-          <TemplatesEmptyState text="Шаблонов пока нет." />
+          <TemplatesEmptyState text="Әзірге үлгілер жоқ." />
         ) : (
           <TemplatesTable templates={templates} onRequestDelete={setPendingDeleteTemplate} />
         )}

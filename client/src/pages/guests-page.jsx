@@ -17,30 +17,30 @@ function normalizeEventTitle(eventData) {
     return names;
   }
 
-  return eventData?.slug || "Event";
+  return eventData?.slug || "Оқиға";
 }
 
 function getStatusLabel(status) {
-  if (status === "yes") return "Attending";
-  if (status === "no") return "Declined";
-  return status || "Unknown";
+  if (status === "yes") return "Келеді";
+  if (status === "no") return "Келмейді";
+  return status || "Белгісіз";
 }
 
 function sortGuests(guests, sortKey) {
   const sorted = [...guests];
 
   if (sortKey === "name_asc") {
-    sorted.sort((left, right) => left.name.localeCompare(right.name, "ru"));
+    sorted.sort((left, right) => left.name.localeCompare(right.name, "kk"));
     return sorted;
   }
 
   if (sortKey === "name_desc") {
-    sorted.sort((left, right) => right.name.localeCompare(left.name, "ru"));
+    sorted.sort((left, right) => right.name.localeCompare(left.name, "kk"));
     return sorted;
   }
 
   if (sortKey === "status") {
-    sorted.sort((left, right) => getStatusLabel(left.status).localeCompare(getStatusLabel(right.status), "ru"));
+    sorted.sort((left, right) => getStatusLabel(left.status).localeCompare(getStatusLabel(right.status), "kk"));
     return sorted;
   }
 
@@ -70,7 +70,7 @@ export default function GuestsPage() {
         const eventPayload = await eventResponse.json();
 
         if (!eventResponse.ok) {
-          throw new Error(eventPayload.detail || "Failed to load event");
+          throw new Error(eventPayload.detail || "Оқиғаны жүктеу мүмкін болмады");
         }
 
         if (eventPayload.is_example) {
@@ -84,7 +84,7 @@ export default function GuestsPage() {
         const guestsPayload = await guestsResponse.json();
 
         if (!guestsResponse.ok) {
-          throw new Error(guestsPayload.detail || "Failed to load guests");
+          throw new Error(guestsPayload.detail || "Қонақтарды жүктеу мүмкін болмады");
         }
 
         if (!isMounted) return;
@@ -93,7 +93,7 @@ export default function GuestsPage() {
         setGuests(Array.isArray(guestsPayload) ? guestsPayload : []);
       } catch (requestError) {
         if (isMounted) {
-          setError(requestError instanceof Error ? requestError.message : "Unknown error");
+          setError(requestError instanceof Error ? requestError.message : "Белгісіз қате");
         }
       } finally {
         if (isMounted) {
@@ -126,7 +126,7 @@ export default function GuestsPage() {
   );
 
   if (isLoading) {
-    return <GuestsState title="Loading guests" description="Fetching guest responses." />;
+    return <GuestsState title="Қонақтар жүктелуде" description="Қонақ жауаптарын алып жатырмыз." />;
   }
 
   if (error || !eventData) {
@@ -139,12 +139,12 @@ export default function GuestsPage() {
         <header className="rounded-[36px] border border-black/10 bg-white/80 px-6 py-6 shadow-[0_20px_60px_rgba(31,26,23,0.08)] backdrop-blur md:px-8 lg:px-10">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <p className="text-xs uppercase tracking-[0.38em] text-[#7f1118]/60">Guests Page</p>
+              <p className="text-xs uppercase tracking-[0.38em] text-[#7f1118]/60">Қонақтар беті</p>
               <h1 className="mt-4 font-['Georgia','Times_New_Roman',serif] text-4xl leading-[0.95] text-[#7f1118] md:text-6xl">
                 {normalizeEventTitle(eventData)}
               </h1>
               <p className="mt-4 text-sm leading-7 text-black/65 md:text-base">
-                Guest responses for invitation <span className="font-medium text-[#7f1118]">{eventData.slug}</span>.
+                <span className="font-medium text-[#7f1118]">{eventData.slug}</span> шақыруына келген қонақ жауаптары.
               </p>
             </div>
 
@@ -152,15 +152,15 @@ export default function GuestsPage() {
               to={`/${eventData.slug}`}
               className="inline-flex items-center justify-center rounded-full border border-black/10 px-5 py-3 text-xs uppercase tracking-[0.18em] text-black/60 transition hover:border-[#7f1118]/25 hover:text-[#7f1118]"
             >
-              Open Invitation
+              Шақыруды ашу
             </Link>
           </div>
         </header>
 
         <section className="grid gap-4 md:grid-cols-3">
-          <SummaryCard label="Responded" value={respondedCount} />
-          <SummaryCard label="Attending" value={attendingCount} tone="success" />
-          <SummaryCard label="Declined" value={declinedCount} />
+          <SummaryCard label="Жауап бергендер" value={respondedCount} />
+          <SummaryCard label="Келетіндер" value={attendingCount} tone="success" />
+          <SummaryCard label="Келмейтіндер" value={declinedCount} />
         </section>
 
         <section className="rounded-[32px] border border-black/10 bg-white/80 px-6 py-6 shadow-[0_20px_60px_rgba(31,26,23,0.08)] backdrop-blur md:px-8">

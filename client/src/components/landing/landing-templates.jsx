@@ -35,7 +35,7 @@ export default function LandingTemplates() {
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
         <div>
           <p className="text-[0.75rem] font-semibold uppercase tracking-[0.18em] text-[#b28a2d]">Біздің үлгілер</p>
-          <h2 className="mt-3 font-['Georgia','Times_New_Roman',serif] text-[2.55rem] leading-[0.94] tracking-[-0.04em] text-[#27282d] md:text-[3.4rem]">
+          <h2 className="landing-serif mt-3 text-[2.55rem] leading-[0.94] tracking-[-0.04em] text-[#27282d] md:text-[3.4rem]">
             Әсемдік галереясы
           </h2>
         </div>
@@ -43,7 +43,7 @@ export default function LandingTemplates() {
         <div className="flex flex-col items-center gap-5 pt-2 lg:items-end">
 
           <a
-            href="#templates"
+            href="/templates"
             className="inline-flex items-center gap-3 text-base font-semibold text-[#a27b24] transition duration-300 hover:text-[#87651b]"
           >
             <span>Барлық жұмыстарды көру</span>

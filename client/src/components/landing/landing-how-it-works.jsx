@@ -59,7 +59,7 @@ export default function LandingHowItWorks() {
   return (
     <section id="how-it-works" className="mx-auto w-full max-w-[1240px] px-4 pb-20 pt-6 md:px-5 md:pb-24 md:pt-8">
       <div className="mx-auto max-w-[780px] text-center">
-        <h2 className="font-['Georgia','Times_New_Roman',serif] text-[2.55rem] leading-[0.96] tracking-[-0.04em] text-[#28292e] md:text-[3.4rem]">
+        <h2 className="landing-serif text-[2.55rem] leading-[0.96] tracking-[-0.04em] text-[#28292e] md:text-[3.4rem]">
           Мінсіздікке апарар жол
         </h2>
         <p className="mx-auto mt-4 max-w-[36rem] text-[1rem] leading-8 text-[#8a8b91]">

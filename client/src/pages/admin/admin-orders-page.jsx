@@ -25,7 +25,7 @@ export default function AdminOrdersPage() {
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.detail || "Не удалось загрузить список заказов");
+          throw new Error(data.detail || "Тапсырыстар тізімін жүктеу мүмкін болмады");
         }
 
         if (isMounted) {
@@ -33,7 +33,7 @@ export default function AdminOrdersPage() {
         }
       } catch (requestError) {
         if (isMounted) {
-          const message = requestError instanceof Error ? requestError.message : "Неизвестная ошибка";
+          const message = requestError instanceof Error ? requestError.message : "Белгісіз қате";
           setError(message);
           notification.error(message);
         }
@@ -71,16 +71,16 @@ export default function AdminOrdersPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.detail || "Не удалось обновить статус заказа");
+        throw new Error(data.detail || "Тапсырыс күйін жаңарту мүмкін болмады");
       }
 
       setOrders((current) => current.map((item) => (item.id === pendingStatusChange.order.id ? data : item)));
       setPendingStatusChange(null);
       notification.success(
-        pendingStatusChange.nextStatus === "paid" ? "Оплата подтверждена" : "Статус заказа обновлен"
+        pendingStatusChange.nextStatus === "paid" ? "Төлем расталды" : "Тапсырыс күйі жаңартылды"
       );
     } catch (statusError) {
-      const message = statusError instanceof Error ? statusError.message : "Не удалось обновить статус заказа";
+      const message = statusError instanceof Error ? statusError.message : "Тапсырыс күйін жаңарту мүмкін болмады";
       setError(message);
       notification.error(message);
     } finally {
@@ -91,15 +91,15 @@ export default function AdminOrdersPage() {
   return (
     <>
       <AdminShell
-        title="Список заказов"
-        description="Раздел для контроля заказов по событиям. Здесь можно быстро увидеть ID заказа, привязанный event, сумму и текущий статус оплаты."
+        title="Тапсырыстар тізімі"
+        description="Бұл бөлімде оқиғаларға қатысты тапсырыстарды бақылап, тапсырыс ID-сын, байланысқан оқиғаны, соманы және төлем күйін көруге болады."
       >
         {isLoading ? (
-          <OrdersEmptyState text="Загружаем заказы..." />
+          <OrdersEmptyState text="Тапсырыстар жүктелуде..." />
         ) : error ? (
           <OrdersEmptyState text={error} tone="error" />
         ) : orders.length === 0 ? (
-          <OrdersEmptyState text="Заказов пока нет." />
+          <OrdersEmptyState text="Әзірге тапсырыстар жоқ." />
         ) : (
           <OrdersTable
             orders={orders}

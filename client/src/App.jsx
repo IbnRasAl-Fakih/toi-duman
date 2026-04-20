@@ -13,12 +13,14 @@ import NotFoundPage from "./pages/not-found-page.jsx";
 import PrivacyPage from "./pages/privacy-page.jsx";
 import Template5FormPage from "./pages/template-5-form-page.jsx";
 import Template6FormPage from "./pages/template-6-form-page.jsx";
+import TemplatesPage from "./pages/templates-page.jsx";
 import TermsPage from "./pages/terms-page.jsx";
 
 export default function App() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
+      <Route path="/templates" element={<TemplatesPage />} />
       <Route path="/template-5/form" element={<Template5FormPage />} />
       <Route path="/template-6/form" element={<Template6FormPage />} />
       <Route path="/privacy" element={<PrivacyPage />} />

@@ -187,7 +187,7 @@ async def create_public_template_5_event(
 
     parsed_config["template_path"] = "templates/invitation-page_template_5.jsx"
     parsed_config["template_type"] = "invitation_v5"
-    parsed_config["template_name"] = "Template 5"
+    parsed_config["template_name"] = "Махаббат театры"
 
     event_type = str(type or "wedding")
     uploaded_urls: list[str] = []
@@ -245,7 +245,7 @@ async def create_public_template_6_event(
 
     parsed_config["template_path"] = "templates/invitation-page_template_6.jsx"
     parsed_config["template_type"] = "invitation_v6"
-    parsed_config["template_name"] = "Template 6"
+    parsed_config["template_name"] = "Ғашықтар бағы"
 
     event_type = str(type or "wedding")
     uploaded_urls: list[str] = []

@@ -62,7 +62,7 @@ function PricingCard({ name, price, suffix, features, cta, featured = false, bad
       ) : null}
 
       <p className="text-[0.8rem] font-semibold uppercase tracking-[0.18em] text-[#73747a]">{name}</p>
-      <div className="mt-4 flex items-end gap-1 font-['Georgia','Times_New_Roman',serif] text-[#23242a]">
+      <div className="landing-serif mt-4 flex items-end gap-1 text-[#23242a]">
         <span className="text-[2.8rem] font-semibold leading-none tracking-[-0.05em]">{price}</span>
         <span className="pb-1 text-[1.35rem]">{suffix}</span>
       </div>
@@ -96,7 +96,7 @@ export default function LandingPricing() {
   return (
     <section id="pricing" className="mx-auto w-full max-w-[1240px] px-4 pb-20 pt-8 md:px-5 md:pb-24 md:pt-10">
       <div className="mx-auto max-w-[700px] text-center">
-        <h2 className="font-['Georgia','Times_New_Roman',serif] text-[2.55rem] leading-[0.96] tracking-[-0.04em] text-[#28292e] md:text-[3.4rem]">
+        <h2 className="landing-serif text-[2.55rem] leading-[0.96] tracking-[-0.04em] text-[#28292e] md:text-[3.4rem]">
           Тариф жоспарлары
         </h2>
         <p className="mx-auto mt-4 max-w-[31rem] text-[1rem] leading-8 text-[#8a8b91]">

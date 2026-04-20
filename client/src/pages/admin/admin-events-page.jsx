@@ -25,7 +25,7 @@ export default function AdminEventsPage() {
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.detail || "Не удалось загрузить список event-ов");
+          throw new Error(data.detail || "Оқиғалар тізімін жүктеу мүмкін болмады");
         }
 
         if (isMounted) {
@@ -33,7 +33,7 @@ export default function AdminEventsPage() {
         }
       } catch (requestError) {
         if (isMounted) {
-          const message = requestError instanceof Error ? requestError.message : "Неизвестная ошибка";
+          const message = requestError instanceof Error ? requestError.message : "Белгісіз қате";
           setError(message);
           notification.error(message);
         }
@@ -65,7 +65,7 @@ export default function AdminEventsPage() {
       });
 
       if (!response.ok) {
-        let detail = "Не удалось удалить event";
+        let detail = "Оқиғаны өшіру мүмкін болмады";
 
         try {
           const data = await response.json();
@@ -77,9 +77,9 @@ export default function AdminEventsPage() {
 
       setEvents((current) => current.filter((item) => item.id !== pendingDeleteEvent.id));
       setPendingDeleteEvent(null);
-      notification.success("Event удален");
+      notification.success("Оқиға өшірілді");
     } catch (deleteError) {
-      const message = deleteError instanceof Error ? deleteError.message : "Не удалось удалить event";
+      const message = deleteError instanceof Error ? deleteError.message : "Оқиғаны өшіру мүмкін болмады";
       setError(message);
       notification.error(message);
     } finally {
@@ -90,15 +90,15 @@ export default function AdminEventsPage() {
   return (
     <>
       <AdminShell
-        title="Список event-ов"
-        description="Раздел для просмотра созданных событий. Здесь можно быстро проверить slug, дату, локацию и обложку."
+        title="Оқиғалар тізімі"
+        description="Бұл бөлімде жасалған оқиғаларды қарап, slug, күнін, орнын және мұқабасын жылдам тексеруге болады."
       >
         {isLoading ? (
-          <EventsEmptyState text="Загружаем события..." />
+          <EventsEmptyState text="Оқиғалар жүктелуде..." />
         ) : error ? (
           <EventsEmptyState text={error} tone="error" />
         ) : events.length === 0 ? (
-          <EventsEmptyState text="Событий пока нет." />
+          <EventsEmptyState text="Әзірге оқиғалар жоқ." />
         ) : (
           <div className="grid gap-5">
             {events.map((eventItem) => (

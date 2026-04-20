@@ -48,7 +48,7 @@ export function AdminAuthProvider({ children }) {
 
         const data = await response.json().catch(() => ({}));
         if (!response.ok) {
-          throw new Error(data.detail || "Не удалось войти");
+          throw new Error(data.detail || "Кіру сәтсіз аяқталды");
         }
 
         await refreshSession();

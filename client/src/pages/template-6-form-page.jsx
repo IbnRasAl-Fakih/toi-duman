@@ -80,7 +80,7 @@ function buildConfig(form, galleryImageUrls = [], coverImageUrl = "") {
   return {
     template_path: TEMPLATE_6_PATH,
     template_type: TEMPLATE_6_TYPE,
-    template_name: "Template 6",
+    template_name: "Ғашықтар бағы",
     date: form.date && form.time ? `${form.date}T${form.time}:00Z` : form.date || "",
     time: form.time,
     location: form.location,
@@ -106,22 +106,22 @@ function buildConfig(form, galleryImageUrls = [], coverImageUrl = "") {
 
 function validateForm(form, galleryFiles) {
   if (!form.name.trim()) {
-    return "Укажите имена пары.";
+    return "Жұптың есімдерін енгізіңіз.";
   }
   if (!form.date || !form.time) {
-    return "Заполните дату и время события.";
+    return "Оқиғаның күні мен уақытын толтырыңыз.";
   }
   if (!form.location.trim()) {
-    return "Укажите адрес мероприятия.";
+    return "Іс-шара мекенжайын енгізіңіз.";
   }
   if (!form.locationLink.trim()) {
-    return "Добавьте ссылку на карту.";
+    return "Карта сілтемесін қосыңыз.";
   }
   if (!form.heroTitle.trim()) {
-    return "Заполните заголовок приглашения.";
+    return "Шақыру тақырыбын толтырыңыз.";
   }
   if (galleryFiles.length < GALLERY_MIN || galleryFiles.length > GALLERY_MAX) {
-    return "Загрузите от 3 до 6 фотографий для галереи.";
+    return "Галерея үшін 3-тен 6-ға дейін фото жүктеңіз.";
   }
   return "";
 }
@@ -144,7 +144,7 @@ async function createTemplate6Event({ config, type, coverFile, galleryFiles }) {
 
   const data = await response.json();
   if (!response.ok) {
-    throw new Error(data.detail || "Не удалось создать приглашение");
+    throw new Error(data.detail || "Шақыруды жасау мүмкін болмады");
   }
 
   return data;
@@ -211,7 +211,7 @@ function PhonePreview({ form, coverFile, galleryFiles, createdEvent }) {
       slug: createdEvent?.slug || "preview-template-6",
       type: form.type || "wedding",
       date: form.date && form.time ? `${form.date}T${form.time}:00Z` : `${new Date().toISOString().slice(0, 10)}T19:30:00Z`,
-      location: form.location || "Проспект Достык, 52",
+      location: form.location || "Достық даңғылы, 52",
       location_link: form.locationLink || "#",
       description: form.introText || null,
       cover_image_url: coverFile?.previewUrl || null,
@@ -334,7 +334,7 @@ export default function Template6FormPage() {
     }
 
     if (files.length < GALLERY_MIN || files.length > GALLERY_MAX) {
-      setError("Загрузите от 3 до 6 фотографий для галереи.");
+      setError("Галерея үшін 3-тен 6-ға дейін фото жүктеңіз.");
       return;
     }
 
@@ -370,7 +370,7 @@ export default function Template6FormPage() {
       });
       setCreatedEvent(created);
     } catch (createError) {
-      setError(createError instanceof Error ? createError.message : "Не удалось создать приглашение.");
+      setError(createError instanceof Error ? createError.message : "Шақыруды жасау мүмкін болмады.");
     } finally {
       setIsCreating(false);
     }
@@ -385,22 +385,22 @@ export default function Template6FormPage() {
           <section className="min-w-0 space-y-12">
             <div className="max-w-[760px]">
               <h1 className="text-[2.4rem] leading-none text-[#8b6a34]" style={{ fontFamily: "var(--font-display)" }}>
-                Template 6
+                Ғашықтар бағы
               </h1>
             </div>
 
-            <FormSection title="Основная информация">
+            <FormSection title="Негізгі ақпарат">
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="md:col-span-2">
-                  <Field label="Имена пары" value={form.name} onChange={(event) => updateField("name", event.target.value)} placeholder="Например: Аружан, Нұрлан" />
+                  <Field label="Жұптың есімдері" value={form.name} onChange={(event) => updateField("name", event.target.value)} placeholder="Мысалы: Аружан, Нұрлан" />
                 </div>
-                <CreateEventDateField label="Дата события" selected={parseDateValue(form.date)} onChange={(value) => updateField("date", formatDateValue(value))} />
-                <CreateEventTimeField label="Время начала" selected={parseTimeValue(form.time)} onChange={(value) => updateField("time", formatTimeValue(value))} />
+                <CreateEventDateField label="Оқиға күні" selected={parseDateValue(form.date)} onChange={(value) => updateField("date", formatDateValue(value))} />
+                <CreateEventTimeField label="Басталу уақыты" selected={parseTimeValue(form.time)} onChange={(value) => updateField("time", formatTimeValue(value))} />
                 <div className="md:col-span-2">
-                  <Field label="Адрес" value={form.location} onChange={(event) => updateField("location", event.target.value)} placeholder="Проспект Достык, 52" />
+                  <Field label="Мекенжай" value={form.location} onChange={(event) => updateField("location", event.target.value)} placeholder="Достық даңғылы, 52" />
                 </div>
                 <div className="md:col-span-2">
-                  <Field label="Ссылка на карту" value={form.locationLink} onChange={(event) => updateField("locationLink", event.target.value)} placeholder="https://2gis.kz/..." />
+                  <Field label="Карта сілтемесі" value={form.locationLink} onChange={(event) => updateField("locationLink", event.target.value)} placeholder="https://2gis.kz/..." />
                 </div>
               </div>
             </FormSection>
@@ -408,39 +408,39 @@ export default function Template6FormPage() {
             <FormSection title="Hero">
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="md:col-span-2">
-                  <Field label="Заголовок" value={form.heroTitle} onChange={(event) => updateField("heroTitle", event.target.value)} placeholder="Үйлену тойына шақыру" />
+                  <Field label="Тақырып" value={form.heroTitle} onChange={(event) => updateField("heroTitle", event.target.value)} placeholder="Үйлену тойына шақыру" />
                 </div>
                 <div className="md:col-span-2">
-                  <Field label="Подзаголовок" value={form.heroSubtitle} onChange={(event) => updateField("heroSubtitle", event.target.value)} multiline rows={4} />
+                  <Field label="Ішкі тақырып" value={form.heroSubtitle} onChange={(event) => updateField("heroSubtitle", event.target.value)} multiline rows={4} />
                 </div>
                 <div className="md:col-span-2">
-                  <Field label="Заголовок интро-блока" value={form.introTitle} onChange={(event) => updateField("introTitle", event.target.value)} />
+                  <Field label="Кіріспе блоктың тақырыбы" value={form.introTitle} onChange={(event) => updateField("introTitle", event.target.value)} />
                 </div>
                 <div className="md:col-span-2">
-                  <Field label="Текст интро-блока" value={form.introText} onChange={(event) => updateField("introText", event.target.value)} multiline rows={4} />
+                  <Field label="Кіріспе блоктың мәтіні" value={form.introText} onChange={(event) => updateField("introText", event.target.value)} multiline rows={4} />
                 </div>
               </div>
             </FormSection>
 
-            <FormSection title="Место и медиа">
+            <FormSection title="Өтетін орын және медиа">
               <div className="grid gap-4">
-                <Field label="Название площадки" value={form.venue_name} onChange={(event) => updateField("venue_name", event.target.value)} placeholder="Grand Ballroom" />
-                <Field label="Текст про родителей / хостов" value={form.hosts} onChange={(event) => updateField("hosts", event.target.value)} multiline rows={3} />
-                <Field label="Текст кнопки карты" value={form.mapLabel} onChange={(event) => updateField("mapLabel", event.target.value)} />
+                <Field label="Өтетін орын атауы" value={form.venue_name} onChange={(event) => updateField("venue_name", event.target.value)} placeholder="Grand Ballroom" />
+                <Field label="Ата-ана / жүргізуші мәтіні" value={form.hosts} onChange={(event) => updateField("hosts", event.target.value)} multiline rows={3} />
+                <Field label="Карта батырмасының мәтіні" value={form.mapLabel} onChange={(event) => updateField("mapLabel", event.target.value)} />
 
                 <div className="pt-2">
                   <div className="flex items-center justify-between gap-4">
                     <div>
-                      <FieldLabel>Обложка</FieldLabel>
-                      <p className="text-sm text-[#8f7d63]">Необязательно. Если загрузите, фото станет постером первого экрана.</p>
+                      <FieldLabel>Мұқаба</FieldLabel>
+                      <p className="text-sm text-[#8f7d63]">Міндетті емес. Жүктесеңіз, фото бірінші экранның постеріне айналады.</p>
                     </div>
                     <label className="cursor-pointer rounded-full border border-[#d8c5a1] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#8b6a34]">
-                      Загрузить
+                      Жүктеу
                       <input type="file" accept="image/*" onChange={handleCoverChange} className="hidden" />
                     </label>
                   </div>
                   <div className="mt-4">
-                    <UploadGrid items={coverFile ? [coverFile] : []} emptyText="Загрузите обложку для hero-блока или оставьте дефолтную." />
+                    <UploadGrid items={coverFile ? [coverFile] : []} emptyText="Hero блогына мұқаба жүктеңіз немесе әдепкі нұсқаны қалдырыңыз." />
                   </div>
                 </div>
 
@@ -448,15 +448,15 @@ export default function Template6FormPage() {
                   <div className="flex items-center justify-between gap-4">
                     <div>
                       <FieldLabel>Галерея</FieldLabel>
-                      <p className="text-sm text-[#8f7d63]">Загрузите от 3 до 6 фотографий. Они сразу попадут в live-preview и будут использованы в слайдере шаблона.</p>
+                      <p className="text-sm text-[#8f7d63]">3-тен 6-ға дейін фото жүктеңіз. Олар бірден live-preview-ге түсіп, үлгінің слайдерінде қолданылады.</p>
                     </div>
                     <label className="cursor-pointer rounded-full border border-[#d8c5a1] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#8b6a34]">
-                      Добавить
+                      Қосу
                       <input type="file" accept="image/*" multiple onChange={handleGalleryChange} className="hidden" />
                     </label>
                   </div>
                   <div className="mt-4">
-                    <UploadGrid items={galleryFiles} emptyText="Добавьте 3-6 фотографий для галереи." />
+                    <UploadGrid items={galleryFiles} emptyText="Галерея үшін 3-6 фото қосыңыз." />
                   </div>
                 </div>
               </div>
@@ -465,13 +465,13 @@ export default function Template6FormPage() {
             <FormSection title="RSVP">
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="md:col-span-2">
-                  <Field label="Заголовок формы" value={form.rsvpTitle} onChange={(event) => updateField("rsvpTitle", event.target.value)} />
+                  <Field label="Форма тақырыбы" value={form.rsvpTitle} onChange={(event) => updateField("rsvpTitle", event.target.value)} />
                 </div>
                 <div className="md:col-span-2">
-                  <Field label="Описание формы" value={form.rsvpText} onChange={(event) => updateField("rsvpText", event.target.value)} multiline rows={4} />
+                  <Field label="Форма сипаттамасы" value={form.rsvpText} onChange={(event) => updateField("rsvpText", event.target.value)} multiline rows={4} />
                 </div>
                 <div className="md:col-span-2">
-                  <Field label="Текст кнопки отправки" value={form.submitLabel} onChange={(event) => updateField("submitLabel", event.target.value)} />
+                  <Field label="Жіберу батырмасының мәтіні" value={form.submitLabel} onChange={(event) => updateField("submitLabel", event.target.value)} />
                 </div>
               </div>
             </FormSection>
@@ -486,7 +486,7 @@ export default function Template6FormPage() {
                   disabled={isCreating}
                   className="rounded-full bg-[#d9bf88] px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#5a4517] disabled:opacity-50"
                 >
-                  {isCreating ? "Создание..." : "Создать приглашение"}
+                  {isCreating ? "Жасалуда..." : "Шақыру жасау"}
                 </button>
 
                 {createdEvent ? (
@@ -496,7 +496,7 @@ export default function Template6FormPage() {
                     rel="noreferrer"
                     className="rounded-full border border-[#ddd1bc] px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#7d6b4f]"
                   >
-                    Открыть сайт
+                    Сайтты ашу
                   </a>
                 ) : null}
               </div>

@@ -11,7 +11,7 @@ export default function CreateEventCoverUploadField({
 }) {
   return (
     <div className="block">
-      <span className="mb-2 block text-xs uppercase tracking-[0.28em] text-black/55">Обложка</span>
+      <span className="mb-2 block text-xs uppercase tracking-[0.28em] text-black/55">Мұқаба</span>
       <label
         onDragEnter={(event) => {
           event.preventDefault();
@@ -39,13 +39,13 @@ export default function CreateEventCoverUploadField({
             <div className="flex min-h-[240px] w-full items-center justify-center overflow-hidden rounded-[18px] bg-[#f6f1eb] p-3 shadow-[0_16px_36px_rgba(31,26,23,0.14)]">
               <img
                 src={preview}
-                alt="Предпросмотр обложки"
+                alt="Мұқабаның алдын ала көрінісі"
                 className="max-h-[420px] max-w-full rounded-[14px] object-contain"
               />
             </div>
             <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-left">
               <div>
-                <p className="text-sm font-medium text-[#1f1a17]">{fileName || "Изображение выбрано"}</p>
+                <p className="text-sm font-medium text-[#1f1a17]">{fileName || "Сурет таңдалды"}</p>
               </div>
               <button
                 type="button"
@@ -55,7 +55,7 @@ export default function CreateEventCoverUploadField({
                 }}
                 className="rounded-full border border-black/10 px-4 py-2 text-xs uppercase tracking-[0.18em] text-black/60 transition hover:border-[#7f1118]/30 hover:text-[#7f1118]"
               >
-                Удалить
+                Өшіру
               </button>
             </div>
           </div>
@@ -65,8 +65,8 @@ export default function CreateEventCoverUploadField({
               <span className="absolute left-1/2 top-1/2 h-px w-4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-current" />
               <span className="absolute left-1/2 top-1/2 h-4 w-px -translate-x-1/2 -translate-y-1/2 rounded-full bg-current" />
             </div>
-            <p className="mt-4 text-sm font-medium text-[#1f1a17]">Перетащите изображение сюда</p>
-            <p className="mt-2 text-sm text-black/55">или нажмите, чтобы выбрать файл с компьютера</p>
+            <p className="mt-4 text-sm font-medium text-[#1f1a17]">Суретті осы жерге сүйреп әкеліңіз</p>
+            <p className="mt-2 text-sm text-black/55">немесе компьютерден файл таңдау үшін басыңыз</p>
             <p className="mt-4 text-xs uppercase tracking-[0.24em] text-black/35">PNG, JPG, WEBP, GIF, SVG</p>
           </>
         )}

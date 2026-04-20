@@ -1,9 +1,9 @@
 function formatDateTime(value) {
   if (!value) {
-    return "Не оплачено";
+    return "Төленбеген";
   }
 
-  return new Date(value).toLocaleString("ru-RU", {
+  return new Date(value).toLocaleString("kk-KZ", {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
@@ -15,7 +15,11 @@ function formatDateTime(value) {
 function formatAmount(value) {
   const numericValue = Number(value) || 0;
 
-  return `${Math.trunc(numericValue).toLocaleString("ru-RU")} ₸`;
+  return `${Math.trunc(numericValue).toLocaleString("kk-KZ")} ₸`;
+}
+
+function getStatusLabel(status) {
+  return status === "paid" ? "Төленген" : "Төленбеген";
 }
 
 export default function OrderRow({ order, onRequestStatusChange }) {
@@ -35,7 +39,7 @@ export default function OrderRow({ order, onRequestStatusChange }) {
             order.status === "paid" ? "bg-[#0d7a3b]/10 text-[#0d7a3b]" : "bg-[#7f1118]/10 text-[#7f1118]"
           }`}
         >
-          {order.status}
+          {getStatusLabel(order.status)}
         </span>
       </div>
       <div>{formatDateTime(order.paid_at)}</div>
@@ -45,7 +49,7 @@ export default function OrderRow({ order, onRequestStatusChange }) {
           onClick={() => onRequestStatusChange(order, nextStatus)}
           className="rounded-full border border-black/10 bg-white px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-black/60 transition hover:border-[#7f1118]/25 hover:text-[#7f1118]"
         >
-          {nextStatus === "paid" ? "Подтвердить оплату" : "Отменить оплату"}
+          {nextStatus === "paid" ? "Төлемді растау" : "Төлемді болдырмау"}
         </button>
       </div>
     </div>

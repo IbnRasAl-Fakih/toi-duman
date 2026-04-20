@@ -25,10 +25,10 @@ export default function AdminLoginPage() {
 
     try {
       await login(username.trim(), password);
-      notification.success("Вход выполнен");
+      notification.success("Жүйеге кіру орындалды");
       navigate(location.state?.from || "/admin/events", { replace: true });
     } catch (submitError) {
-      notification.error(submitError instanceof Error ? submitError.message : "Не удалось войти");
+      notification.error(submitError instanceof Error ? submitError.message : "Кіру сәтсіз аяқталды");
     } finally {
       setIsSubmitting(false);
     }
@@ -37,12 +37,12 @@ export default function AdminLoginPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#f4efe8] px-4 py-6 text-[#1f1a17] md:px-6">
       <div className="w-full max-w-xl rounded-[36px] border border-black/10 bg-white/85 px-6 py-8 shadow-[0_24px_80px_rgba(31,24,21,0.08)] backdrop-blur-xl md:px-8">
-        <p className="text-xs uppercase tracking-[0.38em] text-[#7f1118]/60">Admin Panel</p>
+        <p className="text-xs uppercase tracking-[0.38em] text-[#7f1118]/60">Әкімші панелі</p>
         <h1 className="mt-4 font-['Georgia','Times_New_Roman',serif] text-5xl leading-[0.92] text-[#7f1118] md:text-6xl">
-          Вход
+          Кіру
         </h1>
         <p className="mt-4 text-sm leading-7 text-black/65 md:text-base">
-          Введите логин и пароль администратора, чтобы открыть управление шаблонами, событиями и заказами.
+          Үлгілерді, оқиғаларды және тапсырыстарды басқару үшін әкімші логині мен құпиясөзін енгізіңіз.
         </p>
 
         <form onSubmit={handleSubmit} className="mt-8 grid gap-5">
@@ -59,7 +59,7 @@ export default function AdminLoginPage() {
           </label>
 
           <label className="block">
-            <span className="mb-2 block text-xs uppercase tracking-[0.28em] text-black/55">Пароль</span>
+            <span className="mb-2 block text-xs uppercase tracking-[0.28em] text-black/55">Құпиясөз</span>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
@@ -73,7 +73,7 @@ export default function AdminLoginPage() {
                 type="button"
                 onClick={() => setShowPassword((current) => !current)}
                 className="absolute inset-y-0 right-5 inline-flex items-center justify-center text-black/45 transition hover:text-[#7f1118]"
-                aria-label={showPassword ? "Скрыть пароль" : "Показать пароль"}
+                aria-label={showPassword ? "Құпиясөзді жасыру" : "Құпиясөзді көрсету"}
               >
                 {showPassword ? <HidePasswordIcon className="h-5 w-5" /> : <ShowPasswordIcon className="h-5 w-5" />}
               </button>
@@ -88,7 +88,7 @@ export default function AdminLoginPage() {
                 isSubmitting || !username.trim() || !password ? "cursor-default bg-[#7f1118]/50" : "bg-[#7f1118] hover:bg-[#5d0b11]"
               }`}
             >
-              {isSubmitting ? "Вход..." : "Войти"}
+              {isSubmitting ? "Кіріп жатыр..." : "Кіру"}
             </button>
           </div>
         </form>

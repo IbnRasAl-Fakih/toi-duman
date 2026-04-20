@@ -21,8 +21,8 @@ const templateOptions = [
   { value: TEMPLATE_2_PATH, label: "Template 2" },
   { value: TEMPLATE_3_PATH, label: "Template 3" },
   { value: TEMPLATE_4_PATH, label: "Template 4" },
-  { value: TEMPLATE_5_PATH, label: "Template 5" },
-  { value: TEMPLATE_6_PATH, label: "Template 6" }
+  { value: TEMPLATE_5_PATH, label: "Махаббат театры" },
+  { value: TEMPLATE_6_PATH, label: "Ғашықтар бағы" }
 ];
 
 const initialForm = {

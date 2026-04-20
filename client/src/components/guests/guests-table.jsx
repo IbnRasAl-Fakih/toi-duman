@@ -1,13 +1,13 @@
 function getStatusLabel(status) {
   if (status === "yes") {
-    return "Придет";
+    return "Келеді";
   }
 
   if (status === "no") {
-    return "Не придет";
+    return "Келмейді";
   }
 
-  return status || "Неизвестно";
+  return status || "Белгісіз";
 }
 
 function getStatusBadgeClass(status) {
@@ -27,8 +27,8 @@ export default function GuestsTable({ guests }) {
     <div className="mt-6 overflow-hidden rounded-[28px] border border-black/10 bg-[#fcfaf7]">
       <div className="grid grid-cols-[72px_minmax(0,1fr)_180px] gap-4 border-b border-black/10 px-5 py-4 text-xs uppercase tracking-[0.24em] text-black/40">
         <span>ID</span>
-        <span>Имя</span>
-        <span>Статус</span>
+        <span>Аты</span>
+        <span>Күйі</span>
       </div>
 
       {guests.length ? (
@@ -46,7 +46,7 @@ export default function GuestsTable({ guests }) {
           ))}
         </div>
       ) : (
-        <div className="px-5 py-12 text-center text-sm text-black/55">По текущим фильтрам гости не найдены.</div>
+        <div className="px-5 py-12 text-center text-sm text-black/55">Ағымдағы сүзгілер бойынша қонақтар табылмады.</div>
       )}
     </div>
   );

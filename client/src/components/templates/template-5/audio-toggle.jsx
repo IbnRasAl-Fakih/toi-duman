@@ -12,7 +12,7 @@ export default function Template5AudioToggle({ isPlaying, onToggleAudio, preview
           ? "border-[#8b3d30] bg-[#8c352b] text-white"
           : "border-[#e7c5b8] bg-[rgba(255,249,245,0.96)] text-[#7f3a31]"
       }`}
-      aria-label={isPlaying ? "Выключить музыку" : "Включить музыку"}
+      aria-label={isPlaying ? "Музыканы өшіру" : "Музыканы қосу"}
     >
       {isPlaying ? <SoundOnIcon className="h-5 w-5" /> : <SoundOffIcon className="h-5 w-5" />}
     </button>

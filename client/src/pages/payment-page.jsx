@@ -15,7 +15,7 @@ function formatAmount(value) {
   const numeric = Number(value);
   if (Number.isNaN(numeric)) return String(value);
 
-  return new Intl.NumberFormat("ru-RU").format(numeric);
+  return new Intl.NumberFormat("kk-KZ").format(numeric);
 }
 
 function formatAccountForDisplay(value) {
@@ -36,8 +36,8 @@ function formatPhoneForDisplay(value) {
 }
 
 function buildWhatsappMessage(orderId) {
-  const suffix = orderId ? ` Номер заказа: ${orderId}.` : "";
-  return encodeURIComponent(`Здравствуйте! Отправляю чек по оплате пригласительной.${suffix}`);
+  const suffix = orderId ? ` Тапсырыс нөмірі: ${orderId}.` : "";
+  return encodeURIComponent(`Сәлеметсіз бе! Шақыру ақысын төлеген чекімді жіберіп отырмын.${suffix}`);
 }
 
 export default function PaymentPage() {
@@ -65,7 +65,7 @@ export default function PaymentPage() {
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.detail || "Не удалось загрузить заказ");
+          throw new Error(data.detail || "Тапсырысты жүктеу мүмкін болмады");
         }
 
         if (isMounted) {
@@ -74,7 +74,7 @@ export default function PaymentPage() {
       } catch (requestError) {
         if (isMounted) {
           setOrder(null);
-          setError(requestError instanceof Error ? requestError.message : "Не удалось загрузить заказ");
+          setError(requestError instanceof Error ? requestError.message : "Тапсырысты жүктеу мүмкін болмады");
         }
       } finally {
         if (isMounted) {
@@ -106,20 +106,20 @@ export default function PaymentPage() {
         <header className="rounded-[36px] border border-black/10 bg-white/75 px-6 py-6 shadow-[0_24px_80px_rgba(31,24,21,0.08)] backdrop-blur-xl md:px-8 lg:px-10">
           <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
             <div className="lg:pr-6">
-              <p className="text-xs uppercase tracking-[0.38em] text-[#7f1118]/55">Payment Page</p>
+              <p className="text-xs uppercase tracking-[0.38em] text-[#7f1118]/55">Төлем беті</p>
               <h1 className="mt-7 font-['Georgia','Times_New_Roman',serif] text-4xl leading-[0.94] text-[#7f1118] md:text-6xl">
-                Оплата пригласительной
+                Шақыру ақысын төлеу
               </h1>
               <p className="mt-5 max-w-3xl text-sm leading-7 text-black/65 md:text-base">
-                Переведите оплату на Kaspi, затем отправьте чек в WhatsApp.
+                Төлемді Kaspi арқылы аударып, кейін чекті WhatsApp-қа жіберіңіз.
               </p>
             </div>
 
             <div className="rounded-[28px] border border-[#7f1118]/10 bg-[#fffaf6] p-5 lg:self-stretch">
-              <p className="text-xs uppercase tracking-[0.28em] text-black/45">Статус</p>
+              <p className="text-xs uppercase tracking-[0.28em] text-black/45">Күйі</p>
               <div className="mt-3 space-y-3">
-                <InfoPill label="Заказ" value={isLoading ? "Загрузка..." : resolvedOrderId} />
-                <InfoPill label="Сумма" value={isLoading ? "..." : resolvedAmount} />
+                <InfoPill label="Тапсырыс" value={isLoading ? "Жүктелуде..." : resolvedOrderId} />
+                <InfoPill label="Сома" value={isLoading ? "..." : resolvedAmount} />
               </div>
             </div>
           </div>
@@ -128,20 +128,20 @@ export default function PaymentPage() {
         <section className="rounded-[36px] border border-black/10 bg-[#1a1616] p-6 text-[#f8f2ec] shadow-[0_28px_80px_rgba(18,16,16,0.18)] md:p-8">
           <div className="flex flex-wrap items-center gap-3">
             <span className="rounded-full border border-white/15 bg-[#7f1118] px-4 py-2 text-[11px] uppercase tracking-[0.28em] text-white">
-              Как активировать
+              Қалай белсендіреміз
             </span>
           </div>
 
           <div className="mt-6 grid gap-4">
             <PaymentStep
               index="01"
-              title="Сделайте перевод"
+              title="Төлем жасаңыз"
               text={
                 <p>
-                  Отправьте оплату на номер Kaspi или на счет ниже
+                  Төлемді төмендегі Kaspi нөміріне не шотқа аударыңыз
                   {resolvedAmount ? (
                     <>
-                      {" "}на сумму <strong className="font-semibold text-[#f8f2ec]">{resolvedAmount}</strong>
+                      {" "}сомасы <strong className="font-semibold text-[#f8f2ec]">{resolvedAmount}</strong>
                     </>
                   ) : null}
                   .
@@ -151,27 +151,27 @@ export default function PaymentPage() {
 
             <div className="my-4 grid gap-4 md:grid-cols-2">
               <PaymentCard
-                eyebrow="Kaspi номер"
+                eyebrow="Kaspi нөмірі"
                 value={formatPhoneForDisplay(PAYMENT_PHONE)}
                 copyValue={PAYMENT_PHONE}
                 ownerName={PAYMENT_USER_NAME}
-                hint="Перевод по номеру телефона"
+                hint="Телефон нөмірі арқылы аударым"
               />
               <PaymentCard
-                eyebrow="Kaspi счет"
+                eyebrow="Kaspi шоты"
                 value={formatAccountForDisplay(PAYMENT_ACCOUNT)}
                 copyValue={PAYMENT_ACCOUNT}
                 ownerName={PAYMENT_USER_NAME}
-                hint="Можно отправить перевод по реквизитам"
+                hint="Реквизит арқылы аударуға болады"
               />
             </div>
 
             <PaymentStep
               index="02"
-              title="Отправьте чек в WhatsApp"
+              title="Чекті WhatsApp-қа жіберіңіз"
               text={
                 <p>
-                  Пришлите чек в WhatsApp и укажите номер заказа
+                  Чекті WhatsApp-қа жіберіп, тапсырыс нөмірін көрсетіңіз
                   {resolvedOrderId ? (
                     <>
                       : <strong className="font-semibold text-[#f8f2ec]">{resolvedOrderId}</strong>
@@ -189,7 +189,7 @@ export default function PaymentPage() {
                 rel="noreferrer"
                 className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-[#1f8f51] px-5 py-3 text-xs uppercase tracking-[0.16em] text-white shadow-[0_14px_32px_rgba(31,143,81,0.24)] transition hover:bg-[#187443]"
               >
-                Отправить чек в WhatsApp
+                Чекті WhatsApp-қа жіберу
               </a>
             </div>
           </div>

@@ -24,7 +24,7 @@ function QuoteMark() {
 function TestimonialCard({ quote, author }) {
   return (
     <article className="border-l-2 border-[#efe5d4] pl-7">
-      <p className="font-['Georgia','Times_New_Roman',serif] text-[1.65rem] italic leading-[1.55] text-[#6d6458]">
+      <p className="landing-serif text-[1.65rem] italic leading-[1.55] text-[#6d6458]">
         "{quote}"
       </p>
       <p className="mt-5 text-sm font-semibold uppercase tracking-[0.08em] text-[#6f7077]">— {author}</p>
@@ -38,7 +38,7 @@ export default function LandingTestimonials() {
       <div className="grid gap-12 lg:grid-cols-[0.95fr_1.25fr] lg:items-start">
         <div className="pt-5">
           <QuoteMark />
-          <h2 className="mt-7 font-['Georgia','Times_New_Roman',serif] text-[2.55rem] leading-[0.98] tracking-[-0.04em] text-[#2a2b31] md:text-[3.4rem]">
+          <h2 className="landing-serif mt-7 text-[2.55rem] leading-[0.98] tracking-[-0.04em] text-[#2a2b31] md:text-[3.4rem]">
             Біздің
             <br />
             <span className="text-[#a17922] italic">клиенттердің пікірі</span>

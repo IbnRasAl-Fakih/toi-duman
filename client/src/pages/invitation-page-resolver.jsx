@@ -47,7 +47,7 @@ export default function InvitationPageResolver() {
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.detail || "Failed to load invitation");
+          throw new Error(data.detail || "Шақыруды жүктеу мүмкін болмады");
         }
 
         if (isMounted) {
@@ -55,7 +55,7 @@ export default function InvitationPageResolver() {
         }
       } catch (requestError) {
         if (isMounted) {
-          setError(requestError instanceof Error ? requestError.message : "Unknown error");
+          setError(requestError instanceof Error ? requestError.message : "Белгісіз қате");
         }
       } finally {
         if (isMounted) {
@@ -74,7 +74,7 @@ export default function InvitationPageResolver() {
   }, [slug]);
 
   if (isLoading) {
-    return <TemplateState title="Loading Invitation" description="Fetching event data." />;
+    return <TemplateState title="Шақыру жүктелуде" description="Оқиға деректерін алып жатырмыз." />;
   }
 
   if (error || !eventData?.config) {
@@ -95,7 +95,7 @@ function TemplateState({ title, description }) {
   return (
     <main className="flex min-h-screen items-center justify-center bg-gradient-to-b from-[#240f11] to-[#111112] px-6 text-center text-[#f5e7dc]">
       <div className="w-full max-w-3xl">
-        <p className="text-xs uppercase tracking-[0.38em] text-white/40">Invitation</p>
+        <p className="text-xs uppercase tracking-[0.38em] text-white/40">Шақыру</p>
         <h1 className="mt-6 font-['Georgia','Times_New_Roman',serif] text-5xl leading-none md:text-7xl">{title}</h1>
         <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-white/70 md:text-lg">{description}</p>
       </div>

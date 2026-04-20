@@ -24,7 +24,7 @@ export default function LandingCta() {
       </div>
 
       <div className="relative mx-auto flex max-w-[900px] flex-col items-center text-center">
-        <h2 className="font-['Georgia','Times_New_Roman',serif] text-[3.4rem] leading-[0.94] tracking-[-0.05em] text-[#232429] md:text-[4.7rem]">
+        <h2 className="landing-serif text-[3.4rem] leading-[0.94] tracking-[-0.05em] text-[#232429] md:text-[4.7rem]">
           Мерекені
           <br />
           <span className="text-[#a17922] italic">бүгін бастаңыз</span>

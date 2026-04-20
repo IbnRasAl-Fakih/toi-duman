@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Great+Vibes&family=Lora:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Bona+Nova:wght@400;700&family=Cormorant+Garamond:wght@400;500;600;700&family=Cormorant+Infant:wght@400;500;600;700&family=Great+Vibes&family=Literata:wght@400;500;600;700&family=PT+Serif:wght@400;700&family=Source+Serif+4:wght@400;600;700&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -61,7 +61,8 @@
   color-scheme: dark;
   --font-display: "Cormorant Garamond", serif;
   --font-script: "Great Vibes", cursive;
-  --font-body: "Lora", serif;
+  --font-body: "PT Serif", serif;
+  --font-landing-serif: "Times New Roman", "Source Serif 4", "PT Serif", serif;
   --scrollbar-track: rgba(10, 18, 22, 0.92);
   --scrollbar-thumb: linear-gradient(180deg, #d6c4b3 0%, #b7885f 100%);
   --scrollbar-thumb-hover: linear-gradient(180deg, #ecdccc 0%, #c69264 100%);
@@ -392,4 +393,8 @@ html.theme-template-5 {
   width: 0;
   height: 0;
   display: none;
+}
+
+.landing-serif {
+  font-family: var(--font-landing-serif);
 }

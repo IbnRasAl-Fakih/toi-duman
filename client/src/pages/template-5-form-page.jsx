@@ -13,42 +13,42 @@ const initialForm = {
   location: "",
   locationLink: "",
   name: "Данияр, Аружан",
-  description: "Будем рады видеть вас",
-  overline: "ПРИГЛАШЕНИЕ",
+  description: "Сізді қуана қарсы аламыз",
+  overline: "ШАҚЫРУ",
   heroTitle: "Данияр\nАружан",
-  introText: "Будем рады видеть вас",
-  heroOpenLabel: "Открыть",
-  heroOpenAriaLabel: "Открыть приглашение",
-  heroScrollLabel: "Листать",
-  detailsDateLabel: "Дата",
-  detailsTimeLabel: "Время",
-  detailsPlaceLabel: "Место",
-  countdownTitle: "До торжества осталось",
-  venueSectionLabel: "Место",
-  venueSubtitle: "Праздник состоится здесь",
+  introText: "Сізді қуана қарсы аламыз",
+  heroOpenLabel: "Ашу",
+  heroOpenAriaLabel: "Шақыруды ашу",
+  heroScrollLabel: "Төмен сырғыту",
+  detailsDateLabel: "Күні",
+  detailsTimeLabel: "Уақыты",
+  detailsPlaceLabel: "Өтетін орны",
+  countdownTitle: "Тойдың басталуына қалды",
+  venueSectionLabel: "Өтетін орны",
+  venueSubtitle: "Мереке осы жерде өтеді",
   venue_name: "Grand Ballroom",
   venueTitle: "Grand Ballroom",
-  mapLabel: "Открыть карту",
-  timelineTitle: "Тайминг",
+  mapLabel: "Картаны ашу",
+  timelineTitle: "Бағдарлама",
   schedule1Time: "18:30",
-  schedule1Title: "Сбор гостей",
+  schedule1Title: "Қонақтарды қарсы алу",
   schedule2Time: "19:30",
-  schedule2Title: "Начало торжества",
+  schedule2Title: "Тойдың басталуы",
   schedule3Time: "",
   schedule3Title: "",
   schedule4Time: "",
   schedule4Title: "",
-  noteTitle: "Будем рады вашему присутствию",
-  noteText: "Пожалуйста, подтвердите участие заранее, чтобы мы подготовили праздник для вас.",
-  hostsLabel: "С любовью",
-  hosts: "Семья Данияра и Аружан",
-  rsvpTitle: "Подтвердите участие",
-  rsvpDescription: "Заполните форму ниже и отправьте ваш ответ.",
-  rsvpNamePlaceholder: "Ваше имя и фамилия",
-  rsvpSubmitLabel: "Отправить ответ",
-  rsvpSubmittingLabel: "Отправка...",
-  rsvpYesLabel: "С удовольствием приду",
-  rsvpNoLabel: "К сожалению, не смогу"
+  noteTitle: "Келетініңіз біз үшін қуаныш",
+  noteText: "Тойды алдын ала дайындау үшін қатысатыныңызды ертерек растауыңызды сұраймыз.",
+  hostsLabel: "Ізгі тілекпен",
+  hosts: "Данияр мен Аружанның отбасы",
+  rsvpTitle: "Қатысуыңызды растаңыз",
+  rsvpDescription: "Төмендегі форманы толтырып, жауабыңызды жіберіңіз.",
+  rsvpNamePlaceholder: "Аты-жөніңіз",
+  rsvpSubmitLabel: "Жауап жіберу",
+  rsvpSubmittingLabel: "Жіберілуде...",
+  rsvpYesLabel: "Иә, келемін",
+  rsvpNoLabel: "Өкінішке қарай, келе алмаймын"
 };
 
 const GALLERY_MIN = 3;
@@ -108,7 +108,7 @@ function buildConfig(form, galleryImageUrls = []) {
   return {
     template_path: TEMPLATE_5_PATH,
     template_type: TEMPLATE_5_TYPE,
-    template_name: "Template 5",
+    template_name: "Махаббат театры",
     date: form.date && form.time ? `${form.date}T${form.time}:00Z` : form.date || "",
     location: form.location,
     location_link: form.locationLink || null,
@@ -156,22 +156,22 @@ function buildConfig(form, galleryImageUrls = []) {
 
 function validateForm(form, galleryFiles) {
   if (!form.name.trim()) {
-    return "Укажите имена главных героев.";
+    return "Жұптың есімдерін енгізіңіз.";
   }
   if (!form.date || !form.time) {
-    return "Заполните дату события и время начала.";
+    return "Оқиға күні мен басталу уақытын толтырыңыз.";
   }
   if (!form.venueTitle.trim()) {
-    return "Укажите название зала или ресторана.";
+    return "Залдың немесе мейрамхананың атауын енгізіңіз.";
   }
   if (!form.location.trim()) {
-    return "Укажите точный адрес.";
+    return "Нақты мекенжайды енгізіңіз.";
   }
   if (!form.locationLink.trim()) {
-    return "Добавьте ссылку на карту.";
+    return "Карта сілтемесін қосыңыз.";
   }
   if (galleryFiles.length < GALLERY_MIN || galleryFiles.length > GALLERY_MAX) {
-    return "Загрузите от 3 до 4 фотографий.";
+    return "3-тен 4-ке дейін фото жүктеңіз.";
   }
   return "";
 }
@@ -191,7 +191,7 @@ async function createTemplate5Event({ config, type, galleryFiles }) {
 
   const data = await response.json();
   if (!response.ok) {
-    throw new Error(data.detail || "Не удалось создать приглашение");
+    throw new Error(data.detail || "Шақыруды жасау мүмкін болмады");
   }
 
   return data;
@@ -228,8 +228,8 @@ function Field({ label, value, onChange, placeholder = "", type = "text", multil
 function EventRow({ time, title, onTimeChange, onTitleChange }) {
   return (
     <div className="grid gap-4 md:grid-cols-[120px_minmax(0,1fr)]">
-      <CreateEventTimeField label="Время" selected={parseTimeValue(time)} onChange={(value) => onTimeChange(formatTimeValue(value))} />
-      <Field label="Событие" value={title} onChange={onTitleChange} placeholder="Начало торжества" />
+      <CreateEventTimeField label="Уақыт" selected={parseTimeValue(time)} onChange={(value) => onTimeChange(formatTimeValue(value))} />
+      <Field label="Оқиға" value={title} onChange={onTitleChange} placeholder="Тойдың басталуы" />
     </div>
   );
 }
@@ -258,7 +258,7 @@ function PhonePreview({ form, galleryFiles, createdEvent }) {
       slug: createdEvent?.slug || "preview-template-5",
       type: form.type || "wedding",
       date: form.date && form.time ? `${form.date}T${form.time}:00Z` : `${new Date().toISOString().slice(0, 10)}T19:30:00Z`,
-      location: form.location || "Проспект Достык, 52",
+      location: form.location || "Достық даңғылы, 52",
       location_link: form.locationLink || "#",
       description: form.description || null,
       config: buildConfig(form, previewUrls),
@@ -440,7 +440,7 @@ export default function Template5FormPage() {
     }
 
     if (files.length < GALLERY_MIN || files.length > GALLERY_MAX) {
-      setError("Загрузите от 3 до 4 фотографий.");
+      setError("3-тен 4-ке дейін фото жүктеңіз.");
       return;
     }
 
@@ -475,7 +475,7 @@ export default function Template5FormPage() {
       });
       setCreatedEvent(created);
     } catch (createError) {
-      setError(createError instanceof Error ? createError.message : "Не удалось создать приглашение.");
+      setError(createError instanceof Error ? createError.message : "Шақыруды жасау мүмкін болмады.");
     } finally {
       setIsCreating(false);
     }
@@ -490,31 +490,31 @@ export default function Template5FormPage() {
           <section className="min-w-0 space-y-12">
             <div className="max-w-[760px]">
               <h1 className="text-[2.4rem] leading-none text-[#8c3b2f]" style={{ fontFamily: "var(--font-display)" }}>
-                Template 5
+                Махаббат театры
               </h1>
             </div>
 
-            <FormSection title="Основная информация">
+            <FormSection title="Негізгі ақпарат">
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="md:col-span-2">
                   <Field
-                    label="Имена пары"
+                    label="Жұптың есімдері"
                     value={form.name}
                     onChange={(event) => updateField("name", event.target.value)}
-                    placeholder="Например: Данияр, Аружан"
+                    placeholder="Мысалы: Данияр, Аружан"
                   />
                 </div>
-                <CreateEventDateField label="Дата события" selected={parseDateValue(form.date)} onChange={(value) => updateField("date", formatDateValue(value))} />
-                <CreateEventTimeField label="Время начала" selected={parseTimeValue(form.time)} onChange={(value) => updateField("time", formatTimeValue(value))} />
+                <CreateEventDateField label="Оқиға күні" selected={parseDateValue(form.date)} onChange={(value) => updateField("date", formatDateValue(value))} />
+                <CreateEventTimeField label="Басталу уақыты" selected={parseTimeValue(form.time)} onChange={(value) => updateField("time", formatTimeValue(value))} />
                 <div className="md:col-span-2">
                   <Field
-                    label="Текст под именами"
+                    label="Есімдердің астындағы мәтін"
                     value={form.description}
                     onChange={(event) => {
                       updateField("description", event.target.value);
                       updateField("introText", event.target.value);
                     }}
-                    placeholder="Будем рады видеть вас"
+                    placeholder="Сізді қуана қарсы аламыз"
                   />
                 </div>
               </div>
@@ -522,20 +522,20 @@ export default function Template5FormPage() {
 
             <FormSection title="Hero">
               <div className="grid gap-4 md:grid-cols-2">
-                <Field label="Верхняя подпись" value={form.overline} onChange={(event) => updateField("overline", event.target.value)} />
-                <Field label="Заголовок шторки" value={form.heroTitle} onChange={(event) => updateField("heroTitle", event.target.value)} multiline />
-                <Field label="Кнопка открытия" value={form.heroOpenLabel} onChange={(event) => updateField("heroOpenLabel", event.target.value)} />
-                <Field label="Aria-label кнопки" value={form.heroOpenAriaLabel} onChange={(event) => updateField("heroOpenAriaLabel", event.target.value)} />
+                <Field label="Жоғарғы жазу" value={form.overline} onChange={(event) => updateField("overline", event.target.value)} />
+                <Field label="Перде тақырыбы" value={form.heroTitle} onChange={(event) => updateField("heroTitle", event.target.value)} multiline />
+                <Field label="Ашу батырмасы" value={form.heroOpenLabel} onChange={(event) => updateField("heroOpenLabel", event.target.value)} />
+                <Field label="Батырманың aria-label-ы" value={form.heroOpenAriaLabel} onChange={(event) => updateField("heroOpenAriaLabel", event.target.value)} />
                 <div className="md:col-span-2">
-                  <Field label="Подсказка листания" value={form.heroScrollLabel} onChange={(event) => updateField("heroScrollLabel", event.target.value)} />
+                  <Field label="Сырғыту ишарасы" value={form.heroScrollLabel} onChange={(event) => updateField("heroScrollLabel", event.target.value)} />
                 </div>
               </div>
             </FormSection>
 
-            <FormSection title="Место и галерея">
+            <FormSection title="Өтетін орын және галерея">
               <div className="grid gap-4">
                 <Field
-                  label="Название площадки"
+                  label="Өтетін орын атауы"
                   value={form.venueTitle}
                   onChange={(event) => {
                     updateField("venueTitle", event.target.value);
@@ -544,31 +544,31 @@ export default function Template5FormPage() {
                   placeholder="Grand Ballroom"
                 />
                 <Field
-                  label="Точный адрес"
+                  label="Нақты мекенжай"
                   value={form.location}
                   onChange={(event) => updateField("location", event.target.value)}
-                  placeholder="Проспект Достык, 52"
+                  placeholder="Достық даңғылы, 52"
                 />
                 <Field
-                  label="Ссылка на карту"
+                  label="Карта сілтемесі"
                   value={form.locationLink}
                   onChange={(event) => updateField("locationLink", event.target.value)}
                   placeholder="https://2gis.kz/..."
                 />
 
                 <div className="grid gap-4 md:grid-cols-3">
-                  <Field label="Лейбл даты" value={form.detailsDateLabel} onChange={(event) => updateField("detailsDateLabel", event.target.value)} />
-                  <Field label="Лейбл времени" value={form.detailsTimeLabel} onChange={(event) => updateField("detailsTimeLabel", event.target.value)} />
-                  <Field label="Лейбл места" value={form.detailsPlaceLabel} onChange={(event) => updateField("detailsPlaceLabel", event.target.value)} />
+                  <Field label="Күн атауы" value={form.detailsDateLabel} onChange={(event) => updateField("detailsDateLabel", event.target.value)} />
+                  <Field label="Уақыт атауы" value={form.detailsTimeLabel} onChange={(event) => updateField("detailsTimeLabel", event.target.value)} />
+                  <Field label="Орын атауы" value={form.detailsPlaceLabel} onChange={(event) => updateField("detailsPlaceLabel", event.target.value)} />
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2">
-                  <Field label="Заголовок секции места" value={form.venueSectionLabel} onChange={(event) => updateField("venueSectionLabel", event.target.value)} />
-                  <Field label="Кнопка карты" value={form.mapLabel} onChange={(event) => updateField("mapLabel", event.target.value)} />
+                  <Field label="Орын бөлімі тақырыбы" value={form.venueSectionLabel} onChange={(event) => updateField("venueSectionLabel", event.target.value)} />
+                  <Field label="Карта батырмасы" value={form.mapLabel} onChange={(event) => updateField("mapLabel", event.target.value)} />
                 </div>
 
                 <Field
-                  label="Подзаголовок блока площадки"
+                  label="Орын блогының ішкі тақырыбы"
                   value={form.venueSubtitle}
                   onChange={(event) => updateField("venueSubtitle", event.target.value)}
                 />
@@ -577,10 +577,10 @@ export default function Template5FormPage() {
                   <div className="flex items-center justify-between gap-4">
                     <div>
                       <FieldLabel>Галерея</FieldLabel>
-                      <p className="text-sm text-[#8a8073]">Загрузите 3 или 4 фотографии. Они сразу попадут в live-превью и будут отправлены при создании события.</p>
+                      <p className="text-sm text-[#8a8073]">3 немесе 4 фото жүктеңіз. Олар бірден live-preview-ге түсіп, оқиға жасалғанда бірге жіберіледі.</p>
                     </div>
                     <label className="cursor-pointer rounded-full border border-[#d9c49a] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#9d7f42]">
-                      Добавить
+                      Қосу
                       <input type="file" accept="image/*" multiple onChange={handleGalleryChange} className="hidden" />
                     </label>
                   </div>
@@ -595,7 +595,7 @@ export default function Template5FormPage() {
                       ))
                     ) : (
                       <div className="col-span-full rounded-[18px] border border-dashed border-[#e7dfd2] bg-[#fbfaf7] px-5 py-7 text-sm text-[#a09383]">
-                        Добавьте 3 или 4 фотографии для блока галереи.
+                        Галерея блогына 3 немесе 4 фото қосыңыз.
                       </div>
                     )}
                   </div>
@@ -603,10 +603,10 @@ export default function Template5FormPage() {
               </div>
             </FormSection>
 
-            <FormSection title="Таймер и тайминг">
+            <FormSection title="Таймер және бағдарлама">
               <div className="space-y-4">
-                <Field label="Заголовок таймера" value={form.countdownTitle} onChange={(event) => updateField("countdownTitle", event.target.value)} />
-                <Field label="Заголовок секции тайминга" value={form.timelineTitle} onChange={(event) => updateField("timelineTitle", event.target.value)} />
+                <Field label="Таймер тақырыбы" value={form.countdownTitle} onChange={(event) => updateField("countdownTitle", event.target.value)} />
+                <Field label="Бағдарлама бөлімі тақырыбы" value={form.timelineTitle} onChange={(event) => updateField("timelineTitle", event.target.value)} />
                 <EventRow
                   time={form.schedule1Time}
                   title={form.schedule1Title}
@@ -634,15 +634,15 @@ export default function Template5FormPage() {
               </div>
             </FormSection>
 
-            <FormSection title="Блок заметки">
+            <FormSection title="Ескертпе блогы">
               <div className="grid gap-4 md:grid-cols-2">
-                <Field label="Лейбл подписи" value={form.hostsLabel} onChange={(event) => updateField("hostsLabel", event.target.value)} />
-                <Field label="Подпись" value={form.hosts} onChange={(event) => updateField("hosts", event.target.value)} />
+                <Field label="Қолтаңба атауы" value={form.hostsLabel} onChange={(event) => updateField("hostsLabel", event.target.value)} />
+                <Field label="Қолтаңба" value={form.hosts} onChange={(event) => updateField("hosts", event.target.value)} />
                 <div className="md:col-span-2">
-                  <Field label="Заголовок блока" value={form.noteTitle} onChange={(event) => updateField("noteTitle", event.target.value)} />
+                  <Field label="Блок тақырыбы" value={form.noteTitle} onChange={(event) => updateField("noteTitle", event.target.value)} />
                 </div>
                 <div className="md:col-span-2">
-                  <Field label="Текст блока" value={form.noteText} onChange={(event) => updateField("noteText", event.target.value)} multiline rows={4} />
+                  <Field label="Блок мәтіні" value={form.noteText} onChange={(event) => updateField("noteText", event.target.value)} multiline rows={4} />
                 </div>
               </div>
             </FormSection>
@@ -651,20 +651,20 @@ export default function Template5FormPage() {
               <SectionTitle>RSVP</SectionTitle>
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="md:col-span-2">
-                  <Field label="Заголовок формы" value={form.rsvpTitle} onChange={(event) => updateField("rsvpTitle", event.target.value)} />
+                  <Field label="Форма тақырыбы" value={form.rsvpTitle} onChange={(event) => updateField("rsvpTitle", event.target.value)} />
                 </div>
                 <div className="md:col-span-2">
-                  <Field label="Описание формы" value={form.rsvpDescription} onChange={(event) => updateField("rsvpDescription", event.target.value)} multiline rows={4} />
+                  <Field label="Форма сипаттамасы" value={form.rsvpDescription} onChange={(event) => updateField("rsvpDescription", event.target.value)} multiline rows={4} />
                 </div>
                 <Field
-                  label="Плейсхолдер имени"
+                  label="Аты-жөн плейсхолдері"
                   value={form.rsvpNamePlaceholder}
                   onChange={(event) => updateField("rsvpNamePlaceholder", event.target.value)}
                 />
-                <Field label="Кнопка отправки" value={form.rsvpSubmitLabel} onChange={(event) => updateField("rsvpSubmitLabel", event.target.value)} />
-                <Field label="Текст при отправке" value={form.rsvpSubmittingLabel} onChange={(event) => updateField("rsvpSubmittingLabel", event.target.value)} />
-                <Field label="Вариант 'Да'" value={form.rsvpYesLabel} onChange={(event) => updateField("rsvpYesLabel", event.target.value)} />
-                <Field label="Вариант 'Нет'" value={form.rsvpNoLabel} onChange={(event) => updateField("rsvpNoLabel", event.target.value)} />
+                <Field label="Жіберу батырмасы" value={form.rsvpSubmitLabel} onChange={(event) => updateField("rsvpSubmitLabel", event.target.value)} />
+                <Field label="Жіберу кезіндегі мәтін" value={form.rsvpSubmittingLabel} onChange={(event) => updateField("rsvpSubmittingLabel", event.target.value)} />
+                <Field label="'Иә' жауабы" value={form.rsvpYesLabel} onChange={(event) => updateField("rsvpYesLabel", event.target.value)} />
+                <Field label="'Жоқ' жауабы" value={form.rsvpNoLabel} onChange={(event) => updateField("rsvpNoLabel", event.target.value)} />
               </div>
             </section>
 
@@ -678,7 +678,7 @@ export default function Template5FormPage() {
                   disabled={isCreating}
                   className="rounded-full bg-[#d9bf88] px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#5a4517] disabled:opacity-50"
                 >
-                  {isCreating ? "Создание..." : "Создать приглашение"}
+                  {isCreating ? "Жасалуда..." : "Шақыру жасау"}
                 </button>
 
                 {createdEvent ? (
@@ -688,7 +688,7 @@ export default function Template5FormPage() {
                     rel="noreferrer"
                     className="rounded-full border border-[#ddd1bc] px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#7d6b4f]"
                   >
-                    Открыть сайт
+                    Сайтты ашу
                   </a>
                 ) : null}
               </div>

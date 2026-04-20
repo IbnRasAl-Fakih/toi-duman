@@ -54,7 +54,7 @@ export default function CreateEventSelectField({ label, hint, options, value, on
           aria-haspopup="listbox"
           aria-expanded={isOpen}
         >
-          <span className="min-w-0 truncate text-[#1f1a17]">{selectedOption?.label || "Выберите значение"}</span>
+          <span className="min-w-0 truncate text-[#1f1a17]">{selectedOption?.label || "Мәнді таңдаңыз"}</span>
           <DropdownButton
             className={`h-5 w-5 shrink-0 text-[#7f1118] transition-transform ${
               isOpen ? "rotate-180" : ""
@@ -85,7 +85,7 @@ export default function CreateEventSelectField({ label, hint, options, value, on
                     aria-selected={isSelected}
                   >
                     <span className="min-w-0 truncate">{option.label}</span>
-                    {isSelected ? <span className="ml-3 shrink-0 text-xs uppercase tracking-[0.16em]">Выбран</span> : null}
+                    {isSelected ? <span className="ml-3 shrink-0 text-xs uppercase tracking-[0.16em]">Таңдалды</span> : null}
                   </button>
                 );
               })}

@@ -52,8 +52,8 @@ function buildCountdownParts(date, nowTimestamp) {
 
   if (diff <= 0) {
     return [
-      { label: "дней", value: "00" },
-      { label: "часов", value: "00" },
+      { label: "күн", value: "00" },
+      { label: "сағат", value: "00" },
       { label: "минут", value: "00" },
       { label: "секунд", value: "00" }
     ];
@@ -66,8 +66,8 @@ function buildCountdownParts(date, nowTimestamp) {
   const seconds = totalSeconds % 60;
 
   return [
-    { label: "дней", value: pad(days) },
-    { label: "часов", value: pad(hours) },
+    { label: "күн", value: pad(days) },
+    { label: "сағат", value: pad(hours) },
     { label: "минут", value: pad(minutes) },
     { label: "секунд", value: pad(seconds) }
   ];
@@ -83,21 +83,21 @@ export function mapEventToTemplate5(event, nowTimestamp = Date.now()) {
   const names = normalizeNames(config?.name);
   const leftName = names[0] || "Данияр";
   const rightName = names[1] || "Аружан";
-  const hosts = getConfigText(config, "hosts", "С нетерпением ждём вас");
+  const hosts = getConfigText(config, "hosts", "Сіздерді асыға күтеміз");
   const venueName = getConfigText(config, "venue_name", "Grand Ballroom");
   const scheduleItems =
     Array.isArray(config?.schedule) && config.schedule.length
       ? config.schedule
       : [
-          { time: "18:30", title: "Сбор гостей" },
-          { time: "19:30", title: "Начало торжества" }
+          { time: "18:30", title: "Қонақтарды қарсы алу" },
+          { time: "19:30", title: "Тойдың басталуы" }
         ];
   const rsvpOptions =
     Array.isArray(config?.rsvpOptions) && config.rsvpOptions.length
       ? config.rsvpOptions
       : [
-          { value: "yes", label: getConfigText(config, "rsvpYesLabel", "С удовольствием приду") },
-          { value: "no", label: getConfigText(config, "rsvpNoLabel", "К сожалению, не смогу") }
+          { value: "yes", label: getConfigText(config, "rsvpYesLabel", "Иә, келемін") },
+          { value: "no", label: getConfigText(config, "rsvpNoLabel", "Өкінішке қарай, келе алмаймын") }
         ];
 
   return {
@@ -112,12 +112,12 @@ export function mapEventToTemplate5(event, nowTimestamp = Date.now()) {
     intro: {
       overline: getConfigText(config, "overline", "INVITATION"),
       title: getConfigText(config, "heroTitle", `${leftName}\n${rightName}`),
-      message: event.description || getConfigText(config, "introText", "Будем рады видеть вас")
+      message: event.description || getConfigText(config, "introText", "Сізді қуана қарсы аламыз")
     },
     hero: {
-      openLabel: getConfigText(config, "heroOpenLabel", "Открыть"),
-      openAriaLabel: getConfigText(config, "heroOpenAriaLabel", "Открыть приглашение"),
-      scrollLabel: getConfigText(config, "heroScrollLabel", "Листать")
+      openLabel: getConfigText(config, "heroOpenLabel", "Ашу"),
+      openAriaLabel: getConfigText(config, "heroOpenAriaLabel", "Шақыруды ашу"),
+      scrollLabel: getConfigText(config, "heroScrollLabel", "Төмен сырғыту")
     },
     details: {
       day: pad(date.getDate()),
@@ -128,46 +128,46 @@ export function mapEventToTemplate5(event, nowTimestamp = Date.now()) {
       placeLabel: event.location || "Алматы",
       galleryImages: Array.isArray(config?.galleryImages) && config.galleryImages.length ? config.galleryImages : null,
       labels: {
-        date: getConfigText(config, "detailsDateLabel", "Дата"),
-        time: getConfigText(config, "detailsTimeLabel", "Время"),
-        place: getConfigText(config, "detailsPlaceLabel", "Место")
+        date: getConfigText(config, "detailsDateLabel", "Күні"),
+        time: getConfigText(config, "detailsTimeLabel", "Уақыты"),
+        place: getConfigText(config, "detailsPlaceLabel", "Өтетін орны")
       }
     },
     countdown: {
-      title: getConfigText(config, "countdownTitle", "До торжества осталось"),
+      title: getConfigText(config, "countdownTitle", "Тойдың басталуына қалды"),
       items: buildCountdownParts(date, nowTimestamp)
     },
     venue: {
-      sectionLabel: getConfigText(config, "venueSectionLabel", "Место"),
-      subtitle: getConfigText(config, "venueSubtitle", "Праздник состоится здесь"),
+      sectionLabel: getConfigText(config, "venueSectionLabel", "Өтетін орны"),
+      subtitle: getConfigText(config, "venueSubtitle", "Мереке осы жерде өтеді"),
       title: getConfigText(config, "venueTitle", venueName),
       location: event.location || "Алматы",
       dateLabel: formatDateLabel(date),
       mapUrl: event.location_link || "#",
-      mapLabel: getConfigText(config, "mapLabel", "Открыть карту")
+      mapLabel: getConfigText(config, "mapLabel", "Картаны ашу")
     },
     timeline: {
-      title: getConfigText(config, "timelineTitle", "Тайминг"),
+      title: getConfigText(config, "timelineTitle", "Бағдарлама"),
       items: scheduleItems
     },
     note: {
-      title: getConfigText(config, "noteTitle", "Будем рады вашему присутствию"),
+      title: getConfigText(config, "noteTitle", "Келетініңіз біз үшін қуаныш"),
       text: getConfigText(
         config,
         "noteText",
-        "Пожалуйста, подтвердите участие заранее, чтобы мы подготовили праздник для вас."
+        "Тойды алдын ала дайындау үшін қатысатыныңызды ертерек растауыңызды сұраймыз."
       )
     },
     hosts: {
-      label: getConfigText(config, "hostsLabel", "С любовью"),
+      label: getConfigText(config, "hostsLabel", "Ізгі тілекпен"),
       value: hosts
     },
     rsvp: {
-      title: getConfigText(config, "rsvpTitle", "Подтвердите участие"),
-      description: getConfigText(config, "rsvpDescription", "Заполните форму ниже и отправьте ваш ответ."),
-      namePlaceholder: getConfigText(config, "rsvpNamePlaceholder", "Ваше имя и фамилия"),
-      submitLabel: getConfigText(config, "rsvpSubmitLabel", "Отправить ответ"),
-      submittingLabel: getConfigText(config, "rsvpSubmittingLabel", "Отправка..."),
+      title: getConfigText(config, "rsvpTitle", "Қатысуыңызды растаңыз"),
+      description: getConfigText(config, "rsvpDescription", "Төмендегі форманы толтырып, жауабыңызды жіберіңіз."),
+      namePlaceholder: getConfigText(config, "rsvpNamePlaceholder", "Аты-жөніңіз"),
+      submitLabel: getConfigText(config, "rsvpSubmitLabel", "Жауап жіберу"),
+      submittingLabel: getConfigText(config, "rsvpSubmittingLabel", "Жіберілуде..."),
       options: rsvpOptions
     }
   };
@@ -336,31 +336,31 @@ export default function InvitationTemplate5Page({
         setSelectedStatus("");
         setIsSubmitting(false);
         if (typeof onPreviewNotify === "function") {
-          onPreviewNotify({ type: "success", message: "Ответ успешно отправлен" });
+          onPreviewNotify({ type: "success", message: "Жауабыңыз сәтті жіберілді" });
         } else {
-          notification.success("Ответ успешно отправлен");
+          notification.success("Жауабыңыз сәтті жіберілді");
         }
       }, 250);
       return;
     }
 
     if (isExample) {
-      notification.error("Для demo event ответы гостей отключены");
+      notification.error("Demo event үшін қонақ жауаптары өшірілген");
       return;
     }
 
     if (!isPaid) {
-      notification.error("Отправка ответов станет доступна после оплаты шаблона");
+      notification.error("Жауап жіберу үлгі төленгеннен кейін қолжетімді болады");
       return;
     }
 
     if (!guestName.trim()) {
-      notification.error("Введите имя и фамилию");
+      notification.error("Аты-жөніңізді енгізіңіз");
       return;
     }
 
     if (!selectedStatus) {
-      notification.error("Выберите вариант ответа");
+      notification.error("Жауап нұсқасын таңдаңыз");
       return;
     }
 
@@ -379,14 +379,14 @@ export default function InvitationTemplate5Page({
 
       const data = await response.json();
       if (!response.ok) {
-        throw new Error(data.detail || "Не удалось отправить ответ");
+        throw new Error(data.detail || "Жауапты жіберу мүмкін болмады");
       }
 
       setGuestName("");
       setSelectedStatus("");
-      notification.success("Ответ успешно отправлен");
+      notification.success("Жауабыңыз сәтті жіберілді");
     } catch (submitError) {
-      const message = submitError instanceof Error ? submitError.message : "Не удалось отправить ответ";
+      const message = submitError instanceof Error ? submitError.message : "Жауапты жіберу мүмкін болмады";
       notification.error(message);
     } finally {
       setIsSubmitting(false);
