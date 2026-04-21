@@ -1,32 +1,14 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import InvitationTemplate1Page, { TEMPLATE_1_PATH } from "./templates/invitation-page_template_1.jsx";
-import InvitationTemplate2Page, { TEMPLATE_2_PATH } from "./templates/invitation-page_template_2.jsx";
-import InvitationTemplate3Page, { TEMPLATE_3_PATH } from "./templates/invitation-page_template_3.jsx";
-import InvitationTemplate4Page, {
-  TEMPLATE_4_PATH,
-  TEMPLATE_4_TYPE
-} from "./templates/invitation-page_template_4.jsx";
-import InvitationTemplate5Page, {
-  TEMPLATE_5_PATH,
-  TEMPLATE_5_TYPE
-} from "./templates/invitation-page_template_5.jsx";
-import InvitationTemplate6Page, {
-  TEMPLATE_6_PATH,
-  TEMPLATE_6_TYPE
-} from "./templates/invitation-page_template_6.jsx";
+import { THEATRE_OF_LOVE_TYPE, THEATRE_OF_LOVE_PATH} from "./templates/theatre-of-love-page.jsx";
+import { ROMANCE_GARDEN_TYPE, ROMANCE_GARDEN_PATH } from "./templates/romance-garden-page.jsx";
 import NotFoundPage from "../pages/not-found-page.jsx";
 
 const templateRegistry = {
-  [TEMPLATE_1_PATH]: InvitationTemplate1Page,
-  [TEMPLATE_2_PATH]: InvitationTemplate2Page,
-  [TEMPLATE_3_PATH]: InvitationTemplate3Page,
-  [TEMPLATE_4_TYPE]: InvitationTemplate4Page,
-  [TEMPLATE_4_PATH]: InvitationTemplate4Page,
-  [TEMPLATE_5_TYPE]: InvitationTemplate5Page,
-  [TEMPLATE_5_PATH]: InvitationTemplate5Page,
-  [TEMPLATE_6_TYPE]: InvitationTemplate6Page,
-  [TEMPLATE_6_PATH]: InvitationTemplate6Page
+  [THEATRE_OF_LOVE_TYPE]: THEATRE_OF_LOVE_TYPE,
+  [THEATRE_OF_LOVE_PATH]: THEATRE_OF_LOVE_PATH,
+  [ROMANCE_GARDEN_TYPE]: ROMANCE_GARDEN_TYPE,
+  [ROMANCE_GARDEN_PATH]: ROMANCE_GARDEN_PATH
 };
 
 export default function InvitationPageResolver() {

@@ -30,9 +30,15 @@ export default function LandingHeader() {
           <div className="flex items-center justify-between gap-6">
             <a
               href="/"
-              className="landing-serif shrink-0 text-[1.05rem] font-semibold tracking-[-0.03em] text-[#9a741d] transition duration-300 hover:text-[#7f5e14] md:text-[1.2rem]"
+              className="landing-serif inline-flex shrink-0 items-center text-[1.05rem] font-semibold tracking-[-0.03em] text-[#9a741d] transition duration-300 hover:text-[#7f5e14] md:text-[1.2rem]"
             >
               priglasitelnoe.com
+              <img
+                src="/images/priglasitelnoe-favicon.svg"
+                alt=""
+                aria-hidden="true"
+                className="h-5 w-5 shrink-0 object-contain"
+              />
             </a>
 
             <div className="ml-auto flex items-center gap-4 md:gap-5">

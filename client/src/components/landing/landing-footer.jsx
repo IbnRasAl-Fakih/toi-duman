@@ -30,9 +30,15 @@ export default function LandingFooter() {
           <div>
             <a
               href="/"
-              className="landing-serif text-[1rem] font-semibold tracking-[-0.03em] text-[#9a741d] md:text-[1.12rem]"
+              className="landing-serif inline-flex shrink-0 items-center text-[1.05rem] font-semibold tracking-[-0.03em] text-[#9a741d] transition duration-300 hover:text-[#7f5e14] md:text-[1.2rem]"
             >
               priglasitelnoe.com
+              <img
+                src="/images/priglasitelnoe-favicon.svg"
+                alt=""
+                aria-hidden="true"
+                className="h-5 w-5 shrink-0 object-contain"
+              />
             </a>
             <p className="mt-2 text-[0.84rem] font-medium text-[#8c8d94] md:text-sm">
               © 2026 priglasitelnoe.com. Заманауи цифрлық шақырулар.

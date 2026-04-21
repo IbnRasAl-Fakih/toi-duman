@@ -1,4 +1,4 @@
-import CreateEventSelectField from "../admin/create-event/create-event-select-field.jsx";
+import SelectField from "./select-field.jsx";
 
 const statusOptions = [
   { value: "all", label: "Барлығы" },
@@ -34,14 +34,14 @@ export default function GuestsFilters({
         />
       </label>
 
-      <CreateEventSelectField
+      <SelectField
         label="Күйі"
         value={statusFilter}
         onChange={onStatusFilterChange}
         options={statusOptions}
       />
 
-      <CreateEventSelectField
+      <SelectField
         label="Сұрыптау"
         value={sortKey}
         onChange={onSortKeyChange}

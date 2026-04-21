@@ -21,7 +21,7 @@ const TEMPLATE_ITEMS = [
     chooseLabel: "Таңдау",
     image: "/images/image_2026-04-14_23-16-22.png",
     previewHref: "/images/image_2026-04-14_23-16-22.png",
-    chooseHref: "/template-5/form"
+    chooseHref: "/theatre-of-love/form"
   },
   {
     id: "template-6",
@@ -32,7 +32,7 @@ const TEMPLATE_ITEMS = [
     chooseLabel: "Таңдау",
     image: "/images/image_2026-04-14_23-14-17.png",
     previewHref: "/images/image_2026-04-14_23-14-17.png",
-    chooseHref: "/template-6/form"
+    chooseHref: "/romance-garden/form"
   }
 ];
 
