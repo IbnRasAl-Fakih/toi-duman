@@ -1,14 +1,12 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import { THEATRE_OF_LOVE_TYPE, THEATRE_OF_LOVE_PATH} from "./templates/theatre-of-love-page.jsx";
-import { ROMANCE_GARDEN_TYPE, ROMANCE_GARDEN_PATH } from "./templates/romance-garden-page.jsx";
+import TheatreOfLovePage, { THEATRE_OF_LOVE_PATH } from "./templates/theatre-of-love-page.jsx";
+import RomanceGardenPage, { ROMANCE_GARDEN_PATH } from "./templates/romance-garden-page.jsx";
 import NotFoundPage from "../pages/not-found-page.jsx";
 
 const templateRegistry = {
-  [THEATRE_OF_LOVE_TYPE]: THEATRE_OF_LOVE_TYPE,
-  [THEATRE_OF_LOVE_PATH]: THEATRE_OF_LOVE_PATH,
-  [ROMANCE_GARDEN_TYPE]: ROMANCE_GARDEN_TYPE,
-  [ROMANCE_GARDEN_PATH]: ROMANCE_GARDEN_PATH
+  [THEATRE_OF_LOVE_PATH]: TheatreOfLovePage,
+  [ROMANCE_GARDEN_PATH]: RomanceGardenPage
 };
 
 export default function InvitationPageResolver() {
@@ -63,8 +61,8 @@ export default function InvitationPageResolver() {
     return <NotFoundPage />;
   }
 
-  const templateKey = eventData.config.template_path || eventData.config.template_type || eventData.template?.path;
-  const TemplateComponent = templateRegistry[templateKey];
+  const templatePath = eventData.config.template_path || eventData.template?.path;
+  const TemplateComponent = templateRegistry[templatePath];
 
   if (!TemplateComponent) {
     return <NotFoundPage />;
