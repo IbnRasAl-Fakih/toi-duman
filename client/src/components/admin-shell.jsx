@@ -4,8 +4,7 @@ import { useAdminAuth } from "../context/admin-auth-context.jsx";
 
 const navigationItems = [
   { to: "/admin/events", label: "Events", end: true },
-  { to: "/admin/orders", label: "Orders", end: true },
-  { to: "/admin/events/create", label: "Create Event", end: true }
+  { to: "/admin/orders", label: "Orders", end: true }
 ];
 
 export default function AdminShell({ title, description, children }) {

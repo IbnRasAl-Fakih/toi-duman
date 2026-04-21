@@ -199,7 +199,7 @@ async function createTemplate5Event({ config, type, galleryFiles }) {
 
 function SectionTitle({ children }) {
   return (
-    <h2 className="text-[2rem] leading-none text-[#8c3b2f]" style={{ fontFamily: "var(--font-display)" }}>
+    <h2 className="text-[2rem] leading-none text-[#8b6a34]" style={{ fontFamily: "var(--font-display)" }}>
       {children}
     </h2>
   );
@@ -410,13 +410,6 @@ export default function TheatreOfLoveFormPage() {
   }, [galleryFiles]);
 
   React.useEffect(() => {
-    document.documentElement.classList.add("theme-template-5");
-    return () => {
-      document.documentElement.classList.remove("theme-template-5");
-    };
-  }, []);
-
-  React.useEffect(() => {
     return () => {
       galleryFilesRef.current.forEach((item) => {
         URL.revokeObjectURL(item.previewUrl);
@@ -482,14 +475,14 @@ export default function TheatreOfLoveFormPage() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col overflow-x-hidden bg-white text-[#3e352f]">
+    <main className="flex min-h-screen flex-col overflow-x-hidden bg-white text-[#3c3021]">
       <LandingHeader />
 
       <div className="flex-1 px-6 pb-10 pt-28">
         <div className="mx-auto max-w-[1360px] xl:grid xl:grid-cols-[minmax(0,1fr)_320px] xl:gap-12">
           <section className="min-w-0 space-y-12">
             <div className="max-w-[760px]">
-              <h1 className="text-[2.4rem] leading-none text-[#8c3b2f]" style={{ fontFamily: "var(--font-display)" }}>
+              <h1 className="text-[2.4rem] leading-none text-[#8b6a34]" style={{ fontFamily: "var(--font-display)" }}>
                 Махаббат театры
               </h1>
             </div>

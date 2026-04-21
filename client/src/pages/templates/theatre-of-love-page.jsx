@@ -15,7 +15,20 @@ export const THEATRE_OF_LOVE_PATH = "templates/theatre-of-love-page.jsx";
 
 const ORDER_STATUS_PAID = "paid";
 
-const monthFormatter = new Intl.DateTimeFormat("ru-RU", { month: "long" });
+const monthNamesKk = [
+  "қаңтар",
+  "ақпан",
+  "наурыз",
+  "сәуір",
+  "мамыр",
+  "маусым",
+  "шілде",
+  "тамыз",
+  "қыркүйек",
+  "қазан",
+  "қараша",
+  "желтоқсан"
+];
 
 function pad(value) {
   return String(value).padStart(2, "0");
@@ -37,11 +50,11 @@ function normalizeNames(value) {
 }
 
 function formatDateLabel(date) {
-  return `${date.getDate()} ${monthFormatter.format(date)} ${date.getFullYear()}`;
+  return `${date.getDate()} ${monthNamesKk[date.getMonth()]} ${date.getFullYear()}`;
 }
 
 function formatTime(date) {
-  return date.toLocaleTimeString("ru-RU", {
+  return date.toLocaleTimeString("kk-KZ", {
     hour: "2-digit",
     minute: "2-digit"
   });
@@ -121,7 +134,7 @@ export function mapEventToTemplate5(event, nowTimestamp = Date.now()) {
     },
     details: {
       day: pad(date.getDate()),
-      month: monthFormatter.format(date),
+      month: monthNamesKk[date.getMonth()],
       year: String(date.getFullYear()),
       dateLabel: formatDateLabel(date),
       timeLabel: formatTime(date),

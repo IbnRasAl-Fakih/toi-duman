@@ -92,7 +92,7 @@ export default function AdminEventsPage() {
       <AdminShell
         title="Оқиғалар тізімі"
         description="Бұл бөлімде жасалған оқиғаларды қарап, slug, күнін, орнын және мұқабасын жылдам тексеруге болады."
-      >
+      > 
         {isLoading ? (
           <EventsEmptyState text="Оқиғалар жүктелуде..." />
         ) : error ? (

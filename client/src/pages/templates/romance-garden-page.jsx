@@ -1,6 +1,8 @@
 import React from "react";
 import Footer from "../../components/footer.jsx";
 import TemplatePaymentBanner from "../../components/template-payment-banner.jsx";
+import RevealItem from "../../components/templates/theatre-of-love-template/reveal-item.jsx";
+import SectionReveal from "../../components/templates/theatre-of-love-template/section-reveal.jsx";
 import { useNotification } from "../../context/notification-context.jsx";
 
 export const ROMANCE_GARDEN_TYPE = "wedding";
@@ -416,6 +418,35 @@ export default function RomanceGardenPage({ event, order }) {
     };
   }, []);
 
+  React.useEffect(() => {
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousHtmlOverflow = document.documentElement.style.overflow;
+
+    if (!isEnvelopeOpen) {
+      document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
+    }
+
+    return () => {
+      document.body.style.overflow = previousBodyOverflow;
+      document.documentElement.style.overflow = previousHtmlOverflow;
+    };
+  }, [isEnvelopeOpen]);
+
+  async function startMusicPlayback() {
+    const audio = audioRef.current;
+    if (!audio || !audio.paused) {
+      return;
+    }
+
+    try {
+      await audio.play();
+      setIsMusicPlaying(true);
+    } catch {
+      setIsMusicPlaying(false);
+    }
+  }
+
   async function handleSubmit() {
     if (isExample) {
       notification.error("Для demo event ответы гостей отключены");
@@ -493,6 +524,7 @@ export default function RomanceGardenPage({ event, order }) {
 
   function handleOpenInvitation() {
     const introVideo = introVideoRef.current;
+    startMusicPlayback();
 
     if (!introVideo) {
       setIsEnvelopeOpen(true);
@@ -601,8 +633,9 @@ export default function RomanceGardenPage({ event, order }) {
             </div>
           </SectionShell>
 
-          <div className="bg-[#faf6ef] px-5 pb-14 pt-10">
-            <SectionShell paper className="bg-[radial-gradient(circle_at_top,#fffef9_0%,#f7f1e7_100%)] px-6 py-10">
+          <div className="bg-[#faf6ef] px-5 pt-10">
+            <SectionReveal>
+              <SectionShell paper className="bg-[radial-gradient(circle_at_top,#fffef9_0%,#f7f1e7_100%)] px-6 py-10">
               <img
                 src="/images/templates/romance-garden/floral-vase-6x28LN74.png"
                 alt=""
@@ -618,17 +651,23 @@ export default function RomanceGardenPage({ event, order }) {
                 {template.hero.dateLabel} күніне дейін
               </p>
               <Countdown items={template.countdown} />
-            </SectionShell>
+              </SectionShell>
+            </SectionReveal>
 
-            <AtmosphereSlider items={template.gallery} />
+            <SectionReveal>
+              <AtmosphereSlider items={template.gallery} />
+            </SectionReveal>
 
-            <Divider
-              iconSrc="/images/templates/romance-garden/bow-illustration-DWFdIPv5.png"
-              className="mt-4"
-              imageClassName="h-32 w-32"
-            />
+            <RevealItem>
+              <Divider
+                iconSrc="/images/templates/romance-garden/bow-illustration-DWFdIPv5.png"
+                className="mt-4"
+                imageClassName="h-32 w-32"
+              />
+            </RevealItem>
 
-            <SectionShell paper className="mt-6 bg-[#fffdfa] px-7 py-12">
+            <SectionReveal>
+              <SectionShell paper className="mt-6 bg-[#fffdfa] px-7 py-12">
               <div className="absolute inset-0 opacity-70" style={{ backgroundImage: "url('/images/templates/romance-garden/phon6.png')", backgroundSize: "cover", backgroundPosition: "center" }} />
               <div className="relative z-10 text-center">
                 <h2
@@ -647,11 +686,12 @@ export default function RomanceGardenPage({ event, order }) {
                   <img src="/images/templates/romance-garden/swans-framed-ByH4RE7t.png" alt="" className="h-auto w-[170px] object-contain opacity-85" />
                 </div>
               </div>
-            </SectionShell>
+              </SectionShell>
+            </SectionReveal>
 
-            <section className="mt-10 px-6 py-4">
+            <SectionReveal className="mt-10 px-6 py-4">
               <div className="space-y-14 text-center">
-                <div className="px-2 py-2">
+                <RevealItem className="px-2 py-2">
                   <img
                     src="/images/templates/romance-garden/cupid-illustration-BO3_EWaD.png"
                     alt=""
@@ -708,9 +748,9 @@ export default function RomanceGardenPage({ event, order }) {
                   >
                     {template.details.timeLabel}
                   </p>
-                </div>
+                </RevealItem>
 
-                <div className="px-2 py-2">
+                <RevealItem className="px-2 py-2" delay={120}>
                   <img
                     src={template.details.venueImageUrl}
                     alt={template.details.venueLabel}
@@ -732,9 +772,9 @@ export default function RomanceGardenPage({ event, order }) {
                     <img src="/images/2gis-icon-logo.svg" alt="2GIS" className="h-4 w-4 shrink-0 object-contain" />
                     {template.details.mapLabel}
                   </a>
-                </div>
+                </RevealItem>
 
-                <div className="px-2 py-2">
+                <RevealItem className="px-2 py-2" delay={220}>
                   <img
                     src="/images/templates/romance-garden/champagne-tower-Or6MBjHQ.png"
                     alt=""
@@ -752,19 +792,21 @@ export default function RomanceGardenPage({ event, order }) {
                   >
                     {template.details.hostsLabel}
                   </p>
-                </div>
+                </RevealItem>
               </div>
-            </section>
+            </SectionReveal>
 
-            <section className="mt-6 px-6 py-10">
-              <h2
-                className="text-center text-[2.75rem] leading-none text-[#8f713b]"
-                style={{ fontFamily: '"Template Welcome Serif", "Times New Roman", serif' }}
-              >
-                {template.rsvp.title}
-              </h2>
+            <SectionReveal className="mt-6 px-6 py-10">
+              <RevealItem>
+                <h2
+                  className="text-center text-[2.75rem] leading-none text-[#8f713b]"
+                  style={{ fontFamily: '"Template Welcome Serif", "Times New Roman", serif' }}
+                >
+                  {template.rsvp.title}
+                </h2>
+              </RevealItem>
 
-              <div className="mt-7 space-y-3">
+              <RevealItem className="mt-7 space-y-3" delay={120}>
                 <input
                   type="text"
                   value={guestName}
@@ -869,9 +911,10 @@ export default function RomanceGardenPage({ event, order }) {
                     </button>
                   );
                 })}
-              </div>
+              </RevealItem>
 
-              <button
+              <RevealItem delay={220}>
+                <button
                 type="button"
                 disabled={!isReadyToSubmit}
                 onClick={handleSubmit}
@@ -901,16 +944,19 @@ export default function RomanceGardenPage({ event, order }) {
                 >
                   {isSubmitting ? "Жіберілуде..." : template.rsvp.submitLabel}
                 </span>
-              </button>
-            </section>
+                </button>
+              </RevealItem>
+            </SectionReveal>
 
-            <Divider
-              iconSrc="/images/templates/romance-garden/locket-illustration-B7vFK6H-.png"
-              className="mt-2"
-              imageClassName="h-auto w-[98px]"
-            />
+            <RevealItem>
+              <Divider
+                iconSrc="/images/templates/romance-garden/locket-illustration-B7vFK6H-.png"
+                className="mt-2"
+                imageClassName="h-auto w-[98px]"
+              />
+            </RevealItem>
 
-            <div className="pt-12">
+            <div className="px-5 pb-5 pt-12">
               <Footer />
             </div>
           </div>

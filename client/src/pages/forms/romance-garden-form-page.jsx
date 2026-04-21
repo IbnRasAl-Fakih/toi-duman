@@ -377,7 +377,7 @@ export default function RomanceGardenFormPage() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col overflow-x-hidden bg-[#fffdfa] text-[#3c3021]">
+    <main className="flex min-h-screen flex-col overflow-x-hidden bg-white text-[#3c3021]">
       <LandingHeader />
 
       <div className="flex-1 px-6 pb-10 pt-28">
