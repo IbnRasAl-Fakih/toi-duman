@@ -1,12 +1,20 @@
 import React from "react";
 import CreateEventDateField from "../../components/create-event-date-field.jsx";
 import CreateEventTimeField from "../../components/create-event-time-field.jsx";
+import GlobalNotification from "../../components/global-notification.jsx";
 import LandingHeader from "../../components/landing/landing-header.jsx";
+import RomanceGardenAudioToggle from "../../components/templates/romance-garden-template/audio-toggle.jsx";
+import { useAdminAuth } from "../../context/admin-auth-context.jsx";
 import RomanceGardenPage, { ROMANCE_GARDEN_PATH, ROMANCE_GARDEN_TYPE } from "../templates/romance-garden-page.jsx";
 
 const GALLERY_MIN = 3;
 const GALLERY_MAX = 6;
 const PREVIEW_BASE_WIDTH = 430;
+const DEFAULT_PREVIEW_IMAGES = [
+  "/images/photo_example_1.jpg",
+  "/images/photo_example_2.jpg",
+  "/images/photo_example_3.jpg"
+];
 
 const initialForm = {
   type: "wedding",
@@ -126,9 +134,10 @@ function validateForm(form, galleryFiles) {
   return "";
 }
 
-async function createTemplate6Event({ config, type, coverFile, galleryFiles }) {
+async function createTemplate6Event({ config, type, isExample, coverFile, galleryFiles }) {
   const payload = new FormData();
   payload.append("type", type);
+  payload.append("is_example", String(isExample));
   payload.append("config", JSON.stringify(config));
   if (coverFile) {
     payload.append("cover_file", coverFile.file);
@@ -187,7 +196,7 @@ function FormSection({ title, children }) {
   );
 }
 
-function UploadGrid({ items, emptyText }) {
+function UploadGrid({ items, emptyText, onRemove }) {
   if (!items.length) {
     return <div className="rounded-[18px] border border-dashed border-[#e8dcc9] bg-[#fcfaf6] px-5 py-7 text-sm text-[#9a886d]">{emptyText}</div>;
   }
@@ -196,7 +205,19 @@ function UploadGrid({ items, emptyText }) {
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
       {items.map((item, index) => (
         <div key={`${item.name}-${index}`} className="space-y-2">
-          <img src={item.previewUrl} alt={item.name} className="aspect-[4/5] w-full rounded-[18px] object-cover" />
+          <div className="relative">
+            <img src={item.previewUrl} alt={item.name} className="aspect-[4/5] w-full rounded-[18px] object-cover" />
+            {typeof onRemove === "function" ? (
+              <button
+                type="button"
+                onClick={() => onRemove(index)}
+                className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full bg-[rgba(60,48,33,0.78)] text-lg leading-none text-white transition hover:bg-[rgba(60,48,33,0.92)]"
+                aria-label={`Удалить ${item.name}`}
+              >
+                ×
+              </button>
+            ) : null}
+          </div>
           <p className="truncate text-xs text-[#8f7d63]">{item.name}</p>
         </div>
       ))}
@@ -205,6 +226,18 @@ function UploadGrid({ items, emptyText }) {
 }
 
 function PhonePreview({ form, coverFile, galleryFiles, createdEvent }) {
+  const [isPreviewOpened, setIsPreviewOpened] = React.useState(false);
+  const [previewAudioOverlay, setPreviewAudioOverlay] = React.useState({
+    isOpened: false,
+    isPlaying: false,
+    onToggleAudio: null
+  });
+  const [previewNotifications, setPreviewNotifications] = React.useState([]);
+  const previewGalleryUrls = React.useMemo(
+    () => (galleryFiles.length ? galleryFiles.map((item) => item.previewUrl) : DEFAULT_PREVIEW_IMAGES),
+    [galleryFiles]
+  );
+  const previewCoverUrl = coverFile?.previewUrl || DEFAULT_PREVIEW_IMAGES[0];
   const previewEvent = React.useMemo(
     () => ({
       id: 0,
@@ -214,15 +247,11 @@ function PhonePreview({ form, coverFile, galleryFiles, createdEvent }) {
       location: form.location || "Достық даңғылы, 52",
       location_link: form.locationLink || "#",
       description: form.introText || null,
-      cover_image_url: coverFile?.previewUrl || null,
-      config: buildConfig(
-        form,
-        galleryFiles.map((item) => item.previewUrl),
-        coverFile?.previewUrl || ""
-      ),
+      cover_image_url: previewCoverUrl,
+      config: buildConfig(form, previewGalleryUrls, previewCoverUrl),
       is_example: true
     }),
-    [coverFile?.previewUrl, createdEvent?.slug, form, galleryFiles]
+    [createdEvent?.slug, form, previewCoverUrl, previewGalleryUrls]
   );
   const previewOrder = React.useMemo(() => ({ status: "paid" }), []);
   const phoneWidth = 286;
@@ -238,6 +267,44 @@ function PhonePreview({ form, coverFile, galleryFiles, createdEvent }) {
   const viewportWidth = screenWidth * widthRatio;
   const viewportHeight = screenHeight * heightRatio;
   const siteScale = viewportWidth / PREVIEW_BASE_WIDTH;
+  const previewViewportHeight = viewportHeight / siteScale;
+  const scaledOverlayStyle = {
+    width: `${PREVIEW_BASE_WIDTH}px`,
+    height: `${previewViewportHeight}px`,
+    transform: `scale(${siteScale})`,
+    transformOrigin: "top left"
+  };
+
+  React.useEffect(() => {
+    if (!previewNotifications.length) {
+      return undefined;
+    }
+
+    const timers = previewNotifications.map((notification) =>
+      window.setTimeout(() => {
+        setPreviewNotifications((current) => current.filter((item) => item.id !== notification.id));
+      }, notification.duration ?? 4000)
+    );
+
+    return () => {
+      timers.forEach((timer) => window.clearTimeout(timer));
+    };
+  }, [previewNotifications]);
+
+  function closePreviewNotification(id) {
+    setPreviewNotifications((current) => current.filter((item) => item.id !== id));
+  }
+
+  function handlePreviewNotify(notification) {
+    setPreviewNotifications((current) => [
+      ...current,
+      {
+        id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        duration: 4000,
+        ...notification
+      }
+    ]);
+  }
 
   return (
     <div className="xl:pt-2">
@@ -251,18 +318,59 @@ function PhonePreview({ form, coverFile, galleryFiles, createdEvent }) {
             height: `${viewportHeight}px`
           }}
         >
-          <div className="preview-scroll-hidden h-full overflow-x-hidden overflow-y-auto bg-[#f7f1e7]">
+          <div className={`preview-scroll-hidden h-full overflow-x-hidden bg-[#f7f1e7] ${isPreviewOpened ? "overflow-y-auto" : "overflow-y-hidden"}`}>
             <div
               style={{
                 width: `${PREVIEW_BASE_WIDTH}px`,
                 transform: `scale(${siteScale})`,
-                transformOrigin: "top left"
+                transformOrigin: "top left",
+                height: `${previewViewportHeight}px`
               }}
             >
-              <RomanceGardenPage event={previewEvent} order={previewOrder} />
+              <RomanceGardenPage
+                event={previewEvent}
+                order={previewOrder}
+                previewMode
+                previewViewportHeight={previewViewportHeight}
+                onPreviewOpenChange={setIsPreviewOpened}
+                onPreviewAudioOverlayChange={setPreviewAudioOverlay}
+                onPreviewNotify={handlePreviewNotify}
+              />
             </div>
           </div>
         </div>
+
+        {(previewAudioOverlay.isOpened && typeof previewAudioOverlay.onToggleAudio === "function") || previewNotifications.length ? (
+          <div
+            className="pointer-events-none absolute z-40 overflow-hidden"
+            style={{
+              left: `${viewportLeft}px`,
+              top: `${viewportTop}px`,
+              width: `${viewportWidth}px`,
+              height: `${viewportHeight}px`
+            }}
+          >
+            <div className="relative" style={scaledOverlayStyle}>
+              {previewAudioOverlay.isOpened && typeof previewAudioOverlay.onToggleAudio === "function" ? (
+                <div className="pointer-events-auto absolute bottom-6 right-5">
+                  <RomanceGardenAudioToggle
+                    isPlaying={previewAudioOverlay.isPlaying}
+                    onToggleAudio={previewAudioOverlay.onToggleAudio}
+                    previewMode
+                  />
+                </div>
+              ) : null}
+
+              {previewNotifications.length ? (
+                <GlobalNotification
+                  notifications={previewNotifications}
+                  onClose={closePreviewNotification}
+                  className="absolute bottom-6 right-5 w-[22rem] max-w-[calc(100%-1.5rem)]"
+                />
+              ) : null}
+            </div>
+          </div>
+        ) : null}
 
         <img src="/images/phone-mockup.png" alt="" aria-hidden="true" className="pointer-events-none absolute inset-0 h-full w-full object-contain" />
       </div>
@@ -271,9 +379,11 @@ function PhonePreview({ form, coverFile, galleryFiles, createdEvent }) {
 }
 
 export default function RomanceGardenFormPage() {
+  const { isAuthenticated: isAdmin } = useAdminAuth();
   const [form, setForm] = React.useState(initialForm);
   const [coverFile, setCoverFile] = React.useState(null);
   const [galleryFiles, setGalleryFiles] = React.useState([]);
+  const [isExample, setIsExample] = React.useState(false);
   const [isCreating, setIsCreating] = React.useState(false);
   const [createdEvent, setCreatedEvent] = React.useState(null);
   const [error, setError] = React.useState("");
@@ -333,22 +443,45 @@ export default function RomanceGardenFormPage() {
       return;
     }
 
-    if (files.length < GALLERY_MIN || files.length > GALLERY_MAX) {
-      setError("Галерея үшін 3-тен 6-ға дейін фото жүктеңіз.");
-      return;
-    }
-
     setError("");
     setGalleryFiles((current) => {
-      current.forEach((item) => {
-        URL.revokeObjectURL(item.previewUrl);
-      });
-
-      return files.map((file) => ({
+      const addedItems = files.map((file) => ({
         file,
         name: file.name,
         previewUrl: URL.createObjectURL(file)
       }));
+      const nextFiles = [...current, ...addedItems];
+
+      if (nextFiles.length > GALLERY_MAX) {
+        addedItems.forEach((item) => {
+          URL.revokeObjectURL(item.previewUrl);
+        });
+        setError("?????????????? ???????? 3-?????? 6-???? ?????????? ???????? ????????????????.");
+        return current;
+      }
+
+      return nextFiles;
+    });
+  }
+
+  function handleRemoveCover() {
+    setCoverFile((current) => {
+      if (current?.previewUrl) {
+        URL.revokeObjectURL(current.previewUrl);
+      }
+
+      return null;
+    });
+  }
+
+  function handleRemoveGalleryItem(indexToRemove) {
+    setGalleryFiles((current) => {
+      const target = current[indexToRemove];
+      if (target?.previewUrl) {
+        URL.revokeObjectURL(target.previewUrl);
+      }
+
+      return current.filter((_, index) => index !== indexToRemove);
     });
   }
 
@@ -365,6 +498,7 @@ export default function RomanceGardenFormPage() {
       const created = await createTemplate6Event({
         config: buildConfig(form),
         type: form.type,
+        isExample: isAdmin && isExample,
         coverFile,
         galleryFiles
       });
@@ -440,7 +574,7 @@ export default function RomanceGardenFormPage() {
                     </label>
                   </div>
                   <div className="mt-4">
-                    <UploadGrid items={coverFile ? [coverFile] : []} emptyText="Hero блогына мұқаба жүктеңіз немесе әдепкі нұсқаны қалдырыңыз." />
+                    <UploadGrid items={coverFile ? [coverFile] : []} emptyText="Hero блогына мұқаба жүктеңіз немесе әдепкі нұсқаны қалдырыңыз."  onRemove={handleRemoveCover} />
                   </div>
                 </div>
 
@@ -456,7 +590,7 @@ export default function RomanceGardenFormPage() {
                     </label>
                   </div>
                   <div className="mt-4">
-                    <UploadGrid items={galleryFiles} emptyText="Галерея үшін 3-6 фото қосыңыз." />
+                    <UploadGrid items={galleryFiles} emptyText="Галерея үшін 3-6 фото қосыңыз."  onRemove={handleRemoveGalleryItem} />
                   </div>
                 </div>
               </div>
@@ -478,6 +612,23 @@ export default function RomanceGardenFormPage() {
 
             <section className="pt-2">
               {error ? <div className="mb-5 rounded-[14px] bg-[#fff3ef] px-4 py-3 text-sm text-[#a14d35]">{error}</div> : null}
+
+              {isAdmin ? (
+                <label className="mb-5 flex items-center gap-3 rounded-[16px] border border-[#eadfce] bg-[#fffdf9] px-4 py-3 text-sm text-[#6f5a36]">
+                  <input
+                    type="checkbox"
+                    checked={isExample}
+                    onChange={(event) => setIsExample(event.target.checked)}
+                    className="h-4 w-4 appearance-none rounded-[4px] border border-[#d7c39e] bg-white bg-center bg-no-repeat checked:border-[#b89255] checked:bg-[#b89255]"
+                    style={{
+                      backgroundImage: isExample
+                        ? `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M3.5 8.5l2.5 2.5 6-6' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`
+                        : "none"
+                    }}
+                  />
+                  <span>Егер бұл үлгі болса, тапсырыс жасамау</span>
+                </label>
+              ) : null}
 
               <div className="flex flex-wrap items-center gap-4">
                 <button

@@ -4,6 +4,7 @@ import CreateEventTimeField from "../../components/create-event-time-field.jsx";
 import GlobalNotification from "../../components/global-notification.jsx";
 import LandingHeader from "../../components/landing/landing-header.jsx";
 import Template5AudioToggle from "../../components/templates/theatre-of-love-template/audio-toggle.jsx";
+import { useAdminAuth } from "../../context/admin-auth-context.jsx";
 import TheatreOfLovePage, { THEATRE_OF_LOVE_PATH, THEATRE_OF_LOVE_TYPE } from "../templates/theatre-of-love-page.jsx";
 
 const initialForm = {
@@ -54,6 +55,11 @@ const initialForm = {
 const GALLERY_MIN = 3;
 const GALLERY_MAX = 4;
 const PREVIEW_BASE_WIDTH = 430;
+const DEFAULT_PREVIEW_IMAGES = [
+  "/images/photo_example_1.jpg",
+  "/images/photo_example_2.jpg",
+  "/images/photo_example_3.jpg"
+];
 
 function parseDateValue(value) {
   if (!value) {
@@ -176,9 +182,10 @@ function validateForm(form, galleryFiles) {
   return "";
 }
 
-async function createTemplate5Event({ config, type, galleryFiles }) {
+async function createTemplate5Event({ config, type, isExample, galleryFiles }) {
   const payload = new FormData();
   payload.append("type", type);
+  payload.append("is_example", String(isExample));
   payload.append("config", JSON.stringify(config));
   galleryFiles.forEach((item) => {
     payload.append("gallery_files", item.file);
@@ -251,7 +258,10 @@ function PhonePreview({ form, galleryFiles, createdEvent }) {
     onToggleAudio: null
   });
   const [previewNotifications, setPreviewNotifications] = React.useState([]);
-  const previewUrls = React.useMemo(() => galleryFiles.map((item) => item.previewUrl), [galleryFiles]);
+  const previewUrls = React.useMemo(
+    () => (galleryFiles.length ? galleryFiles.map((item) => item.previewUrl) : DEFAULT_PREVIEW_IMAGES),
+    [galleryFiles]
+  );
   const previewEvent = React.useMemo(
     () => ({
       id: 0,
@@ -398,8 +408,10 @@ function PhonePreview({ form, galleryFiles, createdEvent }) {
 }
 
 export default function TheatreOfLoveFormPage() {
+  const { isAuthenticated: isAdmin } = useAdminAuth();
   const [form, setForm] = React.useState(initialForm);
   const [galleryFiles, setGalleryFiles] = React.useState([]);
+  const [isExample, setIsExample] = React.useState(false);
   const [isCreating, setIsCreating] = React.useState(false);
   const [createdEvent, setCreatedEvent] = React.useState(null);
   const [error, setError] = React.useState("");
@@ -432,22 +444,35 @@ export default function TheatreOfLoveFormPage() {
       return;
     }
 
-    if (files.length < GALLERY_MIN || files.length > GALLERY_MAX) {
-      setError("3-тен 4-ке дейін фото жүктеңіз.");
-      return;
-    }
-
     setError("");
     setGalleryFiles((current) => {
-      current.forEach((item) => {
-        URL.revokeObjectURL(item.previewUrl);
-      });
-
-      return files.map((file) => ({
+      const addedItems = files.map((file) => ({
         file,
         name: file.name,
         previewUrl: URL.createObjectURL(file)
       }));
+      const nextFiles = [...current, ...addedItems];
+
+      if (nextFiles.length > GALLERY_MAX) {
+        addedItems.forEach((item) => {
+          URL.revokeObjectURL(item.previewUrl);
+        });
+        setError("3-?????? 4-???? ?????????? ???????? ????????????????.");
+        return current;
+      }
+
+      return nextFiles;
+    });
+  }
+
+  function handleRemoveGalleryItem(indexToRemove) {
+    setGalleryFiles((current) => {
+      const target = current[indexToRemove];
+      if (target?.previewUrl) {
+        URL.revokeObjectURL(target.previewUrl);
+      }
+
+      return current.filter((_, index) => index !== indexToRemove);
     });
   }
 
@@ -464,6 +489,7 @@ export default function TheatreOfLoveFormPage() {
       const created = await createTemplate5Event({
         config: buildConfig(form),
         type: form.type,
+        isExample: isAdmin && isExample,
         galleryFiles
       });
       setCreatedEvent(created);
@@ -582,7 +608,17 @@ export default function TheatreOfLoveFormPage() {
                     {galleryFiles.length ? (
                       galleryFiles.map((item, index) => (
                         <div key={`${item.name}-${index}`} className="space-y-2">
-                          <img src={item.previewUrl} alt={`Gallery ${index + 1}`} className="aspect-[4/5] w-full rounded-[18px] object-cover" />
+                          <div className="relative">
+                            <img src={item.previewUrl} alt={`Gallery ${index + 1}`} className="aspect-[4/5] w-full rounded-[18px] object-cover" />
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveGalleryItem(index)}
+                              className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full bg-[rgba(60,48,33,0.78)] text-lg leading-none text-white transition hover:bg-[rgba(60,48,33,0.92)]"
+                              aria-label={`Delete ${item.name}`}
+                            >
+                              x
+                            </button>
+                          </div>
                           <p className="truncate text-xs text-[#8f8375]">{item.name}</p>
                         </div>
                       ))
@@ -663,6 +699,23 @@ export default function TheatreOfLoveFormPage() {
 
             <section className="pt-2">
               {error ? <div className="mb-5 rounded-[14px] bg-[#fff1ee] px-4 py-3 text-sm text-[#a03f35]">{error}</div> : null}
+
+              {isAdmin ? (
+                <label className="mb-5 flex items-center gap-3 rounded-[16px] border border-[#efe8de] bg-[#fcfbf8] px-4 py-3 text-sm text-[#5f5346]">
+                  <input
+                    type="checkbox"
+                    checked={isExample}
+                    onChange={(event) => setIsExample(event.target.checked)}
+                    className="h-4 w-4 appearance-none rounded-[4px] border border-[#d7c39e] bg-white bg-center bg-no-repeat checked:border-[#b89255] checked:bg-[#b89255]"
+                    style={{
+                      backgroundImage: isExample
+                        ? `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M3.5 8.5l2.5 2.5 6-6' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`
+                        : "none"
+                    }}
+                  />
+                  <span>Егер бұл үлгі болса, тапсырыс жасамау</span>
+                </label>
+              ) : null}
 
               <div className="flex flex-wrap items-center gap-4">
                 <button

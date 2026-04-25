@@ -1,7 +1,7 @@
 import json
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, Request, UploadFile, status
 from fastapi.concurrency import run_in_threadpool
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -11,6 +11,7 @@ from app.core.config import get_settings
 from app.repositories.event_repository import EventRepository
 from app.repositories.order_repository import OrderRepository
 from app.schemas.event import EventListRead, EventRead, EventWithOrderRead
+from app.services.admin_auth import require_admin_request
 from app.services.event_slug import build_event_slug
 from app.services.r2_storage import R2StorageService
 
@@ -162,13 +163,18 @@ async def create_event(
 
 @router.post("/public-template-5", response_model=EventWithOrderRead, status_code=status.HTTP_201_CREATED)
 async def create_public_template_5_event(
+    request: Request,
     type: Annotated[str, Form()] = "wedding",
+    is_example: Annotated[bool, Form()] = False,
     config: Annotated[str, Form()] = "{}",
     gallery_files: Annotated[list[UploadFile] | None, File()] = None,
     session: AsyncSession = Depends(get_session),
 ) -> EventWithOrderRead:
     repository = EventRepository(session)
     settings = get_settings()
+
+    if is_example:
+        require_admin_request(request=request, settings=settings)
 
     try:
         parsed_config = json.loads(config)
@@ -204,7 +210,7 @@ async def create_public_template_5_event(
                 "slug": slug,
                 "type": event_type,
                 "config": parsed_config,
-                "is_example": False,
+                "is_example": is_example,
             },
             order_amount=settings.event_order_amount,
         )
@@ -219,7 +225,9 @@ async def create_public_template_5_event(
 
 @router.post("/public-template-6", response_model=EventWithOrderRead, status_code=status.HTTP_201_CREATED)
 async def create_public_template_6_event(
+    request: Request,
     type: Annotated[str, Form()] = "wedding",
+    is_example: Annotated[bool, Form()] = False,
     config: Annotated[str, Form()] = "{}",
     cover_file: Annotated[UploadFile | None, File()] = None,
     gallery_files: Annotated[list[UploadFile] | None, File()] = None,
@@ -227,6 +235,9 @@ async def create_public_template_6_event(
 ) -> EventWithOrderRead:
     repository = EventRepository(session)
     settings = get_settings()
+
+    if is_example:
+        require_admin_request(request=request, settings=settings)
 
     try:
         parsed_config = json.loads(config)
@@ -269,7 +280,7 @@ async def create_public_template_6_event(
                 "slug": slug,
                 "type": event_type,
                 "config": parsed_config,
-                "is_example": False,
+                "is_example": is_example,
             },
             order_amount=settings.event_order_amount,
         )
