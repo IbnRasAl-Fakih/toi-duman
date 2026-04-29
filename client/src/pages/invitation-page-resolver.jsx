@@ -1,12 +1,16 @@
 import React from "react";
 import { useParams } from "react-router-dom";
+import CeremonialPalacePage, { CEREMONIAL_PALACE_PATH } from "./templates/ceremonial-palace-page.jsx";
 import TheatreOfLovePage, { THEATRE_OF_LOVE_PATH } from "./templates/theatre-of-love-page.jsx";
 import RomanceGardenPage, { ROMANCE_GARDEN_PATH } from "./templates/romance-garden-page.jsx";
 import NotFoundPage from "../pages/not-found-page.jsx";
 
 const templateRegistry = {
+  [CEREMONIAL_PALACE_PATH]: CeremonialPalacePage,
   [THEATRE_OF_LOVE_PATH]: TheatreOfLovePage,
-  [ROMANCE_GARDEN_PATH]: RomanceGardenPage
+  [ROMANCE_GARDEN_PATH]: RomanceGardenPage,
+  "templates/invitation-page_template_5.jsx": TheatreOfLovePage,
+  "templates/invitation-page_template_6.jsx": RomanceGardenPage
 };
 
 export default function InvitationPageResolver() {

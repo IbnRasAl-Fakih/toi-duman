@@ -10,6 +10,7 @@ import LandingPage from "./pages/landing-page.jsx";
 import PaymentPage from "./pages/payment-page.jsx";
 import NotFoundPage from "./pages/not-found-page.jsx";
 import PrivacyPage from "./pages/privacy-page.jsx";
+import CeremonialPalaceFormPage from "./pages/forms/ceremonial-palace-form-page.jsx";
 import TheatreOfLoveFormPage from "./pages/forms/theatre-of-love-form-page.jsx";
 import RomanceGardenFormPage from "./pages/forms/romance-garden-form-page.jsx";
 import TemplatesPage from "./pages/templates-page.jsx";
@@ -23,6 +24,7 @@ export default function App() {
 
       <Route path="/theatre-of-love/form" element={<TheatreOfLoveFormPage />} />
       <Route path="/romance-garden/form" element={<RomanceGardenFormPage />} />
+      <Route path="/ceremonial-palace/form" element={<CeremonialPalaceFormPage />} />
 
       <Route path="/privacy" element={<PrivacyPage />} />
       <Route path="/terms" element={<TermsPage />} />

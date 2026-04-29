@@ -5,13 +5,32 @@
 @tailwind utilities;
 
 @font-face {
+  font-family: "Bickham Script Pro";
+  src: url("./assets/fonts/bickham-script-pro-regular.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Bickham Script Pro";
+  src: url("./assets/fonts/bickham-script-pro-semibold.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Bickham Script Pro";
+  src: url("./assets/fonts/bickham-script-pro-bold.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
   font-family: "Bickham Script Display";
-  src:
-    url("./assets/fonts/bickhamscriptthree.ttf") format("truetype"),
-    local("Bickham Script Pro 3"),
-    local("Bickham Script Pro"),
-    local("Bickham Script Std"),
-    local("Bickham Script");
+  src: url("./assets/fonts/bickhamscriptthree.ttf") format("truetype");
   font-style: normal;
   font-weight: 400;
   font-display: swap;

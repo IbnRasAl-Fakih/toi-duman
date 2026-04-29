@@ -33,6 +33,17 @@ const TEMPLATE_ITEMS = [
     image: "/images/image_2026-04-14_23-14-17.png",
     previewHref: "/images/image_2026-04-14_23-14-17.png",
     chooseHref: "/romance-garden/form"
+  },
+  {
+    id: "template-7",
+    category: "wedding",
+    title: "Салтанат сарайы",
+    description: "Салтанатты сарай атмосферасы, қанық бордо палитрасы және классикалық романтикаға құрылған invitation шаблоны.",
+    previewLabel: "ТљР°СЂР°Сѓ",
+    chooseLabel: "РўР°ТЈРґР°Сѓ",
+    image: "/images/templates/ceremonial-palace/300592484d1f31590325.png.webp",
+    previewHref: "/images/templates/ceremonial-palace/300592484d1f31590325.png.webp",
+    chooseHref: "/ceremonial-palace/form"
   }
 ];
 

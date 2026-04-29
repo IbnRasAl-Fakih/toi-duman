@@ -33,6 +33,13 @@ PUBLIC_TEMPLATE_6_REQUIRED_FIELDS = {
     "name": "Name is required",
     "heroTitle": "Hero title is required",
 }
+PUBLIC_TEMPLATE_7_REQUIRED_FIELDS = {
+    "date": "Date is required",
+    "location": "Location is required",
+    "location_link": "Map link is required",
+    "name": "Name is required",
+    "venue_name": "Venue name is required",
+}
 
 
 def _get_config_text(config: dict, key: str) -> str:
@@ -73,6 +80,21 @@ def _validate_public_template_6_config(config: dict) -> None:
     gallery_images = config.get("gallery_image_urls")
     if not isinstance(gallery_images, list) or len(gallery_images) < 3 or len(gallery_images) > 6:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Upload 3 to 6 gallery images")
+
+    if not _get_config_text(config, "time") and not _get_config_text(config, "date").endswith("Z"):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Event time is required")
+
+
+def _validate_public_template_7_config(config: dict) -> None:
+    for field, detail in PUBLIC_TEMPLATE_7_REQUIRED_FIELDS.items():
+        value = config.get(field)
+        if isinstance(value, list):
+            if not any(str(item).strip() for item in value):
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=detail)
+            continue
+
+        if not isinstance(value, str) or not value.strip():
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=detail)
 
     if not _get_config_text(config, "time") and not _get_config_text(config, "date").endswith("Z"):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Event time is required")
@@ -287,6 +309,52 @@ async def create_public_template_6_event(
     except Exception:
         await _cleanup_uploaded_images(uploaded_urls)
         raise
+
+    order_repository = OrderRepository(session)
+    order = await order_repository.get_by_event_id(event.id)
+    return EventWithOrderRead.model_validate(_serialize_event(event, order=order))
+
+
+@router.post("/public-template-7", response_model=EventWithOrderRead, status_code=status.HTTP_201_CREATED)
+async def create_public_template_7_event(
+    request: Request,
+    type: Annotated[str, Form()] = "wedding",
+    is_example: Annotated[bool, Form()] = False,
+    config: Annotated[str, Form()] = "{}",
+    session: AsyncSession = Depends(get_session),
+) -> EventWithOrderRead:
+    repository = EventRepository(session)
+    settings = get_settings()
+
+    if is_example:
+        require_admin_request(request=request, settings=settings)
+
+    try:
+        parsed_config = json.loads(config)
+    except json.JSONDecodeError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+
+    if not isinstance(parsed_config, dict):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Config must be an object")
+
+    _validate_public_template_7_config(parsed_config)
+
+    parsed_config["template_path"] = "templates/ceremonial-palace-page.jsx"
+    parsed_config["template_type"] = "invitation_v7"
+    parsed_config["template_name"] = "Салтанат сарайы"
+    parsed_config["cover_image_url"] = parsed_config.get("cover_image_url") or "/images/templates/ceremonial-palace/300592484d1f31590325.png.webp"
+
+    event_type = str(type or "wedding")
+    slug = await repository.generate_unique_slug(build_event_slug(event_type=event_type, config=parsed_config))
+    event = await repository.create_with_order(
+        event_data={
+            "slug": slug,
+            "type": event_type,
+            "config": parsed_config,
+            "is_example": is_example,
+        },
+        order_amount=settings.event_order_amount,
+    )
 
     order_repository = OrderRepository(session)
     order = await order_repository.get_by_event_id(event.id)
