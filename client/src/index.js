@@ -6,6 +6,7 @@ import "./globals.css";
 import App from "./App.jsx";
 import { AdminAuthProvider } from "./context/admin-auth-context.jsx";
 import { NotificationProvider } from "./context/notification-context.jsx";
+import { registerServiceWorker } from "./register-service-worker.js";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
@@ -20,3 +21,5 @@ root.render(
     </BrowserRouter>
   </React.StrictMode>
 );
+
+registerServiceWorker();
