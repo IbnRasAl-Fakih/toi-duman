@@ -6,7 +6,7 @@
 
 @font-face {
   font-family: "Bickham Script Pro";
-  src: url("./assets/fonts/bickham-script-pro-regular.ttf") format("truetype");
+  src: url("./assets/fonts/Bickham_Script_Pro_3_Regular.otf") format("opentype");
   font-style: normal;
   font-weight: 400;
   font-display: swap;
@@ -14,7 +14,7 @@
 
 @font-face {
   font-family: "Bickham Script Pro";
-  src: url("./assets/fonts/bickham-script-pro-semibold.ttf") format("truetype");
+  src: url("./assets/fonts/Bickham_Script_Pro_3_Semibold.otf") format("opentype");
   font-style: normal;
   font-weight: 600;
   font-display: swap;
@@ -22,7 +22,7 @@
 
 @font-face {
   font-family: "Bickham Script Pro";
-  src: url("./assets/fonts/bickham-script-pro-bold.ttf") format("truetype");
+  src: url("./assets/fonts/Bickham_Script_Pro_3_Bold.otf") format("opentype");
   font-style: normal;
   font-weight: 700;
   font-display: swap;

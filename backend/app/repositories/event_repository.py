@@ -16,6 +16,11 @@ class EventRepository(BaseRepository[Event]):
         result = await self.session.execute(statement)
         return result.scalars().all()
 
+    async def get_examples(self):
+        statement = select(self.model).where(self.model.is_example.is_(True)).order_by(self.model.created_at.desc())
+        result = await self.session.execute(statement)
+        return result.scalars().all()
+
     async def get_by_slug(self, slug: str) -> Event | None:
         statement = select(self.model).where(self.model.slug == slug)
         result = await self.session.execute(statement)

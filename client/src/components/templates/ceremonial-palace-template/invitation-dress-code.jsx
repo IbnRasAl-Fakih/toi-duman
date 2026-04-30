@@ -20,19 +20,38 @@ const GALLERY_IMAGES = [
 ];
 
 export default function InvitationDressCodeCeremonialPalace({ template }) {
+  const configuredGalleryImages = Array.isArray(template.dressCode.galleryImages) ? template.dressCode.galleryImages : [];
+  const galleryImageKey = configuredGalleryImages.join("\n");
+  const galleryImages = React.useMemo(() => {
+    const imageSources = galleryImageKey ? galleryImageKey.split("\n") : [];
+    if (imageSources.length) {
+      return imageSources.map((src, index) => ({
+        src,
+        alt: `Той суреті ${index + 1}`
+      }));
+    }
+
+    return GALLERY_IMAGES;
+  }, [galleryImageKey]);
   const [slideIndex, setSlideIndex] = React.useState(1);
   const [isTransitionEnabled, setIsTransitionEnabled] = React.useState(true);
   const isAnimatingRef = React.useRef(false);
-  const slideCount = GALLERY_IMAGES.length;
-  const carouselSlides = [GALLERY_IMAGES[slideCount - 1], ...GALLERY_IMAGES, GALLERY_IMAGES[0]];
+  const slideCount = galleryImages.length;
+  const carouselSlides = [galleryImages[slideCount - 1], ...galleryImages, galleryImages[0]];
   const activeIndex = (slideIndex - 1 + slideCount) % slideCount;
 
   React.useEffect(() => {
-    GALLERY_IMAGES.forEach((image) => {
+    galleryImages.forEach((image) => {
       const preloadedImage = new Image();
       preloadedImage.src = image.src;
     });
-  }, []);
+  }, [galleryImages]);
+
+  React.useEffect(() => {
+    setSlideIndex(1);
+    setIsTransitionEnabled(false);
+    isAnimatingRef.current = false;
+  }, [galleryImages]);
 
   const moveSlide = React.useCallback((step) => {
     if (isAnimatingRef.current) {
@@ -148,7 +167,7 @@ export default function InvitationDressCodeCeremonialPalace({ template }) {
         </div>
 
         <div className="mt-5 flex items-center justify-center gap-2">
-          {GALLERY_IMAGES.map((image, index) => (
+          {galleryImages.map((image, index) => (
             <button
               key={image.src}
               type="button"

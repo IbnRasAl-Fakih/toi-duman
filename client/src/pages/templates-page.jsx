@@ -13,74 +13,116 @@ const CATEGORIES = [
 
 const TEMPLATE_ITEMS = [
   {
-    id: "template-5",
+    id: "theatre-of-love",
     category: "wedding",
     title: "Махаббат театры",
     description: "Сахналық атмосферасы, терең реңктері және кештің әсерін айқындайтын айрықша акценттері бар әсерлі той үлгісі.",
     previewLabel: "Қарау",
     chooseLabel: "Таңдау",
-    image: "/images/image_2026-04-14_23-16-22.png",
-    previewHref: "/images/image_2026-04-14_23-16-22.png",
+    image: "/images/templates/theatre-of-love/theatre-of-love-avatar.png",
+    video: "/images/templates/theatre-of-love/theatre-of-love-video.mp4",
+    templatePaths: ["templates/theatre-of-love-page.jsx", "templates/invitation-page_template_5.jsx"],
     chooseHref: "/theatre-of-love/form"
   },
   {
-    id: "template-6",
+    id: "romance-garden",
     category: "wedding",
     title: "Ғашықтар бағы",
     description: "Таза типографикасы, нәзік композициясы және жұмсақ детальдары бар заманауи той үлгісі.",
     previewLabel: "Қарау",
     chooseLabel: "Таңдау",
-    image: "/images/image_2026-04-14_23-14-17.png",
-    previewHref: "/images/image_2026-04-14_23-14-17.png",
+    image: "/images/templates/romance-garden/romance-garden-avatar.png",
+    video: "/images/templates/romance-garden/romance-garden-video.mp4",
+    templatePaths: ["templates/romance-garden-page.jsx", "templates/invitation-page_template_6.jsx"],
     chooseHref: "/romance-garden/form"
   },
   {
-    id: "template-7",
+    id: "ceremonial-palace",
     category: "wedding",
     title: "Салтанат сарайы",
     description: "Салтанатты сарай атмосферасы, қанық бордо палитрасы және классикалық романтикаға құрылған invitation шаблоны.",
-    previewLabel: "ТљР°СЂР°Сѓ",
-    chooseLabel: "РўР°ТЈРґР°Сѓ",
-    image: "/images/templates/ceremonial-palace/300592484d1f31590325.png.webp",
-    previewHref: "/images/templates/ceremonial-palace/300592484d1f31590325.png.webp",
+    previewLabel: "Қарау",
+    chooseLabel: "Таңдау",
+    image: "/images/templates/ceremonial-palace/ceremonial-palace-avatar.png",
+    video: "/images/templates/ceremonial-palace/ceremonical-palace-video.mp4",
+    templatePaths: ["templates/ceremonial-palace-page.jsx"],
     chooseHref: "/ceremonial-palace/form"
   }
 ];
 
-function TemplateCard({ item }) {
-  return (
-    <article className="rounded-[26px] border border-[#eee7dd] bg-white p-3 shadow-[0_18px_40px_rgba(45,35,21,0.04)]">
-      <div className="overflow-hidden rounded-[20px] bg-[#f4efe7]">
-        <img
-          src={item.image}
-          alt={item.title}
-          className="block aspect-[0.78] w-full object-cover"
-        />
-      </div>
+function getExampleHref(item, exampleEvents) {
+  const matchedEvent = exampleEvents.find((event) => {
+    const templatePath = event.config?.template_path || event.template?.path;
+    return item.templatePaths.includes(templatePath);
+  });
 
-      <div className="px-1 pb-1 pt-4">
-        <h3 className="font-['Georgia','Times_New_Roman',serif] text-[1.1rem] font-semibold tracking-[-0.03em] text-[#2f2923]">
+  return matchedEvent?.slug ? `/${matchedEvent.slug}` : "";
+}
+
+function TemplateCard({ item, exampleHref }) {
+  return (
+    <article className="overflow-hidden rounded-[18px] border border-[#eee7dd] bg-white shadow-[0_18px_40px_rgba(45,35,21,0.04)]">
+      <TemplateCardMedia item={item} />
+
+      <div className="px-2.5 pb-2.5 pt-2.5">
+        <h3 className="font-['Georgia','Times_New_Roman',serif] text-[0.88rem] font-semibold tracking-[-0.03em] text-[#2f2923]">
           {item.title}
         </h3>
-        <p className="mt-2 text-[0.84rem] leading-6 text-[#8a8277]">{item.description}</p>
+        <p className="mt-1 line-clamp-2 text-[0.7rem] leading-4 text-[#8a8277]">{item.description}</p>
 
-        <div className="mt-5 flex items-center gap-2">
-          <a
-            href={item.previewHref}
-            className="inline-flex items-center justify-center rounded-full border border-[#e7dccb] bg-white px-4 py-2 text-[0.78rem] font-medium text-[#7d7366] transition hover:border-[#d7c7ae] hover:text-[#2a241e]"
-          >
-            {item.previewLabel}
-          </a>
+        <div className="mt-3 flex items-center gap-1.5">
+          {exampleHref ? (
+            <Link
+              to={exampleHref}
+              className="inline-flex items-center justify-center rounded-full border border-[#e7dccb] bg-white px-3 py-1.5 text-[0.68rem] font-medium text-[#7d7366] transition hover:border-[#d7c7ae] hover:text-[#2a241e]"
+            >
+              {item.previewLabel}
+            </Link>
+          ) : null}
 
           <Link
             to={item.chooseHref}
-            className="inline-flex items-center justify-center rounded-full bg-[#9a741d] px-4 py-2 text-[0.78rem] font-semibold text-white transition hover:bg-[#856219]"
+            className="inline-flex items-center justify-center rounded-full bg-[#9a741d] px-3 py-1.5 text-[0.68rem] font-semibold text-white transition hover:bg-[#856219]"
           >
             {item.chooseLabel}
           </Link>
         </div>
       </div>
     </article>
+  );
+}
+
+function TemplateCardMedia({ item }) {
+  const [isVideoReady, setIsVideoReady] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsVideoReady(false);
+  }, [item.video]);
+
+  return (
+    <div className="relative overflow-hidden bg-[#f4efe7]">
+      {item.video ? (
+        <video
+          src={item.video}
+          poster={item.image}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          onCanPlayThrough={() => setIsVideoReady(true)}
+          className={`block aspect-[9/19.5] w-full scale-[1.05] object-cover transition-opacity duration-300 ${item.videoClassName || ""} ${isVideoReady ? "opacity-100" : "opacity-0"}`}
+        />
+      ) : null}
+
+      {!isVideoReady ? (
+        <img
+          src={item.image}
+          alt={item.title}
+          className={`block aspect-[9/19.5] w-full object-cover ${item.video ? "absolute inset-0" : ""}`}
+        />
+      ) : null}
+    </div>
   );
 }
 
@@ -99,9 +141,39 @@ function EmptyCategoryState() {
 
 export default function TemplatesPage() {
   const [activeCategory, setActiveCategory] = React.useState("wedding");
+  const [exampleEvents, setExampleEvents] = React.useState([]);
 
   const activeCategoryMeta = CATEGORIES.find((category) => category.id === activeCategory);
   const visibleTemplates = TEMPLATE_ITEMS.filter((item) => item.category === activeCategory);
+
+  React.useEffect(() => {
+    let isMounted = true;
+
+    async function loadExampleEvents() {
+      try {
+        const response = await fetch("/api/v1/events/examples");
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.detail || "Examples could not be loaded");
+        }
+
+        if (isMounted) {
+          setExampleEvents(Array.isArray(data) ? data : []);
+        }
+      } catch {
+        if (isMounted) {
+          setExampleEvents([]);
+        }
+      }
+    }
+
+    loadExampleEvents();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <main className="flex min-h-screen flex-col overflow-x-hidden bg-white text-[#2b241f]">
@@ -141,8 +213,8 @@ export default function TemplatesPage() {
         </div>
       </section>
 
-      <section id="catalog" className="flex-1 px-6 py-12 md:px-10 md:py-14 xl:px-14">
-        <div className="flex flex-col gap-3 pb-8 md:flex-row md:items-end md:justify-between">
+      <section id="catalog" className="flex-1 px-6 py-8 md:px-10 md:py-10 xl:px-12">
+        <div className="mx-auto flex max-w-[1040px] flex-col gap-3 pb-5 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-[#b28a57]">
               {activeCategoryMeta.eyebrow}
@@ -158,9 +230,9 @@ export default function TemplatesPage() {
         </div>
 
         {visibleTemplates.length > 0 ? (
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          <div className="mx-auto grid max-w-[1040px] justify-center gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:[grid-template-columns:repeat(4,minmax(0,248px))]">
             {visibleTemplates.map((item) => (
-              <TemplateCard key={item.id} item={item} />
+              <TemplateCard key={item.id} item={item} exampleHref={getExampleHref(item, exampleEvents)} />
             ))}
           </div>
         ) : (

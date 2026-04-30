@@ -11,7 +11,14 @@ import CeremonialPalacePage, {
 } from "../templates/ceremonial-palace-page.jsx";
 
 const PREVIEW_BASE_WIDTH = 430;
+const GALLERY_MIN = 3;
+const GALLERY_MAX = 6;
 const DEFAULT_COVER_IMAGE = "/images/templates/ceremonial-palace/300592484d1f31590325.png.webp";
+const DEFAULT_PREVIEW_IMAGES = [
+  "/images/photo_example_1.jpg",
+  "/images/photo_example_2.jpg",
+  "/images/photo_example_3.jpg"
+];
 
 const initialForm = {
   type: "wedding",
@@ -43,9 +50,8 @@ const initialForm = {
   detailsTitle: "Қосымша ақпарат",
   detailsDescription: "Қосымша сұрақтар бойынша той ұйымдастырушысына хабарласа аласыз.",
   organizerName: "Әмина",
-  organizerPhone: "+31 6845965887",
-  giftText:
-    "Сіздердің келіп, қуанышымызға ортақ болғандарыңыз біз үшін ең үлкен сый. Егер сый жасауды қаласаңыздар, жас отбасымыздың болашағына қосқан үлестеріңізді ризашылықпен қабылдаймыз.",
+  organizerPhone: "+7 777 777 77 77",
+  giftText: "Сіздердің келіп, қуанышымызға ортақ болғандарыңыз біз үшін ең үлкен сый. Егер сый жасауды қаласаңыздар, жас отбасымыздың болашағына қосқан үлестеріңізді ризашылықпен қабылдаймыз.",
   rsvpTitle: "Қатысуыңызды растаңыз",
   rsvpDescription: "Той дайындығын нақтылау үшін қатысатыныңызды белгілеуіңізді сұраймыз.",
   rsvpNamePlaceholder: "Аты-жөніңіз",
@@ -101,7 +107,7 @@ function formatTimeValue(date) {
   return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
 }
 
-function buildConfig(form) {
+function buildConfig(form, galleryImageUrls = []) {
   return {
     template_path: CEREMONIAL_PALACE_PATH,
     template_type: CEREMONIAL_PALACE_TYPE,
@@ -133,6 +139,7 @@ function buildConfig(form) {
     dressCodeTitle: form.dressCodeTitle,
     dressCodeDescription: form.dressCodeDescription,
     dressCodeNote: form.dressCodeNote,
+    gallery_image_urls: galleryImageUrls,
     detailsTitle: form.detailsTitle,
     detailsDescription: form.detailsDescription,
     organizerName: form.organizerName,
@@ -150,7 +157,7 @@ function buildConfig(form) {
   };
 }
 
-function validateForm(form) {
+function validateForm(form, galleryFiles) {
   if (!form.name.trim()) {
     return "Жұптың есімдерін енгізіңіз.";
   }
@@ -166,15 +173,21 @@ function validateForm(form) {
   if (!form.venue_name.trim()) {
     return "Мейрамхана немесе орын атауын енгізіңіз.";
   }
+  if (galleryFiles.length < GALLERY_MIN || galleryFiles.length > GALLERY_MAX) {
+    return "Галерея үшін 3-тен 6-ға дейін фото жүктеңіз.";
+  }
 
   return "";
 }
 
-async function createTemplate7Event({ config, type, isExample }) {
+async function createTemplate7Event({ config, type, isExample, galleryFiles }) {
   const payload = new FormData();
   payload.append("type", type);
   payload.append("is_example", String(isExample));
   payload.append("config", JSON.stringify(config));
+  galleryFiles.forEach((item) => {
+    payload.append("gallery_files", item.file);
+  });
 
   const response = await fetch("/api/v1/events/public-template-7", {
     method: "POST",
@@ -235,7 +248,36 @@ function FormSection({ title, children }) {
   );
 }
 
-function PhonePreview({ form, createdEvent }) {
+function UploadGrid({ items, emptyText, onRemove }) {
+  if (!items.length) {
+    return <div className="rounded-[18px] border border-dashed border-[#e8dcc9] bg-[#fcfaf6] px-5 py-7 text-sm text-[#9a886d]">{emptyText}</div>;
+  }
+
+  return (
+    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      {items.map((item, index) => (
+        <div key={`${item.name}-${index}`} className="space-y-2">
+          <div className="relative">
+            <img src={item.previewUrl} alt={item.name} className="aspect-[4/5] w-full rounded-[18px] object-cover" />
+            {typeof onRemove === "function" ? (
+              <button
+                type="button"
+                onClick={() => onRemove(index)}
+                className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full bg-[rgba(60,48,33,0.78)] text-lg leading-none text-white transition hover:bg-[rgba(60,48,33,0.92)]"
+                aria-label={`${item.name} суретін өшіру`}
+              >
+                ×
+              </button>
+            ) : null}
+          </div>
+          <p className="truncate text-xs text-[#8f7d63]">{item.name}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function PhonePreview({ form, galleryFiles, createdEvent }) {
   const [isPreviewOpened, setIsPreviewOpened] = React.useState(false);
   const [previewAudioOverlay, setPreviewAudioOverlay] = React.useState({
     isOpened: false,
@@ -243,6 +285,10 @@ function PhonePreview({ form, createdEvent }) {
     onToggleAudio: null
   });
   const [previewNotifications, setPreviewNotifications] = React.useState([]);
+  const previewGalleryUrls = React.useMemo(
+    () => (galleryFiles.length ? galleryFiles.map((item) => item.previewUrl) : DEFAULT_PREVIEW_IMAGES),
+    [galleryFiles]
+  );
   const previewEvent = React.useMemo(
     () => ({
       id: 0,
@@ -252,10 +298,10 @@ function PhonePreview({ form, createdEvent }) {
       location: form.location || "Petit Chemin de Saint-Gilles 13200 Arles, France",
       location_link: form.locationLink || "#",
       cover_image_url: DEFAULT_COVER_IMAGE,
-      config: buildConfig(form),
+      config: buildConfig(form, previewGalleryUrls),
       is_example: true
     }),
-    [createdEvent?.slug, form]
+    [createdEvent?.slug, form, previewGalleryUrls]
   );
   const previewOrder = React.useMemo(() => ({ status: "paid" }), []);
   const phoneWidth = 286;
@@ -385,10 +431,24 @@ function PhonePreview({ form, createdEvent }) {
 export default function CeremonialPalaceFormPage() {
   const { isAuthenticated: isAdmin } = useAdminAuth();
   const [form, setForm] = React.useState(initialForm);
+  const [galleryFiles, setGalleryFiles] = React.useState([]);
   const [isExample, setIsExample] = React.useState(false);
   const [isCreating, setIsCreating] = React.useState(false);
   const [createdEvent, setCreatedEvent] = React.useState(null);
   const [error, setError] = React.useState("");
+  const galleryFilesRef = React.useRef([]);
+
+  React.useEffect(() => {
+    galleryFilesRef.current = galleryFiles;
+  }, [galleryFiles]);
+
+  React.useEffect(() => {
+    return () => {
+      galleryFilesRef.current.forEach((item) => {
+        URL.revokeObjectURL(item.previewUrl);
+      });
+    };
+  }, []);
 
   function updateField(key, value) {
     setForm((current) => ({
@@ -397,8 +457,48 @@ export default function CeremonialPalaceFormPage() {
     }));
   }
 
+  function handleGalleryChange(event) {
+    const files = Array.from(event.target.files || []);
+    event.target.value = "";
+
+    if (!files.length) {
+      return;
+    }
+
+    setError("");
+    setGalleryFiles((current) => {
+      const addedItems = files.map((file) => ({
+        file,
+        name: file.name,
+        previewUrl: URL.createObjectURL(file)
+      }));
+      const nextFiles = [...current, ...addedItems];
+
+      if (nextFiles.length > GALLERY_MAX) {
+        addedItems.forEach((item) => {
+          URL.revokeObjectURL(item.previewUrl);
+        });
+        setError("Галереяға ең көбі 6 фото жүктеуге болады.");
+        return current;
+      }
+
+      return nextFiles;
+    });
+  }
+
+  function handleRemoveGalleryItem(indexToRemove) {
+    setGalleryFiles((current) => {
+      const target = current[indexToRemove];
+      if (target?.previewUrl) {
+        URL.revokeObjectURL(target.previewUrl);
+      }
+
+      return current.filter((_, index) => index !== indexToRemove);
+    });
+  }
+
   async function handleCreate() {
-    const validationError = validateForm(form);
+    const validationError = validateForm(form, galleryFiles);
     if (validationError) {
       setError(validationError);
       return;
@@ -410,7 +510,8 @@ export default function CeremonialPalaceFormPage() {
       const created = await createTemplate7Event({
         config: buildConfig(form),
         type: form.type,
-        isExample: isAdmin && isExample
+        isExample: isAdmin && isExample,
+        galleryFiles
       });
       setCreatedEvent(created);
     } catch (createError) {
@@ -515,6 +616,21 @@ export default function CeremonialPalaceFormPage() {
                 <div className="md:col-span-2">
                   <Field label="Галерея ескертпесі" value={form.dressCodeNote} onChange={(event) => updateField("dressCodeNote", event.target.value)} multiline rows={4} />
                 </div>
+                <div className="md:col-span-2 pt-2">
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <FieldLabel>Галерея фотолары</FieldLabel>
+                      <p className="text-sm text-[#8f7d63]">3-тен 6-ға дейін фото жүктеңіз. Олар live-preview-де және шақыру галереясында қолданылады.</p>
+                    </div>
+                    <label className="cursor-pointer rounded-full border border-[#d8c5a1] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#8b6a34]">
+                      Қосу
+                      <input type="file" accept="image/*" multiple onChange={handleGalleryChange} className="hidden" />
+                    </label>
+                  </div>
+                  <div className="mt-4">
+                    <UploadGrid items={galleryFiles} emptyText="Галерея үшін 3-6 фото қосыңыз." onRemove={handleRemoveGalleryItem} />
+                  </div>
+                </div>
               </div>
             </FormSection>
 
@@ -602,7 +718,7 @@ export default function CeremonialPalaceFormPage() {
 
           <aside className="mt-12 xl:mt-0 xl:w-[320px]">
             <div className="xl:fixed xl:right-8 xl:top-28 xl:w-[286px]">
-              <PhonePreview form={form} createdEvent={createdEvent} />
+              <PhonePreview form={form} galleryFiles={galleryFiles} createdEvent={createdEvent} />
             </div>
           </aside>
         </div>

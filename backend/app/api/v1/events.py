@@ -96,6 +96,10 @@ def _validate_public_template_7_config(config: dict) -> None:
         if not isinstance(value, str) or not value.strip():
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=detail)
 
+    gallery_images = config.get("gallery_image_urls")
+    if not isinstance(gallery_images, list) or len(gallery_images) < 3 or len(gallery_images) > 6:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Upload 3 to 6 gallery images")
+
     if not _get_config_text(config, "time") and not _get_config_text(config, "date").endswith("Z"):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Event time is required")
 
@@ -321,6 +325,7 @@ async def create_public_template_7_event(
     type: Annotated[str, Form()] = "wedding",
     is_example: Annotated[bool, Form()] = False,
     config: Annotated[str, Form()] = "{}",
+    gallery_files: Annotated[list[UploadFile] | None, File()] = None,
     session: AsyncSession = Depends(get_session),
 ) -> EventWithOrderRead:
     repository = EventRepository(session)
@@ -337,6 +342,11 @@ async def create_public_template_7_event(
     if not isinstance(parsed_config, dict):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Config must be an object")
 
+    uploads = gallery_files or []
+    if len(uploads) < 3 or len(uploads) > 6:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Upload 3 to 6 gallery images")
+
+    parsed_config["gallery_image_urls"] = [file.filename or f"gallery-{index}" for index, file in enumerate(uploads, start=1)]
     _validate_public_template_7_config(parsed_config)
 
     parsed_config["template_path"] = "templates/ceremonial-palace-page.jsx"
@@ -345,16 +355,27 @@ async def create_public_template_7_event(
     parsed_config["cover_image_url"] = parsed_config.get("cover_image_url") or "/images/templates/ceremonial-palace/300592484d1f31590325.png.webp"
 
     event_type = str(type or "wedding")
-    slug = await repository.generate_unique_slug(build_event_slug(event_type=event_type, config=parsed_config))
-    event = await repository.create_with_order(
-        event_data={
-            "slug": slug,
-            "type": event_type,
-            "config": parsed_config,
-            "is_example": is_example,
-        },
-        order_amount=settings.event_order_amount,
-    )
+    uploaded_urls: list[str] = []
+    try:
+        parsed_config["gallery_image_urls"] = []
+        for file in uploads:
+            upload = await upload_image_to_r2(file)
+            parsed_config["gallery_image_urls"].append(upload.url)
+            uploaded_urls.append(upload.url)
+
+        slug = await repository.generate_unique_slug(build_event_slug(event_type=event_type, config=parsed_config))
+        event = await repository.create_with_order(
+            event_data={
+                "slug": slug,
+                "type": event_type,
+                "config": parsed_config,
+                "is_example": is_example,
+            },
+            order_amount=settings.event_order_amount,
+        )
+    except Exception:
+        await _cleanup_uploaded_images(uploaded_urls)
+        raise
 
     order_repository = OrderRepository(session)
     order = await order_repository.get_by_event_id(event.id)
@@ -370,6 +391,15 @@ async def list_events(
 ) -> list[EventListRead]:
     repository = EventRepository(session)
     events = await repository.get_multi(limit=limit, offset=offset)
+    return [EventListRead.model_validate(_serialize_event(event)) for event in events]
+
+
+@router.get("/examples", response_model=list[EventListRead])
+async def list_example_events(
+    session: AsyncSession = Depends(get_session),
+) -> list[EventListRead]:
+    repository = EventRepository(session)
+    events = await repository.get_examples()
     return [EventListRead.model_validate(_serialize_event(event)) for event in events]
 
 
@@ -474,13 +504,24 @@ async def delete_event(
     if event is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Event not found")
 
-    cover_image_url = event.config.get("cover_image_url") if isinstance(event.config, dict) else None
-    if cover_image_url:
+    image_urls: list[str] = []
+    if isinstance(event.config, dict):
+        cover_image_url = event.config.get("cover_image_url")
+        if isinstance(cover_image_url, str) and cover_image_url.strip():
+            image_urls.append(cover_image_url.strip())
+
+        for gallery_key in ("gallery_image_urls", "galleryImages"):
+            gallery_urls = event.config.get(gallery_key)
+            if isinstance(gallery_urls, list):
+                image_urls.extend(item.strip() for item in gallery_urls if isinstance(item, str) and item.strip())
+
+    if image_urls:
         storage = R2StorageService(get_settings())
-        try:
-            await run_in_threadpool(storage.delete_image_by_url, cover_image_url)
-        except RuntimeError as exc:
-            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(exc)) from exc
+        for image_url in dict.fromkeys(image_urls):
+            try:
+                await run_in_threadpool(storage.delete_image_by_url, image_url)
+            except RuntimeError as exc:
+                raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(exc)) from exc
 
     deleted = await repository.delete(event_id)
     if not deleted:

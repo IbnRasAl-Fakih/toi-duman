@@ -81,6 +81,9 @@ function formatCountdown(date, nowTimestamp) {
 export function mapEventToCeremonialPalace(event, nowTimestamp = Date.now()) {
   const config = event.config || {};
   const names = normalizeNames(config.name);
+  const uploadedGalleryImages = Array.isArray(config.gallery_image_urls)
+    ? config.gallery_image_urls.filter((item) => typeof item === "string" && item.trim()).map((item) => item.trim())
+    : [];
   const date = new Date(event.date);
   const leftName = names[0] || "Виктор";
   const rightName = names[1] || "Паула";
@@ -133,13 +136,14 @@ export function mapEventToCeremonialPalace(event, nowTimestamp = Date.now()) {
     dressCode: {
       title: getText(config, "dressCodeTitle", "Галерея"),
       description: getText(config, "dressCodeDescription", "Естелік сәттерімізден шағын галерея."),
-      note: getText(config, "dressCodeNote", "Галереяға арналған суреттер.")
+      note: getText(config, "dressCodeNote", "Галереяға арналған суреттер."),
+      galleryImages: uploadedGalleryImages
     },
     details: {
       title: getText(config, "detailsTitle", "Қосымша ақпарат"),
       description: getText(config, "detailsDescription", "Қосымша сұрақтар бойынша той ұйымдастырушысына хабарласа аласыз."),
       organizerName: getText(config, "organizerName", "Әмина"),
-      organizerPhone: getText(config, "organizerPhone", "+31 6845965887"),
+      organizerPhone: getText(config, "organizerPhone", "+7 777 777 77 77"),
       giftText: getText(
         config,
         "giftText",

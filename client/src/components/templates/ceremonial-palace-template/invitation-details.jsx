@@ -55,7 +55,3 @@ export default function InvitationDetailsCeremonialPalace({ template }) {
     </section>
   );
 }
-
-
-
-
