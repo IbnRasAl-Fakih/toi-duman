@@ -112,6 +112,14 @@ function buildCalendarCells(date) {
   };
 }
 
+function getMusicUrl(config, fallback) {
+  return typeof config?.music_url === "string" && config.music_url.trim() ? config.music_url.trim() : fallback;
+}
+
+function getMusicStartTime(config) {
+  return Math.max(0, Number(config?.music_start_time) || 0);
+}
+
 export function mapEventToTemplate6(event, nowTimestamp = Date.now()) {
   const config = event.config || {};
   const date = new Date(event.date);
@@ -210,6 +218,8 @@ export default function RomanceGardenPage({
   const audioRef = React.useRef(null);
   const notification = useNotification();
   const template = React.useMemo(() => mapEventToTemplate6(event, nowTimestamp), [event, nowTimestamp]);
+  const musicUrl = React.useMemo(() => getMusicUrl(event.config || {}, "/musics/wedding-background-music-yxy0nS2O.mp3"), [event.config]);
+  const musicStartTime = React.useMemo(() => getMusicStartTime(event.config || {}), [event.config]);
   const isExample = event.is_example === true;
   const isPaid = order?.status === ORDER_STATUS_PAID;
 
@@ -231,16 +241,29 @@ export default function RomanceGardenPage({
 
     const handlePause = () => setIsMusicPlaying(false);
     const handlePlay = () => setIsMusicPlaying(true);
+    const handleEnded = () => {
+      audio.currentTime = musicStartTime;
+      audio.play().catch(() => setIsMusicPlaying(false));
+    };
 
     audio.addEventListener("pause", handlePause);
     audio.addEventListener("play", handlePlay);
+    audio.addEventListener("ended", handleEnded);
 
     return () => {
       audio.pause();
       audio.removeEventListener("pause", handlePause);
       audio.removeEventListener("play", handlePlay);
+      audio.removeEventListener("ended", handleEnded);
     };
-  }, []);
+  }, [musicStartTime, musicUrl]);
+
+  React.useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      audio.currentTime = musicStartTime;
+    }
+  }, [musicStartTime, musicUrl]);
 
   React.useEffect(() => {
     if (previewMode) {
@@ -288,6 +311,7 @@ export default function RomanceGardenPage({
     }
 
     try {
+      audio.currentTime = musicStartTime;
       await audio.play();
       setIsMusicPlaying(true);
     } catch {
@@ -372,6 +396,7 @@ export default function RomanceGardenPage({
 
     if (audio.paused) {
       try {
+        audio.currentTime = audio.paused ? musicStartTime : audio.currentTime;
         await audio.play();
         setIsMusicPlaying(true);
       } catch {
@@ -419,7 +444,7 @@ export default function RomanceGardenPage({
       <main
         className={`${previewMode ? "relative" : "min-h-screen sm:px-3"} bg-[linear-gradient(180deg,#f7f1e7_0%,#f6efe5_38%,#f5efe7_100%)] px-0 py-0 text-[#3c3021]`}
       >
-        <audio ref={audioRef} preload="metadata" loop src="/musics/wedding-background-music-yxy0nS2O.mp3" />
+        <audio ref={audioRef} preload="metadata" src={musicUrl} />
         {!previewMode ? <RomanceGardenAudioToggle isPlaying={isMusicPlaying} onToggleAudio={handleToggleMusic} /> : null}
 
         <div

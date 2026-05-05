@@ -90,6 +90,14 @@ function getConfigText(config, key, fallback) {
   return typeof config?.[key] === "string" && config[key].trim() ? config[key].trim() : fallback;
 }
 
+function getMusicUrl(config, fallback) {
+  return typeof config?.music_url === "string" && config.music_url.trim() ? config.music_url.trim() : fallback;
+}
+
+function getMusicStartTime(config) {
+  return Math.max(0, Number(config?.music_start_time) || 0);
+}
+
 export function mapEventToTemplate5(event, nowTimestamp = Date.now()) {
   const config = event.config || {};
   const date = new Date(event.date);
@@ -204,6 +212,8 @@ export default function TheatreOfLovePage({
   const audioRef = React.useRef(null);
   const notification = useNotification();
   const template = React.useMemo(() => mapEventToTemplate5(event, nowTimestamp), [event, nowTimestamp]);
+  const musicUrl = React.useMemo(() => getMusicUrl(event.config || {}, "/musics/intro-music-CzqJOUtA.mp3"), [event.config]);
+  const musicStartTime = React.useMemo(() => getMusicStartTime(event.config || {}), [event.config]);
   const isExample = event.is_example === true;
   const isPaid = order?.status === ORDER_STATUS_PAID;
 
@@ -238,7 +248,7 @@ export default function TheatreOfLovePage({
         return;
       }
 
-      audio.currentTime = 0;
+      audio.currentTime = musicStartTime;
       audio.play().catch(() => {
         setIsPlaying(false);
       });
@@ -280,7 +290,14 @@ export default function TheatreOfLovePage({
         audio.removeEventListener("pause", handlePause);
       }
     };
-  }, [isInvitationOpened, previewMode]);
+  }, [isInvitationOpened, musicStartTime, previewMode]);
+
+  React.useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      audio.currentTime = musicStartTime;
+    }
+  }, [musicStartTime, musicUrl]);
 
   React.useEffect(() => {
     if (!isInvitationOpened) {
@@ -294,6 +311,7 @@ export default function TheatreOfLovePage({
 
     let isCancelled = false;
     const startPlayback = () => {
+      audio.currentTime = musicStartTime;
       audio.play().catch(() => {
         if (!isCancelled) {
           setIsPlaying(false);
@@ -315,7 +333,7 @@ export default function TheatreOfLovePage({
       isCancelled = true;
       audio.removeEventListener("canplay", startPlayback);
     };
-  }, [isInvitationOpened]);
+  }, [isInvitationOpened, musicStartTime, musicUrl]);
 
   async function handleToggleAudio() {
     const audio = audioRef.current;
@@ -325,6 +343,7 @@ export default function TheatreOfLovePage({
 
     if (audio.paused) {
       try {
+        audio.currentTime = audio.paused ? musicStartTime : audio.currentTime;
         await audio.play();
         setIsPlaying(true);
       } catch {
@@ -419,7 +438,7 @@ export default function TheatreOfLovePage({
         />
       ) : null}
 
-      <audio ref={audioRef} preload="auto" src="/musics/intro-music-CzqJOUtA.mp3" />
+      <audio ref={audioRef} preload="auto" src={musicUrl} />
 
       <main
         className={`mx-auto w-full max-w-[430px] overflow-hidden bg-[#fff9f5] shadow-[0_0_0_1px_rgba(171,110,95,0.08),0_36px_80px_rgba(110,46,37,0.12)] ${

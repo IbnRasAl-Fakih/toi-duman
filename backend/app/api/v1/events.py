@@ -6,8 +6,9 @@ from fastapi.concurrency import run_in_threadpool
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.dependencies import get_session, require_admin
-from app.api.v1.uploads import upload_image_to_r2
+from app.api.v1.uploads import upload_audio_to_r2, upload_image_to_r2
 from app.core.config import get_settings
+from app.models.music import Music
 from app.repositories.event_repository import EventRepository
 from app.repositories.order_repository import OrderRepository
 from app.schemas.event import EventListRead, EventRead, EventWithOrderRead
@@ -150,6 +151,29 @@ def _serialize_event(event, *, order=None) -> dict:
     }
 
 
+async def _attach_uploaded_music_to_config(
+    *,
+    parsed_config: dict,
+    music_file: UploadFile | None,
+    music_title: str | None,
+    session: AsyncSession,
+) -> str | None:
+    if music_file is None:
+        return None
+
+    upload = await upload_audio_to_r2(music_file)
+    title = (music_title or "").strip() or (music_file.filename or "Music").rsplit(".", 1)[0].strip() or "Music"
+    music = Music(title=title, author=None, url=upload.url, is_published=True)
+    session.add(music)
+    await session.flush()
+
+    parsed_config["music_id"] = music.id
+    parsed_config["music_url"] = upload.url
+    parsed_config["music_title"] = title
+    parsed_config["music_start_time"] = max(0, float(parsed_config.get("music_start_time") or 0))
+    return upload.url
+
+
 @router.post("", response_model=EventRead, status_code=status.HTTP_201_CREATED)
 async def create_event(
     type: Annotated[str, Form()],
@@ -193,6 +217,8 @@ async def create_public_template_5_event(
     type: Annotated[str, Form()] = "wedding",
     is_example: Annotated[bool, Form()] = False,
     config: Annotated[str, Form()] = "{}",
+    music_title: Annotated[str | None, Form()] = None,
+    music_file: Annotated[UploadFile | None, File()] = None,
     gallery_files: Annotated[list[UploadFile] | None, File()] = None,
     session: AsyncSession = Depends(get_session),
 ) -> EventWithOrderRead:
@@ -224,6 +250,15 @@ async def create_public_template_5_event(
     event_type = str(type or "wedding")
     uploaded_urls: list[str] = []
     try:
+        uploaded_music_url = await _attach_uploaded_music_to_config(
+            parsed_config=parsed_config,
+            music_file=music_file,
+            music_title=music_title,
+            session=session,
+        )
+        if uploaded_music_url:
+            uploaded_urls.append(uploaded_music_url)
+
         parsed_config["galleryImages"] = []
         for file in uploads:
             upload = await upload_image_to_r2(file)
@@ -255,6 +290,8 @@ async def create_public_template_6_event(
     type: Annotated[str, Form()] = "wedding",
     is_example: Annotated[bool, Form()] = False,
     config: Annotated[str, Form()] = "{}",
+    music_title: Annotated[str | None, Form()] = None,
+    music_file: Annotated[UploadFile | None, File()] = None,
     cover_file: Annotated[UploadFile | None, File()] = None,
     gallery_files: Annotated[list[UploadFile] | None, File()] = None,
     session: AsyncSession = Depends(get_session),
@@ -288,6 +325,15 @@ async def create_public_template_6_event(
     uploaded_urls: list[str] = []
     cover_url: str | None = None
     try:
+        uploaded_music_url = await _attach_uploaded_music_to_config(
+            parsed_config=parsed_config,
+            music_file=music_file,
+            music_title=music_title,
+            session=session,
+        )
+        if uploaded_music_url:
+            uploaded_urls.append(uploaded_music_url)
+
         if cover_file is not None:
             cover_upload = await upload_image_to_r2(cover_file)
             cover_url = cover_upload.url
@@ -325,6 +371,8 @@ async def create_public_template_7_event(
     type: Annotated[str, Form()] = "wedding",
     is_example: Annotated[bool, Form()] = False,
     config: Annotated[str, Form()] = "{}",
+    music_title: Annotated[str | None, Form()] = None,
+    music_file: Annotated[UploadFile | None, File()] = None,
     gallery_files: Annotated[list[UploadFile] | None, File()] = None,
     session: AsyncSession = Depends(get_session),
 ) -> EventWithOrderRead:
@@ -357,6 +405,15 @@ async def create_public_template_7_event(
     event_type = str(type or "wedding")
     uploaded_urls: list[str] = []
     try:
+        uploaded_music_url = await _attach_uploaded_music_to_config(
+            parsed_config=parsed_config,
+            music_file=music_file,
+            music_title=music_title,
+            session=session,
+        )
+        if uploaded_music_url:
+            uploaded_urls.append(uploaded_music_url)
+
         parsed_config["gallery_image_urls"] = []
         for file in uploads:
             upload = await upload_image_to_r2(file)

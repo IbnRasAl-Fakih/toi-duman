@@ -414,6 +414,45 @@ html.theme-template-5 {
   display: none;
 }
 
+.music-start-range::-webkit-slider-runnable-track {
+  height: 8px;
+  border-radius: 999px;
+  background: transparent;
+}
+
+.music-start-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  margin-top: -5px;
+  border: 3px solid #fffdf9;
+  border-radius: 999px;
+  background: #b89255;
+  box-shadow: 0 4px 12px rgba(93, 69, 31, 0.22);
+}
+
+.music-start-range::-moz-range-track {
+  height: 8px;
+  border-radius: 999px;
+  background: transparent;
+}
+
+.music-start-range::-moz-range-progress {
+  height: 8px;
+  border-radius: 999px;
+  background: #b89255;
+}
+
+.music-start-range::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border: 3px solid #fffdf9;
+  border-radius: 999px;
+  background: #b89255;
+  box-shadow: 0 4px 12px rgba(93, 69, 31, 0.22);
+}
+
 .landing-serif {
   font-family: var(--font-landing-serif);
 }

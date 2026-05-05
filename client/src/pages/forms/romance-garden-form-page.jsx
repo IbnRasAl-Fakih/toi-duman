@@ -3,6 +3,7 @@ import CreateEventDateField from "../../components/create-event-date-field.jsx";
 import CreateEventTimeField from "../../components/create-event-time-field.jsx";
 import GlobalNotification from "../../components/global-notification.jsx";
 import LandingHeader from "../../components/landing/landing-header.jsx";
+import MusicPicker from "../../components/music-picker.jsx";
 import RomanceGardenAudioToggle from "../../components/templates/romance-garden-template/audio-toggle.jsx";
 import { useAdminAuth } from "../../context/admin-auth-context.jsx";
 import RomanceGardenPage, { ROMANCE_GARDEN_PATH, ROMANCE_GARDEN_TYPE } from "../templates/romance-garden-page.jsx";
@@ -15,6 +16,7 @@ const DEFAULT_PREVIEW_IMAGES = [
   "/images/photo_example_2.jpg",
   "/images/photo_example_3.jpg"
 ];
+const KAZAKHSTAN_TIMEZONE_OFFSET = "+05:00";
 
 const initialForm = {
   type: "wedding",
@@ -22,6 +24,10 @@ const initialForm = {
   time: "",
   location: "",
   locationLink: "",
+  musicId: "",
+  musicUrl: "",
+  musicTitle: "",
+  musicStartTime: 0,
   name: "Аружан, Нұрлан",
   heroTitle: "Үйлену тойына шақыру",
   heroSubtitle: "Сізді қуаныш пен махаббатқа толы ерекше күнімізде бірге болуға шақырамыз.",
@@ -84,15 +90,23 @@ function formatTimeValue(date) {
   return `${hours}:${minutes}`;
 }
 
+function buildKazakhstanDateTime(date, time) {
+  return date && time ? `${date}T${time}:00${KAZAKHSTAN_TIMEZONE_OFFSET}` : date || "";
+}
+
 function buildConfig(form, galleryImageUrls = [], coverImageUrl = "") {
   return {
     template_path: ROMANCE_GARDEN_PATH,
     template_type: ROMANCE_GARDEN_TYPE,
     template_name: "Ғашықтар бағы",
-    date: form.date && form.time ? `${form.date}T${form.time}:00Z` : form.date || "",
+    date: buildKazakhstanDateTime(form.date, form.time),
     time: form.time,
     location: form.location,
     location_link: form.locationLink || null,
+    music_id: form.musicId || null,
+    music_url: form.musicUrl || null,
+    music_title: form.musicTitle || null,
+    music_start_time: Number(form.musicStartTime) || 0,
     name: form.name
       .split(",")
       .map((item) => item.trim())
@@ -134,11 +148,15 @@ function validateForm(form, galleryFiles) {
   return "";
 }
 
-async function createTemplate6Event({ config, type, isExample, coverFile, galleryFiles }) {
+async function createTemplate6Event({ config, type, isExample, coverFile, galleryFiles, uploadedMusic }) {
   const payload = new FormData();
   payload.append("type", type);
   payload.append("is_example", String(isExample));
   payload.append("config", JSON.stringify(config));
+  if (uploadedMusic?.file) {
+    payload.append("music_file", uploadedMusic.file);
+    payload.append("music_title", uploadedMusic.title || uploadedMusic.file.name);
+  }
   if (coverFile) {
     payload.append("cover_file", coverFile.file);
   }
@@ -243,7 +261,7 @@ function PhonePreview({ form, coverFile, galleryFiles, createdEvent }) {
       id: 0,
       slug: createdEvent?.slug || "preview-template-6",
       type: form.type || "wedding",
-      date: form.date && form.time ? `${form.date}T${form.time}:00Z` : `${new Date().toISOString().slice(0, 10)}T19:30:00Z`,
+      date: form.date && form.time ? buildKazakhstanDateTime(form.date, form.time) : `${new Date().toISOString().slice(0, 10)}T19:30:00${KAZAKHSTAN_TIMEZONE_OFFSET}`,
       location: form.location || "Достық даңғылы, 52",
       location_link: form.locationLink || "#",
       description: form.introText || null,
@@ -383,17 +401,20 @@ export default function RomanceGardenFormPage() {
   const [form, setForm] = React.useState(initialForm);
   const [coverFile, setCoverFile] = React.useState(null);
   const [galleryFiles, setGalleryFiles] = React.useState([]);
+  const [uploadedMusic, setUploadedMusic] = React.useState(null);
   const [isExample, setIsExample] = React.useState(false);
   const [isCreating, setIsCreating] = React.useState(false);
   const [createdEvent, setCreatedEvent] = React.useState(null);
   const [error, setError] = React.useState("");
   const coverFileRef = React.useRef(null);
   const galleryFilesRef = React.useRef([]);
+  const uploadedMusicRef = React.useRef(null);
 
   React.useEffect(() => {
     coverFileRef.current = coverFile;
     galleryFilesRef.current = galleryFiles;
-  }, [coverFile, galleryFiles]);
+    uploadedMusicRef.current = uploadedMusic;
+  }, [coverFile, galleryFiles, uploadedMusic]);
 
   React.useEffect(() => {
     return () => {
@@ -403,6 +424,9 @@ export default function RomanceGardenFormPage() {
       galleryFilesRef.current.forEach((item) => {
         URL.revokeObjectURL(item.previewUrl);
       });
+      if (uploadedMusicRef.current?.previewUrl) {
+        URL.revokeObjectURL(uploadedMusicRef.current.previewUrl);
+      }
     };
   }, []);
 
@@ -410,6 +434,16 @@ export default function RomanceGardenFormPage() {
     setForm((current) => ({
       ...current,
       [key]: value
+    }));
+  }
+
+  function updateMusic(nextMusic) {
+    setForm((current) => ({
+      ...current,
+      musicId: nextMusic.musicId,
+      musicUrl: nextMusic.musicUrl,
+      musicTitle: nextMusic.musicTitle,
+      musicStartTime: nextMusic.startTime
     }));
   }
 
@@ -500,7 +534,8 @@ export default function RomanceGardenFormPage() {
         type: form.type,
         isExample: isAdmin && isExample,
         coverFile,
-        galleryFiles
+        galleryFiles,
+        uploadedMusic
       });
       setCreatedEvent(created);
     } catch (createError) {
@@ -535,6 +570,17 @@ export default function RomanceGardenFormPage() {
                 </div>
                 <div className="md:col-span-2">
                   <Field label="Карта сілтемесі" value={form.locationLink} onChange={(event) => updateField("locationLink", event.target.value)} placeholder="https://2gis.kz/..." />
+                </div>
+                <div className="md:col-span-2">
+                  <MusicPicker
+                    musicId={form.musicId}
+                    musicUrl={form.musicUrl}
+                    musicTitle={form.musicTitle}
+                    startTime={form.musicStartTime}
+                    uploadedMusic={uploadedMusic}
+                    onChange={updateMusic}
+                    onUploadChange={setUploadedMusic}
+                  />
                 </div>
               </div>
             </FormSection>

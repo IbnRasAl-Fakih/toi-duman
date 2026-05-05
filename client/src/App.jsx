@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import ProtectedAdminRoute from "./components/protected-admin-route.jsx";
 import AdminEventsPage from "./pages/admin/admin-events-page.jsx";
 import AdminLoginPage from "./pages/admin/admin-login-page.jsx";
+import AdminMusicsPage from "./pages/admin/admin-musics-page.jsx";
 import AdminOrdersPage from "./pages/admin/admin-orders-page.jsx";
 import GuestsPage from "./pages/guests-page.jsx";
 import InvitationPageResolver from "./pages/invitation-page-resolver.jsx";
@@ -35,6 +36,7 @@ export default function App() {
         <Route path="/admin" element={<Navigate to="/admin/events" replace />} />
         <Route path="/admin/events" element={<AdminEventsPage />} />
         <Route path="/admin/orders" element={<AdminOrdersPage />} />
+        <Route path="/admin/musics" element={<AdminMusicsPage />} />
       </Route>
 
       <Route path="/:slug/guests" element={<GuestsPage />} />

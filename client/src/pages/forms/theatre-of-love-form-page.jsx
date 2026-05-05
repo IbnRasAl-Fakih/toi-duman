@@ -3,6 +3,7 @@ import CreateEventDateField from "../../components/create-event-date-field.jsx";
 import CreateEventTimeField from "../../components/create-event-time-field.jsx";
 import GlobalNotification from "../../components/global-notification.jsx";
 import LandingHeader from "../../components/landing/landing-header.jsx";
+import MusicPicker from "../../components/music-picker.jsx";
 import Template5AudioToggle from "../../components/templates/theatre-of-love-template/audio-toggle.jsx";
 import { useAdminAuth } from "../../context/admin-auth-context.jsx";
 import TheatreOfLovePage, { THEATRE_OF_LOVE_PATH, THEATRE_OF_LOVE_TYPE } from "../templates/theatre-of-love-page.jsx";
@@ -13,6 +14,10 @@ const initialForm = {
   time: "",
   location: "",
   locationLink: "",
+  musicId: "",
+  musicUrl: "",
+  musicTitle: "",
+  musicStartTime: 0,
   name: "Данияр, Аружан",
   description: "Сізді қуана қарсы аламыз",
   overline: "ШАҚЫРУ",
@@ -60,6 +65,7 @@ const DEFAULT_PREVIEW_IMAGES = [
   "/images/photo_example_2.jpg",
   "/images/photo_example_3.jpg"
 ];
+const KAZAKHSTAN_TIMEZONE_OFFSET = "+05:00";
 
 function parseDateValue(value) {
   if (!value) {
@@ -110,14 +116,23 @@ function formatTimeValue(date) {
   return `${hours}:${minutes}`;
 }
 
+function buildKazakhstanDateTime(date, time) {
+  return date && time ? `${date}T${time}:00${KAZAKHSTAN_TIMEZONE_OFFSET}` : date || "";
+}
+
 function buildConfig(form, galleryImageUrls = []) {
   return {
     template_path: THEATRE_OF_LOVE_PATH,
     template_type: THEATRE_OF_LOVE_TYPE,
     template_name: "Махаббат театры",
-    date: form.date && form.time ? `${form.date}T${form.time}:00Z` : form.date || "",
+    date: buildKazakhstanDateTime(form.date, form.time),
+    time: form.time,
     location: form.location,
     location_link: form.locationLink || null,
+    music_id: form.musicId || null,
+    music_url: form.musicUrl || null,
+    music_title: form.musicTitle || null,
+    music_start_time: Number(form.musicStartTime) || 0,
     description: form.description || null,
     name: form.name
       .split(",")
@@ -182,11 +197,15 @@ function validateForm(form, galleryFiles) {
   return "";
 }
 
-async function createTemplate5Event({ config, type, isExample, galleryFiles }) {
+async function createTemplate5Event({ config, type, isExample, galleryFiles, uploadedMusic }) {
   const payload = new FormData();
   payload.append("type", type);
   payload.append("is_example", String(isExample));
   payload.append("config", JSON.stringify(config));
+  if (uploadedMusic?.file) {
+    payload.append("music_file", uploadedMusic.file);
+    payload.append("music_title", uploadedMusic.title || uploadedMusic.file.name);
+  }
   galleryFiles.forEach((item) => {
     payload.append("gallery_files", item.file);
   });
@@ -267,7 +286,7 @@ function PhonePreview({ form, galleryFiles, createdEvent }) {
       id: 0,
       slug: createdEvent?.slug || "preview-template-5",
       type: form.type || "wedding",
-      date: form.date && form.time ? `${form.date}T${form.time}:00Z` : `${new Date().toISOString().slice(0, 10)}T19:30:00Z`,
+      date: form.date && form.time ? buildKazakhstanDateTime(form.date, form.time) : `${new Date().toISOString().slice(0, 10)}T19:30:00${KAZAKHSTAN_TIMEZONE_OFFSET}`,
       location: form.location || "Достық даңғылы, 52",
       location_link: form.locationLink || "#",
       description: form.description || null,
@@ -411,21 +430,27 @@ export default function TheatreOfLoveFormPage() {
   const { isAuthenticated: isAdmin } = useAdminAuth();
   const [form, setForm] = React.useState(initialForm);
   const [galleryFiles, setGalleryFiles] = React.useState([]);
+  const [uploadedMusic, setUploadedMusic] = React.useState(null);
   const [isExample, setIsExample] = React.useState(false);
   const [isCreating, setIsCreating] = React.useState(false);
   const [createdEvent, setCreatedEvent] = React.useState(null);
   const [error, setError] = React.useState("");
   const galleryFilesRef = React.useRef([]);
+  const uploadedMusicRef = React.useRef(null);
 
   React.useEffect(() => {
     galleryFilesRef.current = galleryFiles;
-  }, [galleryFiles]);
+    uploadedMusicRef.current = uploadedMusic;
+  }, [galleryFiles, uploadedMusic]);
 
   React.useEffect(() => {
     return () => {
       galleryFilesRef.current.forEach((item) => {
         URL.revokeObjectURL(item.previewUrl);
       });
+      if (uploadedMusicRef.current?.previewUrl) {
+        URL.revokeObjectURL(uploadedMusicRef.current.previewUrl);
+      }
     };
   }, []);
 
@@ -433,6 +458,16 @@ export default function TheatreOfLoveFormPage() {
     setForm((current) => ({
       ...current,
       [key]: value
+    }));
+  }
+
+  function updateMusic(nextMusic) {
+    setForm((current) => ({
+      ...current,
+      musicId: nextMusic.musicId,
+      musicUrl: nextMusic.musicUrl,
+      musicTitle: nextMusic.musicTitle,
+      musicStartTime: nextMusic.startTime
     }));
   }
 
@@ -490,7 +525,8 @@ export default function TheatreOfLoveFormPage() {
         config: buildConfig(form),
         type: form.type,
         isExample: isAdmin && isExample,
-        galleryFiles
+        galleryFiles,
+        uploadedMusic
       });
       setCreatedEvent(created);
     } catch (createError) {
@@ -573,6 +609,15 @@ export default function TheatreOfLoveFormPage() {
                   value={form.locationLink}
                   onChange={(event) => updateField("locationLink", event.target.value)}
                   placeholder="https://2gis.kz/..."
+                />
+                <MusicPicker
+                  musicId={form.musicId}
+                  musicUrl={form.musicUrl}
+                  musicTitle={form.musicTitle}
+                  startTime={form.musicStartTime}
+                  uploadedMusic={uploadedMusic}
+                  onChange={updateMusic}
+                  onUploadChange={setUploadedMusic}
                 />
 
                 <div className="grid gap-4 md:grid-cols-3">

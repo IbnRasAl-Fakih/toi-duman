@@ -48,8 +48,8 @@ class R2StorageService:
         base_url = self.settings.r2_public_base_url.rstrip("/")
         return f"{base_url}/{quote(key)}"
 
-    def upload_image(self, *, content: bytes, filename: str, content_type: str | None) -> tuple[str, str]:
-        key = self.build_object_key(filename=filename)
+    def upload_file(self, *, content: bytes, filename: str, content_type: str | None, prefix: str | None = None) -> tuple[str, str]:
+        key = self.build_object_key(filename=filename, prefix=prefix)
         self.client.put_object(
             Bucket=self.settings.r2_bucket_name,
             Key=key,
@@ -57,6 +57,12 @@ class R2StorageService:
             ContentType=content_type or "application/octet-stream",
         )
         return key, self.build_public_url(key)
+
+    def upload_image(self, *, content: bytes, filename: str, content_type: str | None) -> tuple[str, str]:
+        return self.upload_file(content=content, filename=filename, content_type=content_type)
+
+    def upload_audio(self, *, content: bytes, filename: str, content_type: str | None) -> tuple[str, str]:
+        return self.upload_file(content=content, filename=filename, content_type=content_type, prefix="musics")
 
     def extract_key_from_public_url(self, url: str) -> str | None:
         if not self.settings.r2_public_base_url:

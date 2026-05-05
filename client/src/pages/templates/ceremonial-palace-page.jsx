@@ -78,6 +78,14 @@ function formatCountdown(date, nowTimestamp) {
   ];
 }
 
+function getMusicUrl(config, fallback) {
+  return typeof config?.music_url === "string" && config.music_url.trim() ? config.music_url.trim() : fallback;
+}
+
+function getMusicStartTime(config) {
+  return Math.max(0, Number(config?.music_start_time) || 0);
+}
+
 export function mapEventToCeremonialPalace(event, nowTimestamp = Date.now()) {
   const config = event.config || {};
   const names = normalizeNames(config.name);
@@ -186,6 +194,8 @@ export default function CeremonialPalacePage({
   const audioRef = React.useRef(null);
   const notification = useNotification();
   const template = React.useMemo(() => mapEventToCeremonialPalace(event, nowTimestamp), [event, nowTimestamp]);
+  const musicUrl = React.useMemo(() => getMusicUrl(event.config || {}, "/musics/Alex-Warren-Ordinary.mp3"), [event.config]);
+  const musicStartTime = React.useMemo(() => getMusicStartTime(event.config || {}), [event.config]);
   const isExample = event.is_example === true;
   const isPaid = order?.status === ORDER_STATUS_PAID;
 
@@ -207,16 +217,29 @@ export default function CeremonialPalacePage({
 
     const handlePlay = () => setIsMusicPlaying(true);
     const handlePause = () => setIsMusicPlaying(false);
+    const handleEnded = () => {
+      audio.currentTime = musicStartTime;
+      audio.play().catch(() => setIsMusicPlaying(false));
+    };
 
     audio.addEventListener("play", handlePlay);
     audio.addEventListener("pause", handlePause);
+    audio.addEventListener("ended", handleEnded);
 
     return () => {
       audio.pause();
       audio.removeEventListener("play", handlePlay);
       audio.removeEventListener("pause", handlePause);
+      audio.removeEventListener("ended", handleEnded);
     };
-  }, []);
+  }, [musicStartTime, musicUrl]);
+
+  React.useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      audio.currentTime = musicStartTime;
+    }
+  }, [musicStartTime, musicUrl]);
 
   React.useEffect(() => {
     if (previewMode) {
@@ -261,6 +284,7 @@ export default function CeremonialPalacePage({
 
     if (audio.paused) {
       try {
+        audio.currentTime = audio.paused ? musicStartTime : audio.currentTime;
         await audio.play();
         setIsMusicPlaying(true);
       } catch {
@@ -282,6 +306,7 @@ export default function CeremonialPalacePage({
     }
 
     try {
+      audio.currentTime = musicStartTime;
       await audio.play();
       setIsMusicPlaying(true);
     } catch {
@@ -368,7 +393,7 @@ export default function CeremonialPalacePage({
       ) : null}
 
       <main className={`${previewMode ? "relative" : "min-h-screen"} bg-[linear-gradient(180deg,#fbf6f1_0%,#f7f0ea_100%)]`}>
-        <audio ref={audioRef} preload="metadata" loop src="/musics/Alex-Warren-Ordinary.mp3" />
+        <audio ref={audioRef} preload="metadata" src={musicUrl} />
         {!previewMode && isOpened ? <CeremonialPalaceAudioToggle isPlaying={isMusicPlaying} onToggleAudio={handleToggleMusic} /> : null}
 
         <div
