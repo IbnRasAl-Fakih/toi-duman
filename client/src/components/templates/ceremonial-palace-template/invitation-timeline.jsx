@@ -1,5 +1,7 @@
 ﻿import React from "react";
 
+import { CeremonialRevealItem, CeremonialRevealSection } from "./scroll-reveal.jsx";
+
 const CEREMONIAL_TORN_EDGE_SRC = "/images/templates/ceremonial-palace/Mask_group_2_1_Trace.svg";
 const CEREMONIAL_SCRIPT_FONT = '"Bickham Script Pro", "Bickham Script Display", "Snell Roundhand", "Apple Chancery", "Brush Script MT", cursive';
 const CEREMONIAL_SERIF_FONT = '"Times New Roman", Georgia, serif';
@@ -46,7 +48,7 @@ export default function InvitationTimelineCeremonialPalace({ template }) {
   }, []);
 
   return (
-    <section className="relative my-[24px] bg-[#66021F] text-white">
+    <CeremonialRevealSection className="relative my-[24px] bg-[#66021F] text-white">
       <div className="pointer-events-none absolute inset-x-0 -top-[24px] z-20 h-[48px] overflow-hidden">
         <img
           src={CEREMONIAL_TORN_EDGE_SRC}
@@ -57,9 +59,9 @@ export default function InvitationTimelineCeremonialPalace({ template }) {
       </div>
 
       <div className="px-5 pb-24 pt-[5.25rem]">
-        <h2 className="text-center text-[2.45rem] font-normal leading-none" style={{ fontFamily: CEREMONIAL_SCRIPT_FONT }}>
+        <CeremonialRevealItem as="h2" className="text-center text-[2.45rem] font-normal leading-none" style={{ fontFamily: CEREMONIAL_SCRIPT_FONT }}>
           {template.timeline.title}
-        </h2>
+        </CeremonialRevealItem>
 
         <div ref={timelineRef} className="relative mx-auto mt-[4.5rem] max-w-[386px]" style={{ fontFamily: CEREMONIAL_SERIF_FONT }}>
           <div className="absolute bottom-[1.15rem] left-1/2 top-[1.15rem] w-px -translate-x-1/2 bg-white/35" />
@@ -72,13 +74,13 @@ export default function InvitationTimelineCeremonialPalace({ template }) {
 
           <div className="space-y-14">
             {template.timeline.items.map((item, index) => (
-              <div key={`${item.time}-${item.title}-${index}`} className="grid grid-cols-[1fr_44px_1fr] items-center">
+              <CeremonialRevealItem key={`${item.time}-${item.title}-${index}`} className="grid grid-cols-[1fr_44px_1fr] items-center" delay={180 + index * 90}>
                 <div className="pr-8 text-right text-[2rem] leading-none">{item.time}</div>
                 <div className="relative flex justify-center">
                   <span className="h-2 w-2 rotate-45 border border-white bg-white" />
                 </div>
                 <div className="pl-8 text-[1.28rem] leading-[1.08] text-white/95">{item.title}</div>
-              </div>
+              </CeremonialRevealItem>
             ))}
           </div>
         </div>
@@ -92,7 +94,7 @@ export default function InvitationTimelineCeremonialPalace({ template }) {
           className="absolute bottom-0 left-1/2 block h-[120px] max-w-none -translate-x-1/2 object-contain"
         />
       </div>
-    </section>
+    </CeremonialRevealSection>
   );
 }
 

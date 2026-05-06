@@ -1,5 +1,7 @@
 ﻿import React from "react";
 
+import { CeremonialRevealItem, CeremonialRevealSection } from "./scroll-reveal.jsx";
+
 const CEREMONIAL_SCRIPT_FONT = '"Bickham Script Pro", "Bickham Script Display", "Snell Roundhand", "Apple Chancery", "Brush Script MT", cursive';
 const CEREMONIAL_SERIF_FONT = '"Times New Roman", Georgia, serif';
 
@@ -26,32 +28,34 @@ function FlowerBand() {
 
 export default function InvitationDetailsCeremonialPalace({ template }) {
   return (
-    <section className="relative bg-[#fbf6f1] text-[#4a4546]">
+    <CeremonialRevealSection className="relative bg-[#fbf6f1] text-[#4a4546]">
       <div className="px-7 pb-0 pt-12 text-center" style={{ fontFamily: CEREMONIAL_SERIF_FONT }}>
-        <h2 className="text-[2.75rem] font-normal leading-none" style={{ fontFamily: CEREMONIAL_SCRIPT_FONT }}>
+        <CeremonialRevealItem as="h2" className="text-[2.75rem] font-normal leading-none" style={{ fontFamily: CEREMONIAL_SCRIPT_FONT }}>
           Шағын тілек
-        </h2>
-        <p className="mx-auto mt-8 max-w-[320px] text-[1.2rem] leading-[1.35]">
+        </CeremonialRevealItem>
+        <CeremonialRevealItem as="p" delay={120} className="mx-auto mt-8 max-w-[320px] text-[1.2rem] leading-[1.35]">
           Бұл күннің әр сәтін сүйіспеншілікпен дайындап жатырмыз және қуанышымызды сіздермен бөлісуді асыға күтеміз.
-        </p>
+        </CeremonialRevealItem>
 
-        <div className="mx-auto mt-10 max-w-[310px] border-y border-[#66021F]/16 py-7">
+        <CeremonialRevealItem delay={220} className="mx-auto mt-10 max-w-[310px] border-y border-[#66021F]/16 py-7">
           <p className="text-[2.25rem] font-normal leading-none text-[#66021F]" style={{ fontFamily: CEREMONIAL_SCRIPT_FONT }}>
             Сұрақтарыңыз болса
           </p>
           <p className="mx-auto mt-5 max-w-[270px] text-[1.12rem] leading-[1.3]">{template.details.description}</p>
           <p className="mt-6 text-[1.65rem] leading-none">{template.details.organizerName}</p>
           <p className="mt-3 text-[1.75rem] leading-none">{template.details.organizerPhone}</p>
-        </div>
+        </CeremonialRevealItem>
 
-        <div className="mx-auto mt-9 max-w-[320px]">
+        <CeremonialRevealItem delay={320} className="mx-auto mt-9 max-w-[320px]">
           <p className="text-[2.25rem] font-normal leading-none text-[#66021F]" style={{ fontFamily: CEREMONIAL_SCRIPT_FONT }}>
             Сыйлық туралы
           </p>
           <p className="mt-5 text-[1.16rem] leading-[1.35]">{template.details.giftText}</p>
-        </div>
-        <FlowerBand />
+        </CeremonialRevealItem>
+        <CeremonialRevealItem delay={380}>
+          <FlowerBand />
+        </CeremonialRevealItem>
       </div>
-    </section>
+    </CeremonialRevealSection>
   );
 }

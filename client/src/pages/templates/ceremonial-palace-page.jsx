@@ -330,16 +330,6 @@ export default function CeremonialPalacePage({
       return;
     }
 
-    if (isExample) {
-      notification.error("Демо шақыруда қонақ жауаптары өшірулі");
-      return;
-    }
-
-    if (!isPaid) {
-      notification.error("Қонақ жауаптары шаблон төленгеннен кейін қолжетімді болады");
-      return;
-    }
-
     if (!guestName.trim()) {
       notification.error("Аты-жөніңізді енгізіңіз");
       return;
@@ -347,6 +337,22 @@ export default function CeremonialPalacePage({
 
     if (!selectedStatus) {
       notification.error("Қатысу жауабын таңдаңыз");
+      return;
+    }
+
+    if (isExample) {
+      setIsSubmitting(true);
+      window.setTimeout(() => {
+        setGuestName("");
+        setSelectedStatus("");
+        setIsSubmitting(false);
+        notification.success("Жауап қабылданды");
+      }, 250);
+      return;
+    }
+
+    if (!isPaid) {
+      notification.error("Шаблон төленбеген. Жауап жіберілмеді.");
       return;
     }
 
@@ -431,7 +437,7 @@ export default function CeremonialPalacePage({
                 onSelectStatus={setSelectedStatus}
                 onSubmit={handleSubmit}
                 isSubmitting={isSubmitting}
-                isPaid={previewMode || (!isExample && isPaid)}
+                isPaid
               />
               <div className="bg-[#7a0626] px-5 pb-5 pt-6">
                 <Footer className="text-white/65" dividerClassName="bg-white/15" />

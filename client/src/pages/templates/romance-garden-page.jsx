@@ -336,16 +336,6 @@ export default function RomanceGardenPage({
       return;
     }
 
-    if (isExample) {
-      notification.error("Demo event үшін қонақ жауаптары өшірілген");
-      return;
-    }
-
-    if (!isPaid) {
-      notification.error("Жауаптар шаблон төленгеннен кейін ғана қолжетімді");
-      return;
-    }
-
     if (!guestName.trim()) {
       notification.error("Аты-жөніңізді енгізіңіз");
       return;
@@ -353,6 +343,23 @@ export default function RomanceGardenPage({
 
     if (!selectedStatus) {
       notification.error("Жауап нұсқасын таңдаңыз");
+      return;
+    }
+
+    if (isExample) {
+      setIsSubmitting(true);
+      window.setTimeout(() => {
+        setGuestName("");
+        setSelectedStatus("");
+        setGuestCount(1);
+        setIsSubmitting(false);
+        notification.success("Жауап қабылданды");
+      }, 250);
+      return;
+    }
+
+    if (!isPaid) {
+      notification.error("Шаблон төленбеген. Жауап жіберілмеді.");
       return;
     }
 
@@ -493,7 +500,7 @@ export default function RomanceGardenPage({
                 onGuestCountChange={setGuestCount}
                 onSubmit={handleSubmit}
                 isSubmitting={isSubmitting}
-                isPaid={previewMode || (!isExample && isPaid)}
+                isPaid
               />
 
               <RomanceGardenDivider

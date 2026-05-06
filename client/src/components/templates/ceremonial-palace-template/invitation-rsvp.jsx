@@ -1,5 +1,7 @@
 ﻿import React from "react";
 
+import { CeremonialRevealItem, CeremonialRevealSection } from "./scroll-reveal.jsx";
+
 const CEREMONIAL_SCRIPT_FONT = '"Bickham Script Pro", "Bickham Script Display", "Snell Roundhand", "Apple Chancery", "Brush Script MT", cursive';
 const CEREMONIAL_SERIF_FONT = '"Times New Roman", Georgia, serif';
 
@@ -30,16 +32,16 @@ export default function InvitationRsvpCeremonialPalace({
   isPaid
 }) {
   return (
-    <section className="relative bg-[#66021F] text-white">
+    <CeremonialRevealSection className="relative bg-[#66021F] text-white">
       <div className="px-7 pb-0 pt-11 text-center">
-        <h2 className="text-[2.25rem] font-normal leading-none" style={{ fontFamily: CEREMONIAL_SCRIPT_FONT }}>
+        <CeremonialRevealItem as="h2" className="text-[2.25rem] font-normal leading-none" style={{ fontFamily: CEREMONIAL_SCRIPT_FONT }}>
           {template.rsvp.title}
-        </h2>
-        <p className="mx-auto mt-8 max-w-[320px] text-[1.25rem] leading-[1.2] text-white/95" style={{ fontFamily: CEREMONIAL_SERIF_FONT }}>
+        </CeremonialRevealItem>
+        <CeremonialRevealItem as="p" delay={120} className="mx-auto mt-8 max-w-[320px] text-[1.25rem] leading-[1.2] text-white/95" style={{ fontFamily: CEREMONIAL_SERIF_FONT }}>
           {template.rsvp.description}
-        </p>
+        </CeremonialRevealItem>
 
-        <div className="mx-auto mt-9 grid max-w-[320px] gap-3 text-left">
+        <CeremonialRevealItem delay={220} className="mx-auto mt-9 grid max-w-[320px] gap-3 text-left">
           <input
             value={guestName}
             onChange={(event) => onGuestNameChange(event.target.value)}
@@ -61,23 +63,23 @@ export default function InvitationRsvpCeremonialPalace({
           >
             {isSubmitting ? template.rsvp.submittingLabel : template.rsvp.submitLabel}
           </button>
-        </div>
+        </CeremonialRevealItem>
 
-        <div className="mt-14">
+        <CeremonialRevealItem delay={320} className="mt-14">
           <p className="text-[2.35rem] font-normal leading-none text-white" style={{ fontFamily: CEREMONIAL_SCRIPT_FONT }}>
             {template.farewell.title}
           </p>
           <p className="mt-5 text-[1.85rem] leading-none" style={{ fontFamily: CEREMONIAL_SERIF_FONT }}>
             {template.farewell.signature}
           </p>
-        </div>
+        </CeremonialRevealItem>
       </div>
 
-      <div className="relative mt-10">
+      <CeremonialRevealItem delay={380} className="relative mt-10">
         <img src="/images/templates/ceremonial-palace/300592484d1f31590325.png.webp" alt={template.farewell.imageAlt} className="block w-full" />
         <div className="pointer-events-none absolute inset-x-0 top-0 h-[34%] bg-[linear-gradient(180deg,rgba(102,2,31,0.88)_0%,rgba(102,2,31,0.46)_46%,rgba(102,2,31,0)_100%)]" />
-      </div>
-    </section>
+      </CeremonialRevealItem>
+    </CeremonialRevealSection>
   );
 }
 

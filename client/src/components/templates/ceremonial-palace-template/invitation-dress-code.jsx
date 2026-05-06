@@ -1,6 +1,8 @@
 ﻿import React from "react";
 import CeremonialPalaceArrowRight from "../../../assets/ceremonial-palace-template/arrow-right.jsx";
 
+import { CeremonialRevealItem, CeremonialRevealSection } from "./scroll-reveal.jsx";
+
 const CEREMONIAL_TORN_EDGE_SRC = "/images/templates/ceremonial-palace/Mask_group_2_1_Trace.svg";
 const CEREMONIAL_SCRIPT_FONT = '"Bickham Script Pro", "Bickham Script Display", "Snell Roundhand", "Apple Chancery", "Brush Script MT", cursive';
 
@@ -114,7 +116,7 @@ export default function InvitationDressCodeCeremonialPalace({ template }) {
   }
 
   return (
-    <section className="relative bg-[#66021F] text-white">
+    <CeremonialRevealSection className="relative bg-[#66021F] text-white">
       <div className="pointer-events-none absolute inset-x-0 -top-[24px] z-20 h-[48px] overflow-hidden">
         <img
           src={CEREMONIAL_TORN_EDGE_SRC}
@@ -125,11 +127,11 @@ export default function InvitationDressCodeCeremonialPalace({ template }) {
       </div>
 
       <div className="px-6 pb-16 pt-12 text-center">
-        <h2 className="text-[2.65rem] font-normal leading-none" style={{ fontFamily: CEREMONIAL_SCRIPT_FONT }}>
+        <CeremonialRevealItem as="h2" className="text-[2.65rem] font-normal leading-none" style={{ fontFamily: CEREMONIAL_SCRIPT_FONT }}>
           Галерея
-        </h2>
+        </CeremonialRevealItem>
 
-        <div className="relative mx-auto mt-8 max-w-[330px]">
+        <CeremonialRevealItem delay={140} className="relative mx-auto mt-8 max-w-[330px]">
           <div className="overflow-hidden rounded-[2px] border border-white/18 bg-[#4e061a] shadow-[0_16px_36px_rgba(0,0,0,0.18)]">
             <div
               className={`flex ${isTransitionEnabled ? "transition-transform duration-700 ease-out" : ""}`}
@@ -164,9 +166,9 @@ export default function InvitationDressCodeCeremonialPalace({ template }) {
           >
             <CeremonialPalaceArrowRight className="block h-4 w-4" />
           </button>
-        </div>
+        </CeremonialRevealItem>
 
-        <div className="mt-5 flex items-center justify-center gap-2">
+        <CeremonialRevealItem delay={240} className="mt-5 flex items-center justify-center gap-2">
           {galleryImages.map((image, index) => (
             <button
               key={image.src}
@@ -184,7 +186,7 @@ export default function InvitationDressCodeCeremonialPalace({ template }) {
               aria-label={`${index + 1}-суретті көрсету`}
             />
           ))}
-        </div>
+        </CeremonialRevealItem>
       </div>
 
       <div className="pointer-events-none absolute inset-x-0 -bottom-[24px] z-20 h-[48px] overflow-hidden">
@@ -195,7 +197,7 @@ export default function InvitationDressCodeCeremonialPalace({ template }) {
           className="absolute bottom-0 left-1/2 block h-[130px] max-w-none -translate-x-1/2 object-contain"
         />
       </div>
-    </section>
+    </CeremonialRevealSection>
   );
 }
 

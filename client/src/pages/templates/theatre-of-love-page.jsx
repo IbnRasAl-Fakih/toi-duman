@@ -376,16 +376,6 @@ export default function TheatreOfLovePage({
       return;
     }
 
-    if (isExample) {
-      notification.error("Demo event үшін қонақ жауаптары өшірілген");
-      return;
-    }
-
-    if (!isPaid) {
-      notification.error("Жауап жіберу үлгі төленгеннен кейін қолжетімді болады");
-      return;
-    }
-
     if (!guestName.trim()) {
       notification.error("Аты-жөніңізді енгізіңіз");
       return;
@@ -393,6 +383,22 @@ export default function TheatreOfLovePage({
 
     if (!selectedStatus) {
       notification.error("Жауап нұсқасын таңдаңыз");
+      return;
+    }
+
+    if (isExample) {
+      setIsSubmitting(true);
+      window.setTimeout(() => {
+        setGuestName("");
+        setSelectedStatus("");
+        setIsSubmitting(false);
+        notification.success("Жауап қабылданды");
+      }, 250);
+      return;
+    }
+
+    if (!isPaid) {
+      notification.error("Шаблон төленбеген. Жауап жіберілмеді.");
       return;
     }
 
@@ -474,7 +480,7 @@ export default function TheatreOfLovePage({
               onSelectStatus={setSelectedStatus}
               onSubmit={handleSubmit}
               isSubmitting={isSubmitting}
-              isPaid={previewMode || (!isExample && isPaid)}
+              isPaid
             />
             <div className="px-5 pb-5">
               <Footer />
