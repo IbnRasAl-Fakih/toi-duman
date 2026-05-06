@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import ProtectedAdminRoute from "./components/protected-admin-route.jsx";
 import AdminEventsPage from "./pages/admin/admin-events-page.jsx";
 import AdminLoginPage from "./pages/admin/admin-login-page.jsx";
@@ -17,31 +17,44 @@ import RomanceGardenFormPage from "./pages/forms/romance-garden-form-page.jsx";
 import TemplatesPage from "./pages/templates-page.jsx";
 import TermsPage from "./pages/terms-page.jsx";
 
+function ScrollToTop() {
+  const { pathname, search } = useLocation();
+
+  React.useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [pathname, search]);
+
+  return null;
+}
+
 export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<LandingPage />} />
-      <Route path="/templates" element={<TemplatesPage />} />
+    <>
+      <ScrollToTop />
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/templates" element={<TemplatesPage />} />
 
-      <Route path="/theatre-of-love/form" element={<TheatreOfLoveFormPage />} />
-      <Route path="/romance-garden/form" element={<RomanceGardenFormPage />} />
-      <Route path="/ceremonial-palace/form" element={<CeremonialPalaceFormPage />} />
+        <Route path="/theatre-of-love/form" element={<TheatreOfLoveFormPage />} />
+        <Route path="/romance-garden/form" element={<RomanceGardenFormPage />} />
+        <Route path="/ceremonial-palace/form" element={<CeremonialPalaceFormPage />} />
 
-      <Route path="/privacy" element={<PrivacyPage />} />
-      <Route path="/terms" element={<TermsPage />} />
-      <Route path="/admin/login" element={<AdminLoginPage />} />
-      <Route path="/payment/:orderId" element={<PaymentPage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/terms" element={<TermsPage />} />
+        <Route path="/admin/login" element={<AdminLoginPage />} />
+        <Route path="/payment/:orderId" element={<PaymentPage />} />
 
-      <Route element={<ProtectedAdminRoute />}>
-        <Route path="/admin" element={<Navigate to="/admin/events" replace />} />
-        <Route path="/admin/events" element={<AdminEventsPage />} />
-        <Route path="/admin/orders" element={<AdminOrdersPage />} />
-        <Route path="/admin/musics" element={<AdminMusicsPage />} />
-      </Route>
+        <Route element={<ProtectedAdminRoute />}>
+          <Route path="/admin" element={<Navigate to="/admin/events" replace />} />
+          <Route path="/admin/events" element={<AdminEventsPage />} />
+          <Route path="/admin/orders" element={<AdminOrdersPage />} />
+          <Route path="/admin/musics" element={<AdminMusicsPage />} />
+        </Route>
 
-      <Route path="/:slug/guests" element={<GuestsPage />} />
-      <Route path="/:slug" element={<InvitationPageResolver />} />
-      <Route path="*" element={<NotFoundPage />} />
-    </Routes>
+        <Route path="/:slug/guests" element={<GuestsPage />} />
+        <Route path="/:slug" element={<InvitationPageResolver />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </>
   );
 }
