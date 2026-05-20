@@ -154,6 +154,30 @@ html.theme-template-5 {
   background: var(--scrollbar-track);
 }
 
+.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list {
+  scrollbar-color: #caa878 #fbf7ef;
+  scrollbar-width: thin;
+}
+
+.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list::-webkit-scrollbar {
+  width: 10px;
+}
+
+.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list::-webkit-scrollbar-track {
+  background: #fbf7ef;
+  border-radius: 999px;
+}
+
+.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list::-webkit-scrollbar-thumb {
+  border: 2px solid #fbf7ef;
+  border-radius: 999px;
+  background: #caa878;
+}
+
+.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list::-webkit-scrollbar-thumb:hover {
+  background: #b89255;
+}
+
 @keyframes template1-heart-float {
   0% {
     transform: translateY(0) scale(0.96);

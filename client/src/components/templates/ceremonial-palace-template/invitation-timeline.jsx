@@ -1,4 +1,5 @@
 ﻿import React from "react";
+import { isTemplateElementEnabled } from "../../../utils/template-sections.js";
 
 import { CeremonialRevealItem, CeremonialRevealSection } from "./scroll-reveal.jsx";
 
@@ -59,9 +60,11 @@ export default function InvitationTimelineCeremonialPalace({ template }) {
       </div>
 
       <div className="px-5 pb-24 pt-[5.25rem]">
+        {isTemplateElementEnabled(template, "timeline.title") ? (
         <CeremonialRevealItem as="h2" className="text-center text-[2.45rem] font-normal leading-none" style={{ fontFamily: CEREMONIAL_SCRIPT_FONT }}>
           {template.timeline.title}
         </CeremonialRevealItem>
+        ) : null}
 
         <div ref={timelineRef} className="relative mx-auto mt-[4.5rem] max-w-[386px]" style={{ fontFamily: CEREMONIAL_SERIF_FONT }}>
           <div className="absolute bottom-[1.15rem] left-1/2 top-[1.15rem] w-px -translate-x-1/2 bg-white/35" />

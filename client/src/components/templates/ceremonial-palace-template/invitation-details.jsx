@@ -1,4 +1,5 @@
-﻿import React from "react";
+import React from "react";
+import { isTemplateElementEnabled } from "../../../utils/template-sections.js";
 
 import { CeremonialRevealItem, CeremonialRevealSection } from "./scroll-reveal.jsx";
 
@@ -9,7 +10,6 @@ function FlowerBand() {
   return (
     <div className="pointer-events-none relative mx-[-1.75rem] mt-12 h-[200px] overflow-hidden">
       <div className="absolute inset-x-0 bottom-0 h-[56px] border-t border-white/12 bg-[#66021F]" />
-
       <img src="/images/templates/ceremonial-palace/12.png.webp" alt="" className="absolute bottom-[10px] left-[-100px] w-[200px]" />
       <img src="/images/templates/ceremonial-palace/4.png.webp" alt="" className="absolute bottom-[80px] left-[25px] w-[80px]" />
       <img src="/images/templates/ceremonial-palace/7uruby.png.webp" alt="" className="absolute bottom-[60px] left-[105px] w-[90px]" />
@@ -30,31 +30,49 @@ export default function InvitationDetailsCeremonialPalace({ template }) {
   return (
     <CeremonialRevealSection className="relative bg-[#fbf6f1] text-[#4a4546]">
       <div className="px-7 pb-0 pt-12 text-center" style={{ fontFamily: CEREMONIAL_SERIF_FONT }}>
-        <CeremonialRevealItem as="h2" className="text-[2.75rem] font-normal leading-none" style={{ fontFamily: CEREMONIAL_SCRIPT_FONT }}>
-          Шағын тілек
-        </CeremonialRevealItem>
-        <CeremonialRevealItem as="p" delay={120} className="mx-auto mt-8 max-w-[320px] text-[1.2rem] leading-[1.35]">
-          Бұл күннің әр сәтін сүйіспеншілікпен дайындап жатырмыз және қуанышымызды сіздермен бөлісуді асыға күтеміз.
-        </CeremonialRevealItem>
+        {isTemplateElementEnabled(template, "details.title") ? (
+          <CeremonialRevealItem as="p" className="mb-6 text-[1.05rem] uppercase tracking-[0.18em] text-[#66021F]">
+            {template.details.title}
+          </CeremonialRevealItem>
+        ) : null}
 
-        <CeremonialRevealItem delay={220} className="mx-auto mt-10 max-w-[310px] border-y border-[#66021F]/16 py-7">
-          <p className="text-[2.25rem] font-normal leading-none text-[#66021F]" style={{ fontFamily: CEREMONIAL_SCRIPT_FONT }}>
-            Сұрақтарыңыз болса
-          </p>
-          <p className="mx-auto mt-5 max-w-[270px] text-[1.12rem] leading-[1.3]">{template.details.description}</p>
-          <p className="mt-6 text-[1.65rem] leading-none">{template.details.organizerName}</p>
-          <p className="mt-3 text-[1.75rem] leading-none">{template.details.organizerPhone}</p>
-        </CeremonialRevealItem>
+        {isTemplateElementEnabled(template, "details.wishTitle") ? (
+          <CeremonialRevealItem as="h2" className="text-[2.75rem] font-normal leading-none" style={{ fontFamily: CEREMONIAL_SCRIPT_FONT }}>
+            {template.details.wishTitle}
+          </CeremonialRevealItem>
+        ) : null}
 
-        <CeremonialRevealItem delay={320} className="mx-auto mt-9 max-w-[320px]">
-          <p className="text-[2.25rem] font-normal leading-none text-[#66021F]" style={{ fontFamily: CEREMONIAL_SCRIPT_FONT }}>
-            Сыйлық туралы
-          </p>
-          <p className="mt-5 text-[1.16rem] leading-[1.35]">{template.details.giftText}</p>
-        </CeremonialRevealItem>
-        <CeremonialRevealItem delay={380}>
-          <FlowerBand />
-        </CeremonialRevealItem>
+        {isTemplateElementEnabled(template, "details.wishText") ? (
+          <CeremonialRevealItem as="p" delay={120} className="mx-auto mt-8 max-w-[320px] text-[1.2rem] leading-[1.35]">
+            {template.details.wishText}
+          </CeremonialRevealItem>
+        ) : null}
+
+        {isTemplateElementEnabled(template, "details.contacts") ? (
+          <CeremonialRevealItem delay={220} className="mx-auto mt-10 max-w-[310px] border-y border-[#66021F]/16 py-7">
+            <p className="text-[2.25rem] font-normal leading-none text-[#66021F]" style={{ fontFamily: CEREMONIAL_SCRIPT_FONT }}>
+              {template.details.questionsTitle}
+            </p>
+            <p className="mx-auto mt-5 max-w-[270px] text-[1.12rem] leading-[1.3]">{template.details.description}</p>
+            <p className="mt-6 text-[1.65rem] leading-none">{template.details.organizerName}</p>
+            <p className="mt-3 text-[1.75rem] leading-none">{template.details.organizerPhone}</p>
+          </CeremonialRevealItem>
+        ) : null}
+
+        {isTemplateElementEnabled(template, "details.gift") ? (
+          <CeremonialRevealItem delay={320} className="mx-auto mt-9 max-w-[320px]">
+            <p className="text-[2.25rem] font-normal leading-none text-[#66021F]" style={{ fontFamily: CEREMONIAL_SCRIPT_FONT }}>
+              {template.details.giftTitle}
+            </p>
+            <p className="mt-5 text-[1.16rem] leading-[1.35]">{template.details.giftText}</p>
+          </CeremonialRevealItem>
+        ) : null}
+
+        {isTemplateElementEnabled(template, "details.flowerBand") ? (
+          <CeremonialRevealItem delay={380}>
+            <FlowerBand />
+          </CeremonialRevealItem>
+        ) : null}
       </div>
     </CeremonialRevealSection>
   );

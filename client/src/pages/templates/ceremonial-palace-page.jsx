@@ -11,6 +11,7 @@ import InvitationLocationCeremonialPalace from "../../components/templates/cerem
 import InvitationRsvpCeremonialPalace from "../../components/templates/ceremonial-palace-template/invitation-rsvp.jsx";
 import InvitationTimelineCeremonialPalace from "../../components/templates/ceremonial-palace-template/invitation-timeline.jsx";
 import { useNotification } from "../../context/notification-context.jsx";
+import { getTemplateSections } from "../../utils/template-sections.js";
 
 export const CEREMONIAL_PALACE_TYPE = "wedding";
 export const CEREMONIAL_PALACE_PATH = "templates/ceremonial-palace-page.jsx";
@@ -95,19 +96,19 @@ export function mapEventToCeremonialPalace(event, nowTimestamp = Date.now()) {
   const date = new Date(event.date);
   const leftName = names[0] || "Виктор";
   const rightName = names[1] || "Паула";
-  const schedule =
-    Array.isArray(config.schedule) && config.schedule.length
-      ? config.schedule
-      : [
-          { time: "16:00", title: "Неке қию рәсімі" },
-          { time: "17:00", title: "Қонақтарды қарсы алу" },
-          { time: "19:00", title: "Кешкі ас" },
-          { time: "20:00", title: "Той кеші" }
-        ];
+  const schedule = Array.isArray(config.schedule)
+    ? config.schedule
+    : [
+        { time: "16:00", title: "Неке қию рәсімі" },
+        { time: "17:00", title: "Қонақтарды қарсы алу" },
+        { time: "19:00", title: "Кешкі ас" },
+        { time: "20:00", title: "Той кеші" }
+      ];
 
   return {
     id: event.id,
     slug: event.slug,
+    elements: config.elements && typeof config.elements === "object" ? config.elements : {},
     couple: {
       left: leftName,
       right: rightName,
@@ -116,7 +117,9 @@ export function mapEventToCeremonialPalace(event, nowTimestamp = Date.now()) {
     hero: {
       dayLabel: getText(config, "dayLabel", "Үйлену тойы"),
       dateLabel: formatHeroDate(date),
-      videoUrl: "/images/templates/ceremonial-palace/IMG_6230.MP4"
+      videoUrl: getText(config, "heroVideoUrl", "/images/templates/ceremonial-palace/IMG_6230.MP4"),
+      openLabel: getText(config, "heroOpenLabel", "Ашып көру"),
+      openAriaLabel: getText(config, "heroOpenAriaLabel", "Шақыруды ашу")
     },
     intro: {
       title: getText(config, "introTitle", "Құрметті ағайын-туыс, достар!"),
@@ -137,9 +140,11 @@ export function mapEventToCeremonialPalace(event, nowTimestamp = Date.now()) {
       title: getText(config, "locationTitle", "Мекенжай"),
       venue: getText(config, "venue_name", "Chateau de Paon"),
       address: event.location || "Мекенжай жақын арада хабарланады",
+      addressPrefix: getText(config, "locationAddressPrefix", "Мекенжай"),
       mapUrl: event.location_link || "#",
       mapLabel: getText(config, "mapLabel", "Картаны ашу"),
-      dateLabel: formatLongDate(date)
+      dateLabel: formatLongDate(date),
+      imageUrl: getText(config, "locationImageUrl", "/images/templates/ceremonial-palace/image-gen_1-Photoroo.png.webp")
     },
     dressCode: {
       title: getText(config, "dressCodeTitle", "Галерея"),
@@ -149,9 +154,13 @@ export function mapEventToCeremonialPalace(event, nowTimestamp = Date.now()) {
     },
     details: {
       title: getText(config, "detailsTitle", "Қосымша ақпарат"),
+      wishTitle: getText(config, "detailsWishTitle", "Шағын тілек"),
+      wishText: getText(config, "detailsWishText", "Бұл күннің әр сәтін сүйіспеншілікпен дайындап жатырмыз және қуанышымызды сіздермен бөлісуді асыға күтеміз."),
+      questionsTitle: getText(config, "detailsQuestionsTitle", "Сұрақтарыңыз болса"),
       description: getText(config, "detailsDescription", "Қосымша сұрақтар бойынша той ұйымдастырушысына хабарласа аласыз."),
       organizerName: getText(config, "organizerName", "Әмина"),
       organizerPhone: getText(config, "organizerPhone", "+7 777 777 77 77"),
+      giftTitle: getText(config, "detailsGiftTitle", "Сыйлық туралы"),
       giftText: getText(
         config,
         "giftText",
@@ -172,7 +181,8 @@ export function mapEventToCeremonialPalace(event, nowTimestamp = Date.now()) {
     farewell: {
       title: getText(config, "farewellTitle", "Сіздерді асыға күтеміз!"),
       signature: getText(config, "farewellSignature", `${leftName} және ${rightName}`),
-      imageAlt: getText(config, "farewellImageAlt", "Жас жұбайлардың суреті")
+      imageAlt: getText(config, "farewellImageAlt", "Жас жұбайлардың суреті"),
+      imageUrl: getText(config, "farewellImageUrl", "/images/templates/ceremonial-palace/300592484d1f31590325.png.webp")
     }
   };
 }
@@ -194,6 +204,10 @@ export default function CeremonialPalacePage({
   const audioRef = React.useRef(null);
   const notification = useNotification();
   const template = React.useMemo(() => mapEventToCeremonialPalace(event, nowTimestamp), [event, nowTimestamp]);
+  const sections = React.useMemo(
+    () => getTemplateSections(event.config || {}, ["intro", "countdown", "timeline", "location", "gallery", "details", "rsvp"]),
+    [event.config]
+  );
   const musicUrl = React.useMemo(() => getMusicUrl(event.config || {}, "/musics/Alex-Warren-Ordinary.mp3"), [event.config]);
   const musicStartTime = React.useMemo(() => getMusicStartTime(event.config || {}), [event.config]);
   const isExample = event.is_example === true;
@@ -423,22 +437,24 @@ export default function CeremonialPalacePage({
 
           {isOpened ? (
             <>
-              <InvitationIntroCeremonialPalace template={template} />
-              <InvitationCountdownCeremonialPalace template={template} />
-              <InvitationTimelineCeremonialPalace template={template} />
-              <InvitationLocationCeremonialPalace template={template} />
-              <InvitationDressCodeCeremonialPalace template={template} />
-              <InvitationDetailsCeremonialPalace template={template} />
-              <InvitationRsvpCeremonialPalace
-                template={template}
-                guestName={guestName}
-                selectedStatus={selectedStatus}
-                onGuestNameChange={setGuestName}
-                onSelectStatus={setSelectedStatus}
-                onSubmit={handleSubmit}
-                isSubmitting={isSubmitting}
-                isPaid
-              />
+              {sections.intro ? <InvitationIntroCeremonialPalace template={template} /> : null}
+              {sections.countdown ? <InvitationCountdownCeremonialPalace template={template} /> : null}
+              {sections.timeline ? <InvitationTimelineCeremonialPalace template={template} /> : null}
+              {sections.location ? <InvitationLocationCeremonialPalace template={template} /> : null}
+              {sections.gallery ? <InvitationDressCodeCeremonialPalace template={template} /> : null}
+              {sections.details ? <InvitationDetailsCeremonialPalace template={template} /> : null}
+              {sections.rsvp ? (
+                <InvitationRsvpCeremonialPalace
+                  template={template}
+                  guestName={guestName}
+                  selectedStatus={selectedStatus}
+                  onGuestNameChange={setGuestName}
+                  onSelectStatus={setSelectedStatus}
+                  onSubmit={handleSubmit}
+                  isSubmitting={isSubmitting}
+                  isPaid
+                />
+              ) : null}
               <div className="bg-[#7a0626] px-5 pb-5 pt-6">
                 <Footer className="text-white/65" dividerClassName="bg-white/15" />
               </div>

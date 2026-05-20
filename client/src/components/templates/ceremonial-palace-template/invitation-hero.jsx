@@ -1,4 +1,5 @@
 ﻿import React from "react";
+import { isTemplateElementEnabled } from "../../../utils/template-sections.js";
 
 const CEREMONIAL_SCRIPT_FONT = '"Bickham Script Pro", "Bickham Script Display", "Snell Roundhand", "Apple Chancery", "Brush Script MT", cursive';
 const CEREMONIAL_SERIF_FONT = '"Cormorant Garamond", "Times New Roman", Georgia, serif';
@@ -53,7 +54,7 @@ function FlowerStrip() {
   );
 }
 
-function EnvelopeOverlay({ isOpened, onOpen }) {
+function EnvelopeOverlay({ template, isOpened, onOpen }) {
   return (
     <div className={`absolute inset-0 z-30 ${isOpened ? "pointer-events-none" : ""}`}>
       <div className={`absolute -left-[16%] -right-[16%] bottom-0 z-20 h-[58%] overflow-hidden transition-transform duration-[1700ms] ${isOpened ? "translate-y-[110%]" : "translate-y-0"}`}>
@@ -96,7 +97,7 @@ function EnvelopeOverlay({ isOpened, onOpen }) {
             className="mt-3 text-[1.16rem] font-semibold leading-none text-[#9b2845]"
             style={{ fontFamily: CEREMONIAL_SERIF_FONT }}
           >
-            Ашып көру
+            {template.hero.openLabel}
           </span>
         </button>
       </div>
@@ -112,28 +113,34 @@ export default function InvitationHeroCeremonialPalace({ template, isOpened, onO
       {!isOpened ? <div className="absolute inset-0 bg-[#f7f1ea]" /> : null}
       {isOpened ? (
         <>
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="metadata"
-            src={template.hero.videoUrl}
-            className="absolute inset-0 h-full w-full scale-[1.2] bg-[#253d4c] object-contain object-[50%_43%]"
-          />
+          {isTemplateElementEnabled(template, "hero.video") ? (
+            <video
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              src={template.hero.videoUrl}
+              className="absolute inset-0 h-full w-full scale-[1.2] bg-[#253d4c] object-contain object-[50%_43%]"
+            />
+          ) : null}
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,28,47,0.42)_0%,rgba(39,43,48,0.3)_46%,rgba(35,38,42,0.28)_70%,rgba(21,28,33,0.22)_100%)]" />
         </>
       ) : null}
 
       <div className={`relative z-10 flex min-h-[100svh] flex-col items-center px-5 pb-32 pt-[5.8rem] text-center text-white transition duration-[1400ms] ${isOpened ? "opacity-100" : "opacity-0"}`}>
-        <p className="text-[2.25rem] font-normal leading-none text-white/95 sm:text-[2.45rem]" style={{ fontFamily: CEREMONIAL_SCRIPT_FONT }}>
-          {template.hero.dayLabel}
-        </p>
-        <p className="mt-2 text-[1.85rem] font-medium leading-none tracking-[0.02em] text-white/95" style={{ fontFamily: CEREMONIAL_SERIF_FONT }}>
-          {template.hero.dateLabel}
-        </p>
+        {isTemplateElementEnabled(template, "hero.dayLabel") ? (
+          <p className="text-[2.25rem] font-normal leading-none text-white/95 sm:text-[2.45rem]" style={{ fontFamily: CEREMONIAL_SCRIPT_FONT }}>
+            {template.hero.dayLabel}
+          </p>
+        ) : null}
+        {isTemplateElementEnabled(template, "hero.dateLabel") ? (
+          <p className="mt-2 text-[1.85rem] font-medium leading-none tracking-[0.02em] text-white/95" style={{ fontFamily: CEREMONIAL_SERIF_FONT }}>
+            {template.hero.dateLabel}
+          </p>
+        ) : null}
 
-        <div className="mt-[5.25rem]">
+        {isTemplateElementEnabled(template, "hero.coupleNames") ? <div className="mt-[5.25rem]">
           <div className="text-[4.15rem] font-normal leading-[0.82] text-white drop-shadow-[0_10px_25px_rgba(0,0,0,0.28)] sm:text-[4.45rem]" style={{ fontFamily: CEREMONIAL_SCRIPT_FONT }}>
             {template.couple.left}
           </div>
@@ -143,11 +150,11 @@ export default function InvitationHeroCeremonialPalace({ template, isOpened, onO
           <div className="text-[4.15rem] font-normal leading-[0.82] text-white drop-shadow-[0_10px_25px_rgba(0,0,0,0.28)] sm:text-[4.45rem]" style={{ fontFamily: CEREMONIAL_SCRIPT_FONT }}>
             {template.couple.right}
           </div>
-        </div>
+        </div> : null}
       </div>
 
-      {isOpened ? <FlowerStrip /> : null}
-      <EnvelopeOverlay isOpened={isOpened} onOpen={onOpen} />
+      {isOpened && isTemplateElementEnabled(template, "hero.flowerStrip") ? <FlowerStrip /> : null}
+      <EnvelopeOverlay template={template} isOpened={isOpened} onOpen={onOpen} />
     </section>
   );
 }

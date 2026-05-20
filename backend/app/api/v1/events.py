@@ -374,6 +374,7 @@ async def create_public_template_7_event(
     music_title: Annotated[str | None, Form()] = None,
     music_file: Annotated[UploadFile | None, File()] = None,
     gallery_files: Annotated[list[UploadFile] | None, File()] = None,
+    farewell_image_file: Annotated[UploadFile | None, File()] = None,
     session: AsyncSession = Depends(get_session),
 ) -> EventWithOrderRead:
     repository = EventRepository(session)
@@ -418,6 +419,11 @@ async def create_public_template_7_event(
         for file in uploads:
             upload = await upload_image_to_r2(file)
             parsed_config["gallery_image_urls"].append(upload.url)
+            uploaded_urls.append(upload.url)
+
+        if farewell_image_file:
+            upload = await upload_image_to_r2(farewell_image_file)
+            parsed_config["farewellImageUrl"] = upload.url
             uploaded_urls.append(upload.url)
 
         slug = await repository.generate_unique_slug(build_event_slug(event_type=event_type, config=parsed_config))

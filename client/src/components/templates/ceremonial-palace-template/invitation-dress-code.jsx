@@ -1,4 +1,5 @@
 ﻿import React from "react";
+import { isTemplateElementEnabled } from "../../../utils/template-sections.js";
 import CeremonialPalaceArrowRight from "../../../assets/ceremonial-palace-template/arrow-right.jsx";
 
 import { CeremonialRevealItem, CeremonialRevealSection } from "./scroll-reveal.jsx";
@@ -127,9 +128,11 @@ export default function InvitationDressCodeCeremonialPalace({ template }) {
       </div>
 
       <div className="px-6 pb-16 pt-12 text-center">
+        {isTemplateElementEnabled(template, "gallery.title") ? (
         <CeremonialRevealItem as="h2" className="text-[2.65rem] font-normal leading-none" style={{ fontFamily: CEREMONIAL_SCRIPT_FONT }}>
-          Галерея
+          {template.dressCode.title}
         </CeremonialRevealItem>
+        ) : null}
 
         <CeremonialRevealItem delay={140} className="relative mx-auto mt-8 max-w-[330px]">
           <div className="overflow-hidden rounded-[2px] border border-white/18 bg-[#4e061a] shadow-[0_16px_36px_rgba(0,0,0,0.18)]">
