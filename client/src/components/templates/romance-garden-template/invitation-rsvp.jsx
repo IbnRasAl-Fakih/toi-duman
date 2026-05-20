@@ -1,4 +1,5 @@
 import React from "react";
+import { isTemplateElementEnabled } from "../../../utils/template-sections.js";
 import RevealItem from "../theatre-of-love-template/reveal-item.jsx";
 import SectionReveal from "../theatre-of-love-template/section-reveal.jsx";
 
@@ -49,76 +50,90 @@ export default function InvitationRsvpTemplate6({
   isSubmitting,
   isPaid
 }) {
-  const isReadyToSubmit = Boolean(isPaid && guestName.trim() && selectedStatus && !isSubmitting);
+  const showNameInput = isTemplateElementEnabled(template, "rsvp.nameInput");
+  const showGuestCount = isTemplateElementEnabled(template, "rsvp.guestCount");
+  const showOptions = isTemplateElementEnabled(template, "rsvp.options");
+  const showSubmitButton = isTemplateElementEnabled(template, "rsvp.submitButton");
+  const isNameReady = !showNameInput || guestName.trim();
+  const isStatusReady = !showOptions || selectedStatus;
+  const isReadyToSubmit = Boolean(isPaid && isNameReady && isStatusReady && !isSubmitting);
   const isDisabled = !isPaid || isSubmitting;
 
   return (
     <SectionReveal className="mt-6 px-6 py-10">
-      <RevealItem>
-        <h2
-          className="text-center text-[2.75rem] leading-none text-[#8f713b]"
-          style={{ fontFamily: '"Template Welcome Serif", "Times New Roman", serif' }}
-        >
-          {template.rsvp.title}
-        </h2>
-      </RevealItem>
+      {isTemplateElementEnabled(template, "rsvp.title") ? (
+        <RevealItem>
+          <h2
+            className="text-center text-[2.75rem] leading-none text-[#8f713b]"
+            style={{ fontFamily: '"Template Welcome Serif", "Times New Roman", serif' }}
+          >
+            {template.rsvp.title}
+          </h2>
+        </RevealItem>
+      ) : null}
 
-      <RevealItem as="p" className="mx-auto mt-4 max-w-[290px] text-center text-[1rem] leading-7 text-[#82673c]" delay={80}>
-        {template.rsvp.description}
-      </RevealItem>
+      {isTemplateElementEnabled(template, "rsvp.text") ? (
+        <RevealItem as="p" className="mx-auto mt-4 max-w-[290px] text-center text-[1rem] leading-7 text-[#82673c]" delay={80}>
+          {template.rsvp.description}
+        </RevealItem>
+      ) : null}
 
       <RevealItem className="mt-7 space-y-3" delay={120}>
-        <input
-          type="text"
-          value={guestName}
-          onChange={(event) => onGuestNameChange(event.target.value)}
-          disabled={isDisabled}
-          placeholder={template.rsvp.namePlaceholder}
-          className="w-full rounded-[18px] border border-[#e8dcc7] bg-[#fffcf8] px-4 py-3.5 text-[15px] text-[#3f3325] outline-none placeholder:text-[#ae9a78] focus:border-[#c8a969] disabled:cursor-not-allowed disabled:opacity-60"
-        />
+        {showNameInput ? (
+          <input
+            type="text"
+            value={guestName}
+            onChange={(event) => onGuestNameChange(event.target.value)}
+            disabled={isDisabled}
+            placeholder={template.rsvp.namePlaceholder}
+            className="w-full rounded-[18px] border border-[#e8dcc7] bg-[#fffcf8] px-4 py-3.5 text-[15px] text-[#3f3325] outline-none placeholder:text-[#ae9a78] focus:border-[#c8a969] disabled:cursor-not-allowed disabled:opacity-60"
+          />
+        ) : null}
 
-        <div className="px-2 py-3 text-center">
-          <div className="flex items-center justify-center gap-3 text-[#b08d57]">
-            <GuestCountIcon />
-            <p
-              className="text-[1.7rem] leading-none text-[#8f713b]"
-              style={{ fontFamily: '"Template Alistair", "Cormorant Garamond", "Times New Roman", serif' }}
-            >
-              {template.rsvp.guestCountLabel}
-            </p>
+        {showGuestCount ? (
+          <div className="px-2 py-3 text-center">
+            <div className="flex items-center justify-center gap-3 text-[#b08d57]">
+              <GuestCountIcon />
+              <p
+                className="text-[1.7rem] leading-none text-[#8f713b]"
+                style={{ fontFamily: '"Template Alistair", "Cormorant Garamond", "Times New Roman", serif' }}
+              >
+                {template.rsvp.guestCountLabel}
+              </p>
+            </div>
+
+            <div className="mt-4 flex items-center justify-center gap-6">
+              <button
+                type="button"
+                disabled={isDisabled || guestCount <= 1}
+                onClick={() => onGuestCountChange(Math.max(1, guestCount - 1))}
+                className="flex h-11 w-11 items-center justify-center rounded-[12px] border border-[#eadfcd] bg-[#fffdfa] text-[1.5rem] text-[#a9824c] transition hover:bg-[#fcf6ed] disabled:cursor-not-allowed disabled:opacity-50"
+                aria-label="Қонақ санын азайту"
+              >
+                -
+              </button>
+
+              <span
+                className="min-w-[2ch] text-center text-[1.6rem] text-[#7a6035]"
+                style={{ fontFamily: '"Cormorant Garamond", "Times New Roman", serif' }}
+              >
+                {guestCount}
+              </span>
+
+              <button
+                type="button"
+                disabled={isDisabled || guestCount >= 10}
+                onClick={() => onGuestCountChange(Math.min(10, guestCount + 1))}
+                className="flex h-11 w-11 items-center justify-center rounded-[12px] border border-[#eadfcd] bg-[#fffdfa] text-[1.5rem] text-[#a9824c] transition hover:bg-[#fcf6ed] disabled:cursor-not-allowed disabled:opacity-50"
+                aria-label="Қонақ санын көбейту"
+              >
+                +
+              </button>
+            </div>
           </div>
+        ) : null}
 
-          <div className="mt-4 flex items-center justify-center gap-6">
-            <button
-              type="button"
-              disabled={isDisabled || guestCount <= 1}
-              onClick={() => onGuestCountChange(Math.max(1, guestCount - 1))}
-              className="flex h-11 w-11 items-center justify-center rounded-[12px] border border-[#eadfcd] bg-[#fffdfa] text-[1.5rem] text-[#a9824c] transition hover:bg-[#fcf6ed] disabled:cursor-not-allowed disabled:opacity-50"
-              aria-label="Қонақ санын азайту"
-            >
-              -
-            </button>
-
-            <span
-              className="min-w-[2ch] text-center text-[1.6rem] text-[#7a6035]"
-              style={{ fontFamily: '"Cormorant Garamond", "Times New Roman", serif' }}
-            >
-              {guestCount}
-            </span>
-
-            <button
-              type="button"
-              disabled={isDisabled || guestCount >= 10}
-              onClick={() => onGuestCountChange(Math.min(10, guestCount + 1))}
-              className="flex h-11 w-11 items-center justify-center rounded-[12px] border border-[#eadfcd] bg-[#fffdfa] text-[1.5rem] text-[#a9824c] transition hover:bg-[#fcf6ed] disabled:cursor-not-allowed disabled:opacity-50"
-              aria-label="Қонақ санын көбейту"
-            >
-              +
-            </button>
-          </div>
-        </div>
-
-        {template.rsvp.options.map((option) => {
+        {showOptions ? template.rsvp.options.map((option) => {
           const isSelected = selectedStatus === option.value;
 
           return (
@@ -157,9 +172,10 @@ export default function InvitationRsvpTemplate6({
               </span>
             </button>
           );
-        })}
+        }) : null}
       </RevealItem>
 
+      {showSubmitButton ? (
       <RevealItem delay={220}>
         <button
           type="button"
@@ -175,6 +191,7 @@ export default function InvitationRsvpTemplate6({
           </span>
         </button>
       </RevealItem>
+      ) : null}
     </SectionReveal>
   );
 }

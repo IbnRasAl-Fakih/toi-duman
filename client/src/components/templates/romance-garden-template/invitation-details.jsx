@@ -1,4 +1,5 @@
 import React from "react";
+import { isTemplateElementEnabled } from "../../../utils/template-sections.js";
 import RevealItem from "../theatre-of-love-template/reveal-item.jsx";
 import SectionReveal from "../theatre-of-love-template/section-reveal.jsx";
 
@@ -65,7 +66,7 @@ function CalendarCard({ template }) {
   );
 }
 
-function VenueCard({ template }) {
+function VenueCard({ template, showVenueName, showLocation, showMapButton }) {
   return (
     <RevealItem className="px-2 py-2" delay={120}>
       <img
@@ -79,16 +80,21 @@ function VenueCard({ template }) {
       >
         Өтетін орны
       </p>
-      <p className="mt-2 text-[1rem] text-[#8f713b]">{template.details.locationLabel}</p>
-      <a
-        href={template.details.mapUrl}
-        target="_blank"
-        rel="noreferrer"
-        className="mt-6 inline-flex items-center gap-2 rounded-full border border-[#dbc39f] bg-white px-4 py-2 text-[0.82rem] font-semibold text-[#8f713b] transition duration-200 hover:bg-[#fcf7ef]"
-      >
-        <img src="/images/2gis-icon-logo.svg" alt="2GIS" className="h-4 w-4 shrink-0 object-contain" />
-        {template.details.mapLabel}
-      </a>
+      {showVenueName ? (
+        <p className="mt-2 text-[1.15rem] font-semibold text-[#8f713b]">{template.details.venueLabel}</p>
+      ) : null}
+      {showLocation ? <p className="mt-2 text-[1rem] text-[#8f713b]">{template.details.locationLabel}</p> : null}
+      {showMapButton ? (
+        <a
+          href={template.details.mapUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="mt-6 inline-flex items-center gap-2 rounded-full border border-[#dbc39f] bg-white px-4 py-2 text-[0.82rem] font-semibold text-[#8f713b] transition duration-200 hover:bg-[#fcf7ef]"
+        >
+          <img src="/images/2gis-icon-logo.svg" alt="2GIS" className="h-4 w-4 shrink-0 object-contain" />
+          {template.details.mapLabel}
+        </a>
+      ) : null}
     </RevealItem>
   );
 }
@@ -118,12 +124,19 @@ function HostsCard({ template }) {
 }
 
 export default function InvitationDetailsTemplate6({ template }) {
+  const showCalendar = isTemplateElementEnabled(template, "details.calendar");
+  const showVenue = isTemplateElementEnabled(template, "details.venue");
+  const showVenueName = isTemplateElementEnabled(template, "details.venueName");
+  const showLocation = isTemplateElementEnabled(template, "details.location");
+  const showMapButton = isTemplateElementEnabled(template, "details.mapButton");
+  const showHosts = isTemplateElementEnabled(template, "details.hosts");
+
   return (
     <SectionReveal className="mt-10 px-6 py-4">
       <div className="space-y-14 text-center">
-        <CalendarCard template={template} />
-        <VenueCard template={template} />
-        <HostsCard template={template} />
+        {showCalendar ? <CalendarCard template={template} /> : null}
+        {showVenue ? <VenueCard template={template} showVenueName={showVenueName} showLocation={showLocation} showMapButton={showMapButton} /> : null}
+        {showHosts ? <HostsCard template={template} /> : null}
       </div>
     </SectionReveal>
   );

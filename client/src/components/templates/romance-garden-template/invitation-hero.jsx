@@ -1,4 +1,5 @@
 import React from "react";
+import { isTemplateElementEnabled } from "../../../utils/template-sections.js";
 import SectionShell from "./section-shell.jsx";
 
 export default function InvitationHeroTemplate6({
@@ -72,6 +73,7 @@ export default function InvitationHeroTemplate6({
         </video>
 
         <div className={heroContentClassName} style={heroStyle}>
+          {isTemplateElementEnabled(template, "hero.title") ? (
           <div className="absolute inset-x-0 top-[7%] px-6 sm:top-[6%]">
             <h1 className={titleClassName} style={{ fontFamily: '"Bickham Script Display", "Snell Roundhand", "Apple Chancery", "Brush Script MT", cursive' }}>
               <span className={nameClassName}>
@@ -85,17 +87,20 @@ export default function InvitationHeroTemplate6({
               </span>
             </h1>
           </div>
+          ) : null}
 
-          <div className="absolute inset-x-0 bottom-10 w-full px-8 py-3">
-            <div className="mb-4 flex items-center justify-center gap-3">
-              <span className="h-px w-12 bg-white/70 md:w-24" />
-              <span className="text-xl text-white drop-shadow-lg">✦</span>
-              <span className="h-px w-12 bg-white/70 md:w-24" />
+          {isTemplateElementEnabled(template, "hero.date") ? (
+            <div className="absolute inset-x-0 bottom-10 w-full px-8 py-3">
+              <div className="mb-4 flex items-center justify-center gap-3">
+                <span className="h-px w-12 bg-white/70 md:w-24" />
+                <span className="text-xl text-white drop-shadow-lg">✦</span>
+                <span className="h-px w-12 bg-white/70 md:w-24" />
+              </div>
+              <p className="text-[1rem] uppercase tracking-[0.34em] text-white drop-shadow-[0_6px_16px_rgba(0,0,0,0.3)]">
+                {template.hero.dateLabel}
+              </p>
             </div>
-            <p className="text-[1rem] uppercase tracking-[0.34em] text-white drop-shadow-[0_6px_16px_rgba(0,0,0,0.3)]">
-              {template.hero.dateLabel}
-            </p>
-          </div>
+          ) : null}
         </div>
       </SectionShell>
     </>

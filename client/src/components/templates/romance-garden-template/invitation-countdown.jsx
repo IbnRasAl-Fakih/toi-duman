@@ -1,4 +1,5 @@
 import React from "react";
+import { isTemplateElementEnabled } from "../../../utils/template-sections.js";
 import SectionReveal from "../theatre-of-love-template/section-reveal.jsx";
 import SectionShell from "./section-shell.jsx";
 
@@ -21,6 +22,10 @@ function Countdown({ items }) {
 }
 
 export default function InvitationCountdownTemplate6({ template }) {
+  const showTitle = isTemplateElementEnabled(template, "countdown.title");
+  const showDate = isTemplateElementEnabled(template, "countdown.date");
+  const showItems = isTemplateElementEnabled(template, "countdown.items");
+
   return (
     <SectionReveal>
       <SectionShell paper className="bg-[radial-gradient(circle_at_top,#fffef9_0%,#f7f1e7_100%)] px-6 py-10">
@@ -29,16 +34,20 @@ export default function InvitationCountdownTemplate6({ template }) {
           alt=""
           className="mx-auto h-auto w-[98px] object-contain opacity-90"
         />
-        <h2
-          className="mt-5 text-center text-[3.1rem] italic leading-none text-[#8f713b]"
-          style={{ fontFamily: '"Template Alistair", "Cormorant Garamond", "Times New Roman", serif' }}
-        >
-          <span className="uppercase">Т</span>ой уақыты
-        </h2>
-        <p className="mt-3 text-center text-[0.8rem] uppercase tracking-[0.3em] text-[#b08d57]">
-          {template.hero.dateLabel} күніне дейін
-        </p>
-        <Countdown items={template.countdown} />
+        {showTitle ? (
+          <h2
+            className="mt-5 text-center text-[3.1rem] italic leading-none text-[#8f713b]"
+            style={{ fontFamily: '"Template Alistair", "Cormorant Garamond", "Times New Roman", serif' }}
+          >
+            <span className="uppercase">Т</span>ой уақыты
+          </h2>
+        ) : null}
+        {showDate ? (
+          <p className="mt-3 text-center text-[0.8rem] uppercase tracking-[0.3em] text-[#b08d57]">
+            {template.hero.dateLabel} күніне дейін
+          </p>
+        ) : null}
+        {showItems ? <Countdown items={template.countdown} /> : null}
       </SectionShell>
     </SectionReveal>
   );

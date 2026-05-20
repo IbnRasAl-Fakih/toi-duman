@@ -1,4 +1,5 @@
 import React from "react";
+import { isTemplateElementEnabled } from "../../../utils/template-sections.js";
 import RevealItem from "./reveal-item.jsx";
 import SectionReveal from "./section-reveal.jsx";
 
@@ -30,13 +31,15 @@ function DetailItem({ label, value, delay = 0 }) {
 }
 
 export default function InvitationDetailsTemplate5({ template, viewportHeight = null }) {
-  const configuredGalleryItems = Array.isArray(template.details.galleryImages) && template.details.galleryImages.length
-    ? template.details.galleryImages.map((src, index) => ({
-        src,
-        alt: `Gallery image ${index + 1}`,
-        className: galleryItems[index % galleryItems.length]?.className || ""
-      }))
-    : galleryItems;
+  const configuredGalleryItems = isTemplateElementEnabled(template, "details.gallery")
+    ? Array.isArray(template.details.galleryImages) && template.details.galleryImages.length
+      ? template.details.galleryImages.map((src, index) => ({
+          src,
+          alt: `Gallery image ${index + 1}`,
+          className: galleryItems[index % galleryItems.length]?.className || ""
+        }))
+      : galleryItems
+    : [];
   const marqueeItems = [...configuredGalleryItems, ...configuredGalleryItems];
 
   return (
@@ -45,12 +48,12 @@ export default function InvitationDetailsTemplate5({ template, viewportHeight = 
         <RevealItem className="relative grid grid-cols-3 gap-3 overflow-hidden rounded-[26px] bg-[linear-gradient(180deg,rgba(255,250,247,0.88),rgba(255,246,241,0.72))] px-4 py-4">
           <div className="absolute bottom-0 left-1/3 top-0 w-px -translate-x-1/2 bg-[linear-gradient(180deg,transparent,#ebd6cb,transparent)]" />
           <div className="absolute bottom-0 left-2/3 top-0 w-px -translate-x-1/2 bg-[linear-gradient(180deg,transparent,#ebd6cb,transparent)]" />
-          <DetailItem label={template.details.labels.date} value={template.details.day} delay={60} />
-          <DetailItem label={template.details.labels.time} value={template.details.timeLabel} delay={140} />
-          <DetailItem label={template.details.labels.place} value={template.details.placeLabel} delay={220} />
+          {isTemplateElementEnabled(template, "details.date") ? <DetailItem label={template.details.labels.date} value={template.details.day} delay={60} /> : null}
+          {isTemplateElementEnabled(template, "details.time") ? <DetailItem label={template.details.labels.time} value={template.details.timeLabel} delay={140} /> : null}
+          {isTemplateElementEnabled(template, "details.place") ? <DetailItem label={template.details.labels.place} value={template.details.placeLabel} delay={220} /> : null}
         </RevealItem>
 
-        <RevealItem className="relative overflow-hidden py-8" delay={200}>
+        {configuredGalleryItems.length ? <RevealItem className="relative overflow-hidden py-8" delay={200}>
           <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-6 bg-gradient-to-r from-[#fff9f5] via-[rgba(255,249,245,0.72)] to-transparent" />
           <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-6 bg-gradient-to-l from-[#fff9f5] via-[rgba(255,249,245,0.72)] to-transparent" />
 
@@ -64,7 +67,7 @@ export default function InvitationDetailsTemplate5({ template, viewportHeight = 
               </div>
             ))}
           </div>
-        </RevealItem>
+        </RevealItem> : null}
       </div>
     </SectionReveal>
   );

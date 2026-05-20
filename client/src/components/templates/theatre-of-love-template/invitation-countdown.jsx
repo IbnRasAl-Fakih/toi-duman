@@ -1,5 +1,6 @@
 import React from "react";
 import MapLinkButton from "../../map-link-button.jsx";
+import { isTemplateElementEnabled } from "../../../utils/template-sections.js";
 import RevealItem from "./reveal-item.jsx";
 import SectionReveal from "./section-reveal.jsx";
 
@@ -16,55 +17,73 @@ export default function InvitationCountdownTemplate5({ template, viewportHeight 
   return (
     <SectionReveal className="flex min-h-[100svh] items-center bg-white px-5 py-10 text-center" style={viewportHeight ? { minHeight: `${viewportHeight}px` } : undefined}>
       <div className="w-full px-2">
-        <RevealItem as="p" className="text-[1rem] leading-7 text-[#875246]">
-          {template.countdown.title}
-        </RevealItem>
+        {isTemplateElementEnabled(template, "countdown.title") ? (
+          <RevealItem as="p" className="text-[1rem] leading-7 text-[#875246]">
+            {template.countdown.title}
+          </RevealItem>
+        ) : null}
 
-        <div className="mt-7 grid grid-cols-4 gap-3">
-          {template.countdown.items.map((item, index) => (
-            <RevealItem key={item.label} delay={100 + index * 90}>
-              <CountdownCard item={item} />
-            </RevealItem>
-          ))}
-        </div>
+        {isTemplateElementEnabled(template, "countdown.items") ? (
+          <div className="mt-7 grid grid-cols-4 gap-3">
+            {template.countdown.items.map((item, index) => (
+              <RevealItem key={item.label} delay={100 + index * 90}>
+                <CountdownCard item={item} />
+              </RevealItem>
+            ))}
+          </div>
+        ) : null}
 
-        <RevealItem className="template5-divider mt-16 pb-4" delay={220}>
-          <p className="text-[0.68rem] uppercase tracking-[0.34em] text-[#b78b7b]">{template.venue.sectionLabel}</p>
-        </RevealItem>
+        {isTemplateElementEnabled(template, "venue.sectionLabel") ? (
+          <RevealItem className="template5-divider mt-16 pb-4" delay={220}>
+            <p className="text-[0.68rem] uppercase tracking-[0.34em] text-[#b78b7b]">{template.venue.sectionLabel}</p>
+          </RevealItem>
+        ) : null}
 
-        <RevealItem as="p" className="mt-4 text-[1rem] leading-7 text-[#875246]" delay={280}>
-          {template.venue.subtitle}
-        </RevealItem>
+        {isTemplateElementEnabled(template, "venue.subtitle") ? (
+          <RevealItem as="p" className="mt-4 text-[1rem] leading-7 text-[#875246]" delay={280}>
+            {template.venue.subtitle}
+          </RevealItem>
+        ) : null}
 
-        <RevealItem delay={340}>
-          <img
-            src="/images/templates/theatre-of-love/venue-illustration-DebdGS8I.png"
-            alt={template.venue.title}
-            className="mx-auto mt-6 w-full max-w-[340px] object-contain"
-          />
-        </RevealItem>
+        {isTemplateElementEnabled(template, "venue.image") ? (
+          <RevealItem delay={340}>
+            <img
+              src="/images/templates/theatre-of-love/venue-illustration-DebdGS8I.png"
+              alt={template.venue.title}
+              className="mx-auto mt-6 w-full max-w-[340px] object-contain"
+            />
+          </RevealItem>
+        ) : null}
 
-        <RevealItem className="mt-5" delay={400}>
-          <h2 className="text-[2.35rem] leading-none text-[#8c3b2f]" style={{ fontFamily: "var(--font-display)" }}>
-            {template.venue.title}
-          </h2>
-        </RevealItem>
+        {isTemplateElementEnabled(template, "venue.title") ? (
+          <RevealItem className="mt-5" delay={400}>
+            <h2 className="text-[2.35rem] leading-none text-[#8c3b2f]" style={{ fontFamily: "var(--font-display)" }}>
+              {template.venue.title}
+            </h2>
+          </RevealItem>
+        ) : null}
 
-        <RevealItem as="p" className="mt-5 text-[1rem] leading-7 text-[#875246]" delay={460}>
-          {template.venue.location}
-        </RevealItem>
+        {isTemplateElementEnabled(template, "venue.location") ? (
+          <RevealItem as="p" className="mt-5 text-[1rem] leading-7 text-[#875246]" delay={460}>
+            {template.venue.location}
+          </RevealItem>
+        ) : null}
 
-        <RevealItem as="p" className="mt-1 text-[0.92rem] uppercase tracking-[0.22em] text-[#b78b7b]" delay={520}>
-          {template.venue.dateLabel}
-        </RevealItem>
+        {isTemplateElementEnabled(template, "venue.dateLabel") ? (
+          <RevealItem as="p" className="mt-1 text-[0.92rem] uppercase tracking-[0.22em] text-[#b78b7b]" delay={520}>
+            {template.venue.dateLabel}
+          </RevealItem>
+        ) : null}
 
-        <RevealItem className="mt-8 flex justify-center" delay={580}>
-          <MapLinkButton
-            href={template.venue.mapUrl}
-            label={template.venue.mapLabel}
-            className="border border-[#ead7d0]"
-          />
-        </RevealItem>
+        {isTemplateElementEnabled(template, "venue.mapButton") ? (
+          <RevealItem className="mt-8 flex justify-center" delay={580}>
+            <MapLinkButton
+              href={template.venue.mapUrl}
+              label={template.venue.mapLabel}
+              className="border border-[#ead7d0]"
+            />
+          </RevealItem>
+        ) : null}
       </div>
     </SectionReveal>
   );

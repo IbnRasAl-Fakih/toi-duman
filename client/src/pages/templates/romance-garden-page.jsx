@@ -10,6 +10,7 @@ import InvitationHeroTemplate6 from "../../components/templates/romance-garden-t
 import InvitationIntroTemplate6 from "../../components/templates/romance-garden-template/invitation-intro.jsx";
 import InvitationRsvpTemplate6 from "../../components/templates/romance-garden-template/invitation-rsvp.jsx";
 import { useNotification } from "../../context/notification-context.jsx";
+import { getTemplateSections, isTemplateElementEnabled } from "../../utils/template-sections.js";
 
 export const ROMANCE_GARDEN_TYPE = "wedding";
 export const ROMANCE_GARDEN_PATH = "templates/romance-garden-page.jsx";
@@ -151,6 +152,7 @@ export function mapEventToTemplate6(event, nowTimestamp = Date.now()) {
     id: event.id,
     slug: event.slug,
     themeName: config.theme || "Үлгі 6",
+    elements: config.elements && typeof config.elements === "object" ? config.elements : {},
     couple: {
       left: leftName,
       right: rightName,
@@ -220,6 +222,10 @@ export default function RomanceGardenPage({
   const template = React.useMemo(() => mapEventToTemplate6(event, nowTimestamp), [event, nowTimestamp]);
   const musicUrl = React.useMemo(() => getMusicUrl(event.config || {}, "/musics/wedding-background-music-yxy0nS2O.mp3"), [event.config]);
   const musicStartTime = React.useMemo(() => getMusicStartTime(event.config || {}), [event.config]);
+  const sections = React.useMemo(
+    () => getTemplateSections(event.config || {}, ["hero", "countdown", "gallery", "intro", "details", "rsvp"]),
+    [event.config]
+  );
   const isExample = event.is_example === true;
   const isPaid = order?.status === ORDER_STATUS_PAID;
 
@@ -232,6 +238,13 @@ export default function RomanceGardenPage({
       window.clearInterval(timerId);
     };
   }, []);
+
+  React.useEffect(() => {
+    if (!sections.hero) {
+      setIsEnvelopeOpen(true);
+      setIsHeroReady(true);
+    }
+  }, [sections.hero]);
 
   React.useEffect(() => {
     const audio = audioRef.current;
@@ -336,12 +349,12 @@ export default function RomanceGardenPage({
       return;
     }
 
-    if (!guestName.trim()) {
+    if (isTemplateElementEnabled(template, "rsvp.nameInput") && !guestName.trim()) {
       notification.error("Аты-жөніңізді енгізіңіз");
       return;
     }
 
-    if (!selectedStatus) {
+    if (isTemplateElementEnabled(template, "rsvp.options") && !selectedStatus) {
       notification.error("Жауап нұсқасын таңдаңыз");
       return;
     }
@@ -368,8 +381,8 @@ export default function RomanceGardenPage({
 
       const payload = new FormData();
       payload.append("event_id", String(template.id));
-      payload.append("name", guestName.trim());
-      payload.append("status", selectedStatus);
+      payload.append("name", guestName.trim() || "Қонақ");
+      payload.append("status", selectedStatus || "yes");
       payload.append("guest_count", String(guestCount));
 
       const response = await fetch("/api/v1/guests", {
@@ -466,21 +479,23 @@ export default function RomanceGardenPage({
               : undefined
           }
         >
-          <InvitationHeroTemplate6
-            template={template}
-            introVideoRef={introVideoRef}
-            isEnvelopeOpen={isEnvelopeOpen}
-            onOpenInvitation={handleOpenInvitation}
-            isHeroReady={isHeroReady}
-            onIntroEnded={() => setIsEnvelopeOpen(true)}
-            onHeroReady={handleHeroReady}
-            viewportHeight={previewMode ? previewViewportHeight : null}
-          />
+          {sections.hero ? (
+            <InvitationHeroTemplate6
+              template={template}
+              introVideoRef={introVideoRef}
+              isEnvelopeOpen={isEnvelopeOpen}
+              onOpenInvitation={handleOpenInvitation}
+              isHeroReady={isHeroReady}
+              onIntroEnded={() => setIsEnvelopeOpen(true)}
+              onHeroReady={handleHeroReady}
+              viewportHeight={previewMode ? previewViewportHeight : null}
+            />
+          ) : null}
 
           {isEnvelopeOpen ? (
             <div className="bg-[#faf6ef] px-5 pt-10">
-              <InvitationCountdownTemplate6 template={template} />
-              <AtmosphereSlider items={template.gallery} />
+              {sections.countdown ? <InvitationCountdownTemplate6 template={template} /> : null}
+              {sections.gallery && isTemplateElementEnabled(template, "gallery.slider") ? <AtmosphereSlider items={template.gallery} /> : null}
 
               <RomanceGardenDivider
                 iconSrc="/images/templates/romance-garden/bow-illustration-DWFdIPv5.png"
@@ -488,20 +503,22 @@ export default function RomanceGardenPage({
                 imageClassName="h-32 w-32"
               />
 
-              <InvitationIntroTemplate6 template={template} />
-              <InvitationDetailsTemplate6 template={template} />
-              <InvitationRsvpTemplate6
-                template={template}
-                guestName={guestName}
-                selectedStatus={selectedStatus}
-                guestCount={guestCount}
-                onGuestNameChange={setGuestName}
-                onSelectStatus={setSelectedStatus}
-                onGuestCountChange={setGuestCount}
-                onSubmit={handleSubmit}
-                isSubmitting={isSubmitting}
-                isPaid
-              />
+              {sections.intro ? <InvitationIntroTemplate6 template={template} /> : null}
+              {sections.details ? <InvitationDetailsTemplate6 template={template} /> : null}
+              {sections.rsvp ? (
+                <InvitationRsvpTemplate6
+                  template={template}
+                  guestName={guestName}
+                  selectedStatus={selectedStatus}
+                  guestCount={guestCount}
+                  onGuestNameChange={setGuestName}
+                  onSelectStatus={setSelectedStatus}
+                  onGuestCountChange={setGuestCount}
+                  onSubmit={handleSubmit}
+                  isSubmitting={isSubmitting}
+                  isPaid
+                />
+              ) : null}
 
               <RomanceGardenDivider
                 iconSrc="/images/templates/romance-garden/locket-illustration-B7vFK6H-.png"

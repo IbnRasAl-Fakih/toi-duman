@@ -6,6 +6,7 @@ import InvitationHeroTemplate5 from "../../components/templates/theatre-of-love-
 import InvitationNoteTemplate5 from "../../components/templates/theatre-of-love-template/invitation-note.jsx";
 import InvitationRsvpTemplate5 from "../../components/templates/theatre-of-love-template/invitation-rsvp.jsx";
 import InvitationTimelineTemplate5 from "../../components/templates/theatre-of-love-template/invitation-timeline.jsx";
+import { getTemplateSections } from "../../utils/template-sections.js";
 import Footer from "../../components/footer.jsx";
 import TemplatePaymentBanner from "../../components/template-payment-banner.jsx";
 import { useNotification } from "../../context/notification-context.jsx";
@@ -125,6 +126,7 @@ export function mapEventToTemplate5(event, nowTimestamp = Date.now()) {
     id: event.id,
     slug: event.slug,
     title: getConfigText(config, "theme", "Template 5"),
+    elements: config.elements && typeof config.elements === "object" ? config.elements : {},
     couple: {
       left: leftName,
       right: rightName,
@@ -214,6 +216,10 @@ export default function TheatreOfLovePage({
   const template = React.useMemo(() => mapEventToTemplate5(event, nowTimestamp), [event, nowTimestamp]);
   const musicUrl = React.useMemo(() => getMusicUrl(event.config || {}, "/musics/intro-music-CzqJOUtA.mp3"), [event.config]);
   const musicStartTime = React.useMemo(() => getMusicStartTime(event.config || {}), [event.config]);
+  const sections = React.useMemo(
+    () => getTemplateSections(event.config || {}, ["hero", "details", "countdown", "timeline", "note", "rsvp"]),
+    [event.config]
+  );
   const isExample = event.is_example === true;
   const isPaid = order?.status === ORDER_STATUS_PAID;
 
@@ -222,6 +228,12 @@ export default function TheatreOfLovePage({
       onPreviewOpenChange(isInvitationOpened);
     }
   }, [isInvitationOpened, onPreviewOpenChange]);
+
+  React.useEffect(() => {
+    if (!sections.hero) {
+      setIsInvitationOpened(true);
+    }
+  }, [sections.hero]);
 
   React.useEffect(() => {
     if (typeof onPreviewAudioOverlayChange === "function") {
@@ -460,28 +472,32 @@ export default function TheatreOfLovePage({
       >
         {isInvitationOpened && !previewMode ? <Template5AudioToggle isPlaying={isPlaying} onToggleAudio={handleToggleAudio} /> : null}
 
-        <InvitationHeroTemplate5
-          template={template}
-          isOpened={isInvitationOpened}
-          onOpen={handleOpenInvitation}
-          viewportHeight={previewMode ? previewViewportHeight : null}
-        />
+        {sections.hero ? (
+          <InvitationHeroTemplate5
+            template={template}
+            isOpened={isInvitationOpened}
+            onOpen={handleOpenInvitation}
+            viewportHeight={previewMode ? previewViewportHeight : null}
+          />
+        ) : null}
         {isInvitationOpened ? (
           <>
-            <InvitationDetailsTemplate5 template={template} viewportHeight={previewMode ? previewViewportHeight : null} />
-            <InvitationCountdownTemplate5 template={template} viewportHeight={previewMode ? previewViewportHeight : null} />
-            <InvitationTimelineTemplate5 template={template} viewportHeight={previewMode ? previewViewportHeight : null} />
-            <InvitationNoteTemplate5 template={template} />
-            <InvitationRsvpTemplate5
-              template={template}
-              guestName={guestName}
-              selectedStatus={selectedStatus}
-              onGuestNameChange={setGuestName}
-              onSelectStatus={setSelectedStatus}
-              onSubmit={handleSubmit}
-              isSubmitting={isSubmitting}
-              isPaid
-            />
+            {sections.details ? <InvitationDetailsTemplate5 template={template} viewportHeight={previewMode ? previewViewportHeight : null} /> : null}
+            {sections.countdown ? <InvitationCountdownTemplate5 template={template} viewportHeight={previewMode ? previewViewportHeight : null} /> : null}
+            {sections.timeline ? <InvitationTimelineTemplate5 template={template} viewportHeight={previewMode ? previewViewportHeight : null} /> : null}
+            {sections.note ? <InvitationNoteTemplate5 template={template} /> : null}
+            {sections.rsvp ? (
+              <InvitationRsvpTemplate5
+                template={template}
+                guestName={guestName}
+                selectedStatus={selectedStatus}
+                onGuestNameChange={setGuestName}
+                onSelectStatus={setSelectedStatus}
+                onSubmit={handleSubmit}
+                isSubmitting={isSubmitting}
+                isPaid
+              />
+            ) : null}
             <div className="px-5 pb-5">
               <Footer />
             </div>

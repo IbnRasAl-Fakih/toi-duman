@@ -18,6 +18,41 @@ const initialForm = {
   musicUrl: "",
   musicTitle: "",
   musicStartTime: 0,
+  showHeroSection: true,
+  showDetailsSection: true,
+  showCountdownSection: true,
+  showTimelineSection: true,
+  showNoteSection: true,
+  showRsvpSection: true,
+  showHeroOverline: true,
+  showHeroTitle: true,
+  showHeroOpenButton: true,
+  showHeroScrollLabel: true,
+  showDetailsGallery: true,
+  showDetailsDate: true,
+  showDetailsTime: true,
+  showDetailsPlace: true,
+  showCountdownTitle: true,
+  showCountdownItems: true,
+  showTimelineTitle: true,
+  showTimelineItems: true,
+  showVenueSectionLabel: true,
+  showVenueSubtitle: true,
+  showVenueImage: true,
+  showVenueTitle: true,
+  showVenueLocation: true,
+  showVenueDateLabel: true,
+  showVenueMapButton: true,
+  showNoteTitle: true,
+  showNoteText: true,
+  showNoteHostsLabel: true,
+  showNoteHosts: true,
+  showRsvpTitle: true,
+  showRsvpDescription: true,
+  showRsvpNameInput: true,
+  showRsvpOptions: true,
+  showRsvpSubmitButton: true,
+  showRsvpSubmittingLabel: true,
   name: "Данияр, Аружан",
   description: "Сізді қуана қарсы аламыз",
   overline: "ШАҚЫРУ",
@@ -36,14 +71,10 @@ const initialForm = {
   venueTitle: "Grand Ballroom",
   mapLabel: "Картаны ашу",
   timelineTitle: "Бағдарлама",
-  schedule1Time: "18:30",
-  schedule1Title: "Қонақтарды қарсы алу",
-  schedule2Time: "19:30",
-  schedule2Title: "Тойдың басталуы",
-  schedule3Time: "",
-  schedule3Title: "",
-  schedule4Time: "",
-  schedule4Title: "",
+  schedule: [
+    { id: "schedule-1", time: "18:30", title: "Қонақтарды қарсы алу" },
+    { id: "schedule-2", time: "19:30", title: "Тойдың басталуы" }
+  ],
   noteTitle: "Келетініңіз біз үшін қуаныш",
   noteText: "Тойды алдын ала дайындау үшін қатысатыныңызды ертерек растауыңызды сұраймыз.",
   hostsLabel: "Ізгі тілекпен",
@@ -133,13 +164,56 @@ function buildConfig(form, galleryImageUrls = []) {
     music_url: form.musicUrl || null,
     music_title: form.musicTitle || null,
     music_start_time: Number(form.musicStartTime) || 0,
+    sections: {
+      hero: form.showHeroSection !== false,
+      details: form.showDetailsSection !== false,
+      countdown: form.showCountdownSection !== false,
+      timeline: form.showTimelineSection !== false,
+      note: form.showNoteSection !== false,
+      rsvp: form.showRsvpSection !== false
+    },
+    elements: {
+      "hero.overline": form.showHeroOverline !== false,
+      "hero.title": form.showHeroTitle !== false,
+      "hero.openButton": form.showHeroOpenButton !== false,
+      "hero.scrollLabel": form.showHeroScrollLabel !== false,
+      "details.gallery": form.showDetailsGallery !== false,
+      "details.date": form.showDetailsDate !== false,
+      "details.time": form.showDetailsTime !== false,
+      "details.place": form.showDetailsPlace !== false,
+      "countdown.title": form.showCountdownTitle !== false,
+      "countdown.items": form.showCountdownItems !== false,
+      "timeline.title": form.showTimelineTitle !== false,
+      "timeline.items": form.showTimelineItems !== false,
+      "venue.sectionLabel": form.showVenueSectionLabel !== false,
+      "venue.subtitle": form.showVenueSubtitle !== false,
+      "venue.image": form.showVenueImage !== false,
+      "venue.title": form.showVenueTitle !== false,
+      "venue.location": form.showVenueLocation !== false,
+      "venue.dateLabel": form.showVenueDateLabel !== false,
+      "venue.mapButton": form.showVenueMapButton !== false,
+      "note.title": form.showNoteTitle !== false,
+      "note.text": form.showNoteText !== false,
+      "note.hostsLabel": form.showNoteHostsLabel !== false,
+      "note.hosts": form.showNoteHosts !== false,
+      "rsvp.title": form.showRsvpTitle !== false,
+      "rsvp.description": form.showRsvpDescription !== false,
+      "rsvp.nameInput": form.showRsvpNameInput !== false,
+      "rsvp.options": form.showRsvpOptions !== false,
+      "rsvp.submitButton": form.showRsvpSubmitButton !== false,
+      "rsvp.submittingLabel": form.showRsvpSubmittingLabel !== false
+    },
     description: form.description || null,
     name: form.name
       .split(",")
       .map((item) => item.trim())
       .filter(Boolean),
     overline: form.overline,
-    heroTitle: form.heroTitle,
+    heroTitle: form.name
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean)
+      .join("\n"),
     introText: form.introText,
     heroOpenLabel: form.heroOpenLabel,
     heroOpenAriaLabel: form.heroOpenAriaLabel,
@@ -154,12 +228,9 @@ function buildConfig(form, galleryImageUrls = []) {
     venueTitle: form.venueTitle,
     mapLabel: form.mapLabel,
     timelineTitle: form.timelineTitle,
-    schedule: [
-      { time: form.schedule1Time, title: form.schedule1Title },
-      { time: form.schedule2Time, title: form.schedule2Title },
-      { time: form.schedule3Time, title: form.schedule3Title },
-      { time: form.schedule4Time, title: form.schedule4Title }
-    ].filter((item) => item.time.trim() || item.title.trim()),
+    schedule: form.schedule
+      .filter((item) => item.time.trim() || item.title.trim())
+      .map(({ time, title }) => ({ time, title })),
     noteTitle: form.noteTitle,
     noteText: form.noteText,
     hostsLabel: form.hostsLabel,
@@ -251,21 +322,105 @@ function Field({ label, value, onChange, placeholder = "", type = "text", multil
   );
 }
 
-function EventRow({ time, title, onTimeChange, onTitleChange }) {
+function EventRow({ time, title, onTimeChange, onTitleChange, onRemove }) {
   return (
-    <div className="grid gap-4 md:grid-cols-[120px_minmax(0,1fr)]">
+    <div className="grid gap-3 md:grid-cols-[120px_minmax(0,1fr)_auto] md:items-end">
       <CreateEventTimeField label="Уақыт" selected={parseTimeValue(time)} onChange={(value) => onTimeChange(formatTimeValue(value))} />
       <Field label="Оқиға" value={title} onChange={onTitleChange} placeholder="Тойдың басталуы" />
+      <button
+        type="button"
+        onClick={onRemove}
+        className="h-[46px] rounded-full border border-[#ead9c2] px-4 text-sm font-semibold text-[#9c5a4d] transition hover:border-[#d2a697] hover:bg-[#fff4f0]"
+      >
+        Өшіру
+      </button>
     </div>
   );
 }
 
-function FormSection({ title, children }) {
+function FormSection({ title, enabled = true, onEnabledChange = null, children }) {
+  const isToggleable = typeof onEnabledChange === "function";
+  const isEnabled = !isToggleable || enabled;
+
   return (
-    <section className="space-y-6 border-b border-[#ece5da] pb-10">
-      <SectionTitle>{title}</SectionTitle>
-      {children}
+    <section className={`space-y-6 border-b pb-10 transition ${isEnabled ? "border-[#ece5da]" : "rounded-[18px] border-[#eadfd2] bg-[#fcfaf7] px-4 py-5 opacity-80"}`}>
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <SectionTitle>{title}</SectionTitle>
+        {isToggleable ? <ToggleField label={isEnabled ? "Қосылған" : "Қосу"} checked={isEnabled} onChange={onEnabledChange} compact /> : null}
+      </div>
+      <fieldset disabled={!isEnabled} className={`space-y-6 transition ${isEnabled ? "" : "pointer-events-none opacity-45 grayscale"}`}>
+        {children}
+      </fieldset>
     </section>
+  );
+}
+
+function ToggleField({ label, checked, onChange, compact = false }) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      onClick={() => onChange(!checked)}
+      className={`inline-flex items-center gap-2 rounded-full border text-sm transition ${
+        checked ? "border-[#d7c39e] bg-[#f7efe3] text-[#6f5429]" : "border-[#e6ddd0] bg-[#f7f4ef] text-[#9a8b78]"
+      } ${compact ? "px-3 py-1.5" : "px-4 py-2"}`}
+    >
+      <span className={`relative inline-flex h-5 w-9 items-center rounded-full transition ${checked ? "bg-[#b89255]" : "bg-[#d8d0c4]"}`}>
+        <span className={`inline-block h-4 w-4 rounded-full bg-white shadow-sm transition ${checked ? "translate-x-4" : "translate-x-1"}`} />
+      </span>
+      <span>{label}</span>
+    </button>
+  );
+}
+
+function EyeIcon({ hidden = false }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" />
+      <circle cx="12" cy="12" r="3" />
+      {hidden ? <path d="M4 4l16 16" /> : null}
+    </svg>
+  );
+}
+
+function ElementToggle({ label, checked, onChange }) {
+  const statusLabel = checked ? "Көрсетілген" : "Жасырылған";
+
+  return (
+    <button
+      type="button"
+      aria-pressed={checked}
+      aria-label={`${label}: ${statusLabel}`}
+      onClick={() => onChange(!checked)}
+      className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
+        checked ? "border-[#decaa8] bg-[#fbf6ee] text-[#7a5b29]" : "border-[#e4d7c6] bg-[#f7f2ea] text-[#9c7b54]"
+      }`}
+    >
+      <EyeIcon hidden={!checked} />
+      <span>{statusLabel}</span>
+    </button>
+  );
+}
+
+function ElementBlock({ label, checked, onChange, children, className = "" }) {
+  return (
+    <div className={`space-y-2 ${className}`}>
+      <div className="flex justify-end">
+        <ElementToggle label={label} checked={checked} onChange={onChange} />
+      </div>
+      <fieldset disabled={!checked} className={`transition ${checked ? "" : "pointer-events-none opacity-45 grayscale"}`}>
+        {children}
+      </fieldset>
+    </div>
+  );
+}
+
+function ChevronDownIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="m6 9 6 6 6-6" />
+    </svg>
   );
 }
 
@@ -461,6 +616,34 @@ export default function TheatreOfLoveFormPage() {
     }));
   }
 
+  function addScheduleItem() {
+    setForm((current) => ({
+      ...current,
+      schedule: [
+        ...current.schedule,
+        {
+          id: `schedule-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+          time: "",
+          title: ""
+        }
+      ]
+    }));
+  }
+
+  function updateScheduleItem(id, field, value) {
+    setForm((current) => ({
+      ...current,
+      schedule: current.schedule.map((item) => (item.id === id ? { ...item, [field]: value } : item))
+    }));
+  }
+
+  function removeScheduleItem(id) {
+    setForm((current) => ({
+      ...current,
+      schedule: current.schedule.filter((item) => item.id !== id)
+    }));
+  }
+
   function updateMusic(nextMusic) {
     setForm((current) => ({
       ...current,
@@ -540,8 +723,8 @@ export default function TheatreOfLoveFormPage() {
     <main className="flex min-h-screen flex-col overflow-x-hidden bg-white text-[#3c3021]">
       <LandingHeader />
 
-      <div className="flex-1 px-6 pb-10 pt-28">
-        <div className="mx-auto max-w-[1360px] xl:grid xl:grid-cols-[minmax(0,1fr)_320px] xl:gap-12">
+      <div className="flex-1 px-6 pb-10 pt-28 lg:px-10 xl:px-20">
+        <div className="mx-auto w-full max-w-[1600px] xl:grid xl:grid-cols-[minmax(0,992px)_minmax(360px,1fr)] xl:gap-12">
           <section className="min-w-0 space-y-12">
             <div className="max-w-[760px]">
               <h1 className="text-[2.4rem] leading-none text-[#8b6a34]" style={{ fontFamily: "var(--font-display)" }}>
@@ -572,83 +755,45 @@ export default function TheatreOfLoveFormPage() {
                     placeholder="Сізді қуана қарсы аламыз"
                   />
                 </div>
-              </div>
-            </FormSection>
-
-            <FormSection title="Hero">
-              <div className="grid gap-4 md:grid-cols-2">
-                <Field label="Жоғарғы жазу" value={form.overline} onChange={(event) => updateField("overline", event.target.value)} />
-                <Field label="Перде тақырыбы" value={form.heroTitle} onChange={(event) => updateField("heroTitle", event.target.value)} multiline />
-                <Field label="Ашу батырмасы" value={form.heroOpenLabel} onChange={(event) => updateField("heroOpenLabel", event.target.value)} />
-                <Field label="Батырманың aria-label-ы" value={form.heroOpenAriaLabel} onChange={(event) => updateField("heroOpenAriaLabel", event.target.value)} />
                 <div className="md:col-span-2">
-                  <Field label="Сырғыту ишарасы" value={form.heroScrollLabel} onChange={(event) => updateField("heroScrollLabel", event.target.value)} />
+                  <Field
+                    label="Өтетін орын атауы"
+                    value={form.venueTitle}
+                    onChange={(event) => {
+                      updateField("venueTitle", event.target.value);
+                      updateField("venue_name", event.target.value);
+                    }}
+                    placeholder="Grand Ballroom"
+                  />
                 </div>
-              </div>
-            </FormSection>
-
-            <FormSection title="Өтетін орын және галерея">
-              <div className="grid gap-4">
-                <Field
-                  label="Өтетін орын атауы"
-                  value={form.venueTitle}
-                  onChange={(event) => {
-                    updateField("venueTitle", event.target.value);
-                    updateField("venue_name", event.target.value);
-                  }}
-                  placeholder="Grand Ballroom"
-                />
-                <Field
-                  label="Нақты мекенжай"
-                  value={form.location}
-                  onChange={(event) => updateField("location", event.target.value)}
-                  placeholder="Достық даңғылы, 52"
-                />
-                <Field
-                  label="Карта сілтемесі"
-                  value={form.locationLink}
-                  onChange={(event) => updateField("locationLink", event.target.value)}
-                  placeholder="https://2gis.kz/..."
-                />
-                <MusicPicker
-                  musicId={form.musicId}
-                  musicUrl={form.musicUrl}
-                  musicTitle={form.musicTitle}
-                  startTime={form.musicStartTime}
-                  uploadedMusic={uploadedMusic}
-                  onChange={updateMusic}
-                  onUploadChange={setUploadedMusic}
-                />
-
-                <div className="grid gap-4 md:grid-cols-3">
-                  <Field label="Күн атауы" value={form.detailsDateLabel} onChange={(event) => updateField("detailsDateLabel", event.target.value)} />
-                  <Field label="Уақыт атауы" value={form.detailsTimeLabel} onChange={(event) => updateField("detailsTimeLabel", event.target.value)} />
-                  <Field label="Орын атауы" value={form.detailsPlaceLabel} onChange={(event) => updateField("detailsPlaceLabel", event.target.value)} />
+                <div className="md:col-span-2">
+                  <Field label="Мекенжай" value={form.location} onChange={(event) => updateField("location", event.target.value)} placeholder="Достық даңғылы, 52" />
                 </div>
-
-                <div className="grid gap-4 md:grid-cols-2">
-                  <Field label="Орын бөлімі тақырыбы" value={form.venueSectionLabel} onChange={(event) => updateField("venueSectionLabel", event.target.value)} />
-                  <Field label="Карта батырмасы" value={form.mapLabel} onChange={(event) => updateField("mapLabel", event.target.value)} />
+                <div className="md:col-span-2">
+                  <Field label="Карта сілтемесі" value={form.locationLink} onChange={(event) => updateField("locationLink", event.target.value)} placeholder="https://2gis.kz/..." />
                 </div>
-
-                <Field
-                  label="Орын блогының ішкі тақырыбы"
-                  value={form.venueSubtitle}
-                  onChange={(event) => updateField("venueSubtitle", event.target.value)}
-                />
-
-                <div className="pt-2">
+                <div className="md:col-span-2">
+                  <MusicPicker
+                    musicId={form.musicId}
+                    musicUrl={form.musicUrl}
+                    musicTitle={form.musicTitle}
+                    startTime={form.musicStartTime}
+                    uploadedMusic={uploadedMusic}
+                    onChange={updateMusic}
+                    onUploadChange={setUploadedMusic}
+                  />
+                </div>
+                <div className="md:col-span-2 pt-2">
                   <div className="flex items-center justify-between gap-4">
                     <div>
-                      <FieldLabel>Галерея</FieldLabel>
-                      <p className="text-sm text-[#8a8073]">3 немесе 4 фото жүктеңіз. Олар бірден live-preview-ге түсіп, оқиға жасалғанда бірге жіберіледі.</p>
+                      <FieldLabel>Галерея фотолары</FieldLabel>
+                      <p className="text-sm text-[#8a8073]">3 немесе 4 фото жүктеңіз. Олар алдын ала қарауда және шақыру галереясында қолданылады.</p>
                     </div>
                     <label className="cursor-pointer rounded-full border border-[#d9c49a] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#9d7f42]">
                       Қосу
                       <input type="file" accept="image/*" multiple onChange={handleGalleryChange} className="hidden" />
                     </label>
                   </div>
-
                   <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                     {galleryFiles.length ? (
                       galleryFiles.map((item, index) => (
@@ -677,70 +822,180 @@ export default function TheatreOfLoveFormPage() {
               </div>
             </FormSection>
 
-            <FormSection title="Таймер және бағдарлама">
+            <details className="group rounded-[22px] border border-[#eadfd2] bg-[#fcfaf7] px-5 py-5">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4">
+                <span className="text-[1.7rem] leading-none text-[#8b6a34]" style={{ fontFamily: "var(--font-display)" }}>
+                  Кеңейтілген баптаулар
+                </span>
+                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#d8c5a1] text-[#8b6a34] transition group-open:rotate-180">
+                  <ChevronDownIcon />
+                </span>
+              </summary>
+
+              <div className="mt-8 space-y-12">
+            <FormSection title="Hero" enabled={form.showHeroSection !== false} onEnabledChange={(value) => updateField("showHeroSection", value)}>
               <div className="space-y-4">
-                <Field label="Таймер тақырыбы" value={form.countdownTitle} onChange={(event) => updateField("countdownTitle", event.target.value)} />
-                <Field label="Бағдарлама бөлімі тақырыбы" value={form.timelineTitle} onChange={(event) => updateField("timelineTitle", event.target.value)} />
-                <EventRow
-                  time={form.schedule1Time}
-                  title={form.schedule1Title}
-                  onTimeChange={(value) => updateField("schedule1Time", value)}
-                  onTitleChange={(event) => updateField("schedule1Title", event.target.value)}
-                />
-                <EventRow
-                  time={form.schedule2Time}
-                  title={form.schedule2Title}
-                  onTimeChange={(value) => updateField("schedule2Time", value)}
-                  onTitleChange={(event) => updateField("schedule2Title", event.target.value)}
-                />
-                <EventRow
-                  time={form.schedule3Time}
-                  title={form.schedule3Title}
-                  onTimeChange={(value) => updateField("schedule3Time", value)}
-                  onTitleChange={(event) => updateField("schedule3Title", event.target.value)}
-                />
-                <EventRow
-                  time={form.schedule4Time}
-                  title={form.schedule4Title}
-                  onTimeChange={(value) => updateField("schedule4Time", value)}
-                  onTitleChange={(event) => updateField("schedule4Title", event.target.value)}
-                />
+                <ElementBlock label="Жоғарғы жазуды көрсету" checked={form.showHeroOverline !== false} onChange={(value) => updateField("showHeroOverline", value)}>
+                  <Field label="Жоғарғы жазу" value={form.overline} onChange={(event) => updateField("overline", event.target.value)} />
+                </ElementBlock>
+                <ElementBlock label="Тақырыпты көрсету" checked={form.showHeroTitle !== false} onChange={(value) => updateField("showHeroTitle", value)}>
+                  <p className="text-sm text-[#8f7d63]">Перде тақырыбы негізгі ақпараттағы жұптың есімдерінен алынады.</p>
+                </ElementBlock>
+                <ElementBlock label="Ашу батырмасын көрсету" checked={form.showHeroOpenButton !== false} onChange={(value) => updateField("showHeroOpenButton", value)}>
+                  <Field label="Ашу батырмасы" value={form.heroOpenLabel} onChange={(event) => updateField("heroOpenLabel", event.target.value)} />
+                </ElementBlock>
+                <Field label="Батырманың aria-label-ы" value={form.heroOpenAriaLabel} onChange={(event) => updateField("heroOpenAriaLabel", event.target.value)} />
+                <ElementBlock label="Сырғыту ишарасын көрсету" checked={form.showHeroScrollLabel !== false} onChange={(value) => updateField("showHeroScrollLabel", value)} className="md:col-span-2">
+                  <Field label="Сырғыту ишарасы" value={form.heroScrollLabel} onChange={(event) => updateField("heroScrollLabel", event.target.value)} />
+                </ElementBlock>
               </div>
             </FormSection>
 
-            <FormSection title="Ескертпе блогы">
+            <FormSection title="Өтетін орын және галерея" enabled={form.showDetailsSection !== false} onEnabledChange={(value) => updateField("showDetailsSection", value)}>
+              <div className="grid gap-4">
+                <p className="text-sm text-[#8f7d63]">Өтетін орын, мекенжай, карта сілтемесі, музыка және галерея негізгі ақпарат бөлімінде өңделеді.</p>
+
+                <div className="grid gap-4 md:grid-cols-3">
+                  <ElementBlock label="Күнді көрсету" checked={form.showDetailsDate !== false} onChange={(value) => updateField("showDetailsDate", value)}>
+                    <Field label="Күн атауы" value={form.detailsDateLabel} onChange={(event) => updateField("detailsDateLabel", event.target.value)} />
+                  </ElementBlock>
+                  <ElementBlock label="Уақытты көрсету" checked={form.showDetailsTime !== false} onChange={(value) => updateField("showDetailsTime", value)}>
+                    <Field label="Уақыт атауы" value={form.detailsTimeLabel} onChange={(event) => updateField("detailsTimeLabel", event.target.value)} />
+                  </ElementBlock>
+                  <ElementBlock label="Орынды көрсету" checked={form.showDetailsPlace !== false} onChange={(value) => updateField("showDetailsPlace", value)}>
+                    <Field label="Орын атауы" value={form.detailsPlaceLabel} onChange={(event) => updateField("detailsPlaceLabel", event.target.value)} />
+                  </ElementBlock>
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                  <ElementBlock label="Орын бөлімі тақырыбын көрсету" checked={form.showVenueSectionLabel !== false} onChange={(value) => updateField("showVenueSectionLabel", value)}>
+                    <Field label="Орын бөлімі тақырыбы" value={form.venueSectionLabel} onChange={(event) => updateField("venueSectionLabel", event.target.value)} />
+                  </ElementBlock>
+                  <ElementBlock label="Карта батырмасын көрсету" checked={form.showVenueMapButton !== false} onChange={(value) => updateField("showVenueMapButton", value)}>
+                    <Field label="Карта батырмасы" value={form.mapLabel} onChange={(event) => updateField("mapLabel", event.target.value)} />
+                  </ElementBlock>
+                </div>
+
+                <ElementBlock label="Орын ішкі тақырыбын көрсету" checked={form.showVenueSubtitle !== false} onChange={(value) => updateField("showVenueSubtitle", value)}>
+                  <Field
+                    label="Орын блогының ішкі тақырыбы"
+                    value={form.venueSubtitle}
+                    onChange={(event) => updateField("venueSubtitle", event.target.value)}
+                  />
+                </ElementBlock>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                  <ElementBlock label="Орын суретін көрсету" checked={form.showVenueImage !== false} onChange={(value) => updateField("showVenueImage", value)}>
+                    <p className="text-sm text-[#8f7d63]">Орын суреті шаблоннан алынады.</p>
+                  </ElementBlock>
+                  <ElementBlock label="Орын атауын көрсету" checked={form.showVenueTitle !== false} onChange={(value) => updateField("showVenueTitle", value)}>
+                    <p className="text-sm text-[#8f7d63]">Орын атауы негізгі ақпараттан алынады.</p>
+                  </ElementBlock>
+                  <ElementBlock label="Мекенжайды көрсету" checked={form.showVenueLocation !== false} onChange={(value) => updateField("showVenueLocation", value)}>
+                    <p className="text-sm text-[#8f7d63]">Мекенжай негізгі ақпараттан алынады.</p>
+                  </ElementBlock>
+                  <ElementBlock label="Күн белгісін көрсету" checked={form.showVenueDateLabel !== false} onChange={(value) => updateField("showVenueDateLabel", value)}>
+                    <p className="text-sm text-[#8f7d63]">Күн белгісі негізгі ақпараттағы күннен алынады.</p>
+                  </ElementBlock>
+                </div>
+
+                <ElementBlock label="Галереяны көрсету" checked={form.showDetailsGallery !== false} onChange={(value) => updateField("showDetailsGallery", value)} className="pt-2">
+                  <p className="text-sm text-[#8f7d63]">Галерея фотолары негізгі ақпарат бөлімінде жүктеледі.</p>
+                </ElementBlock>
+              </div>
+            </FormSection>
+
+            <FormSection title="Таймер және бағдарлама" enabled={form.showCountdownSection !== false || form.showTimelineSection !== false} onEnabledChange={(value) => {
+              updateField("showCountdownSection", value);
+              updateField("showTimelineSection", value);
+            }}>
+              <div className="space-y-4">
+                <ElementBlock label="Таймер тақырыбын көрсету" checked={form.showCountdownTitle !== false} onChange={(value) => updateField("showCountdownTitle", value)}>
+                  <Field label="Таймер тақырыбы" value={form.countdownTitle} onChange={(event) => updateField("countdownTitle", event.target.value)} />
+                </ElementBlock>
+                <ElementBlock label="Таймер сандарын көрсету" checked={form.showCountdownItems !== false} onChange={(value) => updateField("showCountdownItems", value)}>
+                  <p className="text-sm text-[#8f7d63]">Таймер сандары оқиға күні мен уақытынан есептеледі.</p>
+                </ElementBlock>
+                <ElementBlock label="Бағдарлама тақырыбын көрсету" checked={form.showTimelineTitle !== false} onChange={(value) => updateField("showTimelineTitle", value)}>
+                  <Field label="Бағдарлама бөлімі тақырыбы" value={form.timelineTitle} onChange={(event) => updateField("timelineTitle", event.target.value)} />
+                </ElementBlock>
+                <ElementBlock label="Бағдарлама элементтерін көрсету" checked={form.showTimelineItems !== false} onChange={(value) => updateField("showTimelineItems", value)}>
+                <div className="space-y-4">
+                  {form.schedule.map((item) => (
+                    <EventRow
+                      key={item.id}
+                      time={item.time}
+                      title={item.title}
+                      onTimeChange={(value) => updateScheduleItem(item.id, "time", value)}
+                      onTitleChange={(event) => updateScheduleItem(item.id, "title", event.target.value)}
+                      onRemove={() => removeScheduleItem(item.id)}
+                    />
+                  ))}
+                  <button
+                    type="button"
+                    onClick={addScheduleItem}
+                    className="rounded-full border border-[#d8c5a1] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#8b6a34] transition hover:bg-[#fbf6ee]"
+                  >
+                    Бағдарлама қосу
+                  </button>
+                </div>
+                </ElementBlock>
+              </div>
+            </FormSection>
+
+            <FormSection title="Ескертпе блогы" enabled={form.showNoteSection !== false} onEnabledChange={(value) => updateField("showNoteSection", value)}>
               <div className="grid gap-4 md:grid-cols-2">
-                <Field label="Қолтаңба атауы" value={form.hostsLabel} onChange={(event) => updateField("hostsLabel", event.target.value)} />
-                <Field label="Қолтаңба" value={form.hosts} onChange={(event) => updateField("hosts", event.target.value)} />
+                <ElementBlock label="Қолтаңба атауын көрсету" checked={form.showNoteHostsLabel !== false} onChange={(value) => updateField("showNoteHostsLabel", value)}>
+                  <Field label="Қолтаңба атауы" value={form.hostsLabel} onChange={(event) => updateField("hostsLabel", event.target.value)} />
+                </ElementBlock>
+                <ElementBlock label="Қолтаңбаны көрсету" checked={form.showNoteHosts !== false} onChange={(value) => updateField("showNoteHosts", value)}>
+                  <Field label="Қолтаңба" value={form.hosts} onChange={(event) => updateField("hosts", event.target.value)} />
+                </ElementBlock>
                 <div className="md:col-span-2">
-                  <Field label="Блок тақырыбы" value={form.noteTitle} onChange={(event) => updateField("noteTitle", event.target.value)} />
+                  <ElementBlock label="Блок тақырыбын көрсету" checked={form.showNoteTitle !== false} onChange={(value) => updateField("showNoteTitle", value)}>
+                    <Field label="Блок тақырыбы" value={form.noteTitle} onChange={(event) => updateField("noteTitle", event.target.value)} />
+                  </ElementBlock>
                 </div>
                 <div className="md:col-span-2">
-                  <Field label="Блок мәтіні" value={form.noteText} onChange={(event) => updateField("noteText", event.target.value)} multiline rows={4} />
+                  <ElementBlock label="Блок мәтінін көрсету" checked={form.showNoteText !== false} onChange={(value) => updateField("showNoteText", value)}>
+                    <Field label="Блок мәтіні" value={form.noteText} onChange={(event) => updateField("noteText", event.target.value)} multiline rows={4} />
+                  </ElementBlock>
                 </div>
               </div>
             </FormSection>
 
-            <section className="space-y-6">
-              <SectionTitle>RSVP</SectionTitle>
+            <FormSection title="RSVP" enabled={form.showRsvpSection !== false} onEnabledChange={(value) => updateField("showRsvpSection", value)}>
               <div className="grid gap-4 md:grid-cols-2">
-                <div className="md:col-span-2">
+                <ElementBlock label="Форма тақырыбын көрсету" checked={form.showRsvpTitle !== false} onChange={(value) => updateField("showRsvpTitle", value)} className="md:col-span-2">
                   <Field label="Форма тақырыбы" value={form.rsvpTitle} onChange={(event) => updateField("rsvpTitle", event.target.value)} />
-                </div>
-                <div className="md:col-span-2">
+                </ElementBlock>
+                <ElementBlock label="Форма сипаттамасын көрсету" checked={form.showRsvpDescription !== false} onChange={(value) => updateField("showRsvpDescription", value)} className="md:col-span-2">
                   <Field label="Форма сипаттамасы" value={form.rsvpDescription} onChange={(event) => updateField("rsvpDescription", event.target.value)} multiline rows={4} />
-                </div>
-                <Field
-                  label="Аты-жөн плейсхолдері"
-                  value={form.rsvpNamePlaceholder}
-                  onChange={(event) => updateField("rsvpNamePlaceholder", event.target.value)}
-                />
-                <Field label="Жіберу батырмасы" value={form.rsvpSubmitLabel} onChange={(event) => updateField("rsvpSubmitLabel", event.target.value)} />
-                <Field label="Жіберу кезіндегі мәтін" value={form.rsvpSubmittingLabel} onChange={(event) => updateField("rsvpSubmittingLabel", event.target.value)} />
-                <Field label="'Иә' жауабы" value={form.rsvpYesLabel} onChange={(event) => updateField("rsvpYesLabel", event.target.value)} />
-                <Field label="'Жоқ' жауабы" value={form.rsvpNoLabel} onChange={(event) => updateField("rsvpNoLabel", event.target.value)} />
+                </ElementBlock>
+                <ElementBlock label="Аты-жөні өрісін көрсету" checked={form.showRsvpNameInput !== false} onChange={(value) => updateField("showRsvpNameInput", value)}>
+                  <Field
+                    label="Аты-жөн плейсхолдері"
+                    value={form.rsvpNamePlaceholder}
+                    onChange={(event) => updateField("rsvpNamePlaceholder", event.target.value)}
+                  />
+                </ElementBlock>
+                <ElementBlock label="Жіберу батырмасын көрсету" checked={form.showRsvpSubmitButton !== false} onChange={(value) => updateField("showRsvpSubmitButton", value)}>
+                  <Field label="Жіберу батырмасы" value={form.rsvpSubmitLabel} onChange={(event) => updateField("rsvpSubmitLabel", event.target.value)} />
+                </ElementBlock>
+                <ElementBlock label="Жіберу кезіндегі мәтінді көрсету" checked={form.showRsvpSubmittingLabel !== false} onChange={(value) => updateField("showRsvpSubmittingLabel", value)}>
+                  <Field label="Жіберу кезіндегі мәтін" value={form.rsvpSubmittingLabel} onChange={(event) => updateField("rsvpSubmittingLabel", event.target.value)} />
+                </ElementBlock>
+                <ElementBlock label="Жауаптарды көрсету" checked={form.showRsvpOptions !== false} onChange={(value) => updateField("showRsvpOptions", value)} className="md:col-span-2">
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <Field label="'Иә' жауабы" value={form.rsvpYesLabel} onChange={(event) => updateField("rsvpYesLabel", event.target.value)} />
+                    <Field label="'Жоқ' жауабы" value={form.rsvpNoLabel} onChange={(event) => updateField("rsvpNoLabel", event.target.value)} />
+                  </div>
+                </ElementBlock>
               </div>
-            </section>
+            </FormSection>
+
+              </div>
+            </details>
 
             <section className="pt-2">
               {error ? <div className="mb-5 rounded-[14px] bg-[#fff1ee] px-4 py-3 text-sm text-[#a03f35]">{error}</div> : null}
@@ -797,9 +1052,11 @@ export default function TheatreOfLoveFormPage() {
             </section>
           </section>
 
-          <aside className="mt-12 xl:mt-0 xl:w-[320px]">
-            <div className="xl:fixed xl:right-8 xl:top-28 xl:w-[286px]">
-              <PhonePreview form={form} galleryFiles={galleryFiles} createdEvent={createdEvent} />
+          <aside className="mt-12 xl:mt-0 xl:min-w-[360px]">
+            <div className="xl:fixed xl:bottom-0 xl:right-0 xl:top-[64px] xl:flex xl:w-[calc((100vw-min(100vw,1600px))/2+max(360px,calc((min(100vw,1600px)-992px-48px)*0.5)))] xl:items-center xl:justify-center">
+              <div className="w-[286px]">
+                <PhonePreview form={form} galleryFiles={galleryFiles} createdEvent={createdEvent} />
+              </div>
             </div>
           </aside>
         </div>

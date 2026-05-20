@@ -1,6 +1,7 @@
 import React from "react";
 import { ScrollDownIcon } from "../../../assets/theatre-of-love-template/scroll-down-icon.jsx";
 import { TapIcon } from "../../../assets/theatre-of-love-template/tap-icon.jsx";
+import { isTemplateElementEnabled } from "../../../utils/template-sections.js";
 
 export default function InvitationHeroTemplate5({ template, isOpened, onOpen, instantOpen = false, viewportHeight = null }) {
   const videoRef = React.useRef(null);
@@ -46,7 +47,7 @@ export default function InvitationHeroTemplate5({ template, isOpened, onOpen, in
   return (
     <section className="relative min-h-[100svh] overflow-hidden bg-[#fff9f5]" style={viewportHeight ? { minHeight: `${viewportHeight}px` } : undefined}>
       <div className="absolute inset-0 overflow-hidden bg-[#c07d6e]">
-        {!isOpened ? (
+        {!isOpened && isTemplateElementEnabled(template, "hero.openButton") ? (
           <img
             src="/images/templates/theatre-of-love/curtain-closed-Bpkadld4.jpg"
             alt=""
@@ -107,18 +108,22 @@ export default function InvitationHeroTemplate5({ template, isOpened, onOpen, in
           }`}
         >
           <div className="flex min-h-[100svh] flex-col items-center px-6 pb-8 pt-[30svh] text-center" style={viewportHeight ? { minHeight: `${viewportHeight}px` } : undefined}>
-            <p
-              className="whitespace-pre-line text-[0.62rem] uppercase leading-[1.5] text-[#8d4639]"
-              style={{ fontFamily: "var(--font-body)" }}
-            >
-              {template.intro.overline}
-            </p>
+            {isTemplateElementEnabled(template, "hero.overline") ? (
+              <p
+                className="whitespace-pre-line text-[0.62rem] uppercase leading-[1.5] text-[#8d4639]"
+                style={{ fontFamily: "var(--font-body)" }}
+              >
+                {template.intro.overline}
+              </p>
+            ) : null}
 
-            <div className="mt-16 text-[#6f271f]" style={{ fontFamily: "var(--font-script)" }}>
-              <div className="text-[4.45rem] leading-[0.9]">{template.couple.left}</div>
-              <div className="my-1 text-[2.9rem] leading-none">&amp;</div>
-              <div className="text-[4.45rem] leading-[0.9]">{template.couple.right}</div>
-            </div>
+            {isTemplateElementEnabled(template, "hero.title") ? (
+              <div className="mt-16 text-[#6f271f]" style={{ fontFamily: "var(--font-script)" }}>
+                <div className="text-[4.45rem] leading-[0.9]">{template.couple.left}</div>
+                <div className="my-1 text-[2.9rem] leading-none">&amp;</div>
+                <div className="text-[4.45rem] leading-[0.9]">{template.couple.right}</div>
+              </div>
+            ) : null}
 
             <div className="mt-auto w-full max-w-[320px] pb-2">
               <p
@@ -128,14 +133,16 @@ export default function InvitationHeroTemplate5({ template, isOpened, onOpen, in
                 {template.intro.message}
               </p>
 
-              <div className="template5-scroll-bounce mt-16 flex flex-col items-center justify-center text-[#8d4639]">
-                <span className="text-[0.66rem] uppercase tracking-[0.2em]" style={{ fontFamily: "var(--font-body)" }}>
-                  {template.hero.scrollLabel}
-                </span>
-                <span className="mt-3 inline-flex items-center justify-center">
-                  <ScrollDownIcon className="h-7 w-7" />
-                </span>
-              </div>
+              {isTemplateElementEnabled(template, "hero.scrollLabel") ? (
+                <div className="template5-scroll-bounce mt-16 flex flex-col items-center justify-center text-[#8d4639]">
+                  <span className="text-[0.66rem] uppercase tracking-[0.2em]" style={{ fontFamily: "var(--font-body)" }}>
+                    {template.hero.scrollLabel}
+                  </span>
+                  <span className="mt-3 inline-flex items-center justify-center">
+                    <ScrollDownIcon className="h-7 w-7" />
+                  </span>
+                </div>
+              ) : null}
             </div>
           </div>
         </div>
